@@ -13,7 +13,6 @@ h1{text-align:center;margin:20px 0;color:#333}
 .box{background:white;padding:15px;border-radius:12px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);position:relative}
 input,textarea,button{width:100%;margin:6px 0;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:16px}
 button{background:#4285f4;color:white;border:none;cursor:pointer}
-/* 优化后的删除按钮样式 */
 .delete-btn{
   position:absolute;
   top:10px;
@@ -81,7 +80,7 @@ async function sendNote() {
     const { data, error } = await supabaseClient.storage
       .from('notes')
       .upload(fileName, file);
-    
+
     if (error) {
       console.error('上传失败:', error);
       alert('图片上传失败: ' + error.message);
@@ -90,7 +89,7 @@ async function sendNote() {
 
     const { data: urlData } = supabaseClient
       .storage.from('notes').getPublicUrl(data.path);
-    imgUrl = urlData.publicUrl;
+    imgUrl = urlData.publicUrl; // 只存 URL，不存 HTML
   }
 
   const { error: insertError } = await supabaseClient.from('notes').insert([
