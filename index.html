@@ -10,9 +10,10 @@
 body{background:#f6f7f9;font-family:system-ui,sans-serif;padding:20px}
 .container{max-width:700px;margin:0 auto}
 h1{text-align:center;margin:20px 0;color:#333}
-.box{background:white;padding:15px;border-radius:12px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.box{background:white;padding:15px;border-radius:12px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);position:relative}
 input,textarea,button{width:100%;margin:6px 0;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:16px}
 button{background:#4285f4;color:white;border:none;cursor:pointer}
+.delete-btn{position:absolute;top:10px;right:10px;background:#ff4444;color:white;border:none;padding:4px 8px;border-radius:4px;font-size:12px;cursor:pointer}
 .img-preview{max-width:100%;border-radius:8px;margin:6px 0;display:none}
 .note-img{max-width:100%;border-radius:8px;margin:8px 0}
 .time{font-size:12px;color:#888;margin-top:6px}
@@ -39,11 +40,15 @@ const supabaseClient = supabase.createClient(
 
 document.getElementById('imgFile').addEventListener('change', e => {
   const file = e.target.files[0];
+  const preview = document.getElementById('preview');
+  
+  if (!preview) return;
+
   if (file) {
-    document.getElementById('preview').src = URL.createObjectURL(file);
-    document.getElementById('preview').style.display = 'block';
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
   } else {
-    document.getElementById('preview').style.display = 'none';
+    preview.style.display = 'none';
   }
 });
 
@@ -63,8 +68,9 @@ async function sendNote() {
       .from('notes')
       .upload(fileName, file);
     
-    if (error || !data) {
-      alert('图片上传失败，请重试');
+    if (error) {
+      console.error('上传失败:', error);
+      alert('图片上传失败: ' + error.message);
       return;
     }
 
@@ -92,6 +98,23 @@ async function sendNote() {
   loadNotes();
 }
 
+// 新增：删除备忘录的函数
+async function deleteNote(id) {
+  if (!confirm('确定要删除这条备忘录吗？')) return;
+
+  const { error } = await supabaseClient
+    .from('notes')
+    .delete()
+    .match({ id });
+
+  if (error) {
+    alert('删除失败: ' + error.message);
+    return;
+  }
+
+  loadNotes(); // 删除后刷新列表
+}
+
 async function loadNotes() {
   const { data, error } = await supabaseClient
     .from('notes')
@@ -107,8 +130,10 @@ async function loadNotes() {
     return;
   }
 
+  // 在每条记录里添加了删除按钮
   document.getElementById('list').innerHTML = data.map(n => `
     <div class="box">
+      <button class="delete-btn" onclick="deleteNote(${n.id})">删除</button>
       <div><strong>${n.author}</strong></div>
       <div style="margin:6px 0;white-space:pre-wrap">${n.content}</div>
       ${n.img_url ? `< img src="${n.img_url}" class="note-img">` : ''}
