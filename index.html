@@ -32,13 +32,11 @@ button{background:#4285f4;color:white;border:none;cursor:pointer}
 </div>
 
 <script>
-// 云端后台配置（变量名改为 supabaseClient，避免重复）
 const supabaseClient = supabase.createClient(
   "https://wciaqrhzyvbvnwjnvtktl.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjaWFxcmh6eXZidm53am52dGt0bCIsInJvbGUiOiJjaWVudCIsImlhdCI6MTc0MDk5OTYwMCwiZXhwIjoyMDU2NTc1NjAwfQ.oD7WlM4Zp8vZ4Fg5Y5k5Y5k5Y5k5Y5k5Y5k5Y5k5Y5k"
 );
 
-// 预览图片
 document.getElementById('imgFile').addEventListener('change', e => {
   const file = e.target.files[0];
   if (file) {
@@ -49,7 +47,6 @@ document.getElementById('imgFile').addEventListener('change', e => {
   }
 });
 
-// 发布到云端
 async function sendNote() {
   const author = document.getElementById('author').value.trim();
   const content = document.getElementById('content').value.trim();
@@ -77,17 +74,23 @@ async function sendNote() {
   document.getElementById('content').value = '';
   document.getElementById('imgFile').value = '';
   document.getElementById('preview').style.display = 'none';
-  
-  // 发布后立即刷新列表
   loadNotes();
 }
 
-// 实时加载云端数据
 async function loadNotes() {
-  const { data } = await supabaseClient
+  const { data, error } = await supabaseClient
     .from('notes')
     .select('*')
     .order('created_at', { ascending: false });
+
+  if (error || !data) {
+    document.getElementById('list').innerHTML = `
+      <div class="box">
+        <div style="color: red;">⚠️ 无法连接到服务器，请检查网络后重试。</div>
+      </div>
+    `;
+    return;
+  }
 
   document.getElementById('list').innerHTML = data.map(n => `
     <div class="box">
@@ -99,16 +102,8 @@ async function loadNotes() {
   `).join('');
 }
 
-// 初始化加载
 loadNotes();
-
-// 实时订阅数据库变化
-supabaseClient
-  .channel('notes-channel')
-  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notes' }, payload => {
-    loadNotes();
-  })
-  .subscribe();
+setInterval(loadNotes, 2000);
 </script>
 </body>
 </html>
