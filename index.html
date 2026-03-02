@@ -33,7 +33,7 @@ button{background:#4285f4;color:white;border:none;cursor:pointer}
 
 <script>
 const supabaseClient = supabase.createClient(
-  "https://xxqomjohueqgifggrtix.supabase.co",
+"https://xxqomjohueqgifggrtix.supabase.co",
   "sb_publishable_To4vyVGWsJwkgUUv7sa_XQ_ulU51yVJ"
 );
 
@@ -59,21 +59,36 @@ async function sendNote() {
 
   if (file) {
     const fileName = `images/${Date.now()}_${Math.random().toString(36).substr(2,8)}.jpg`;
-    const { data } = await supabaseClient.storage
+    const { data, error } = await supabaseClient.storage
       .from('notes')
       .upload(fileName, file);
+    
+    if (error || !data) {
+      alert('图片上传失败，请重试');
+      return;
+    }
+
     const { data: urlData } = supabaseClient
       .storage.from('notes').getPublicUrl(data.path);
     imgUrl = urlData.publicUrl;
   }
 
-  await supabaseClient.from('notes').insert([
+  const { error: insertError } = await supabaseClient.from('notes').insert([
     { author, content, img_url: imgUrl }
   ]);
 
+  if (insertError) {
+    alert('发布失败，请检查网络后重试');
+    return;
+  }
+
+  const preview = document.getElementById('preview');
+  if (preview) {
+    preview.style.display = 'none';
+  }
+
   document.getElementById('content').value = '';
   document.getElementById('imgFile').value = '';
-  document.getElementById('preview').style.display = 'none';
   loadNotes();
 }
 
@@ -103,9 +118,7 @@ async function loadNotes() {
 }
 
 loadNotes();
-// 改用每2秒轮询，完全移除WebSocket订阅
 setInterval(loadNotes, 2000);
 </script>
 </body>
 </html>
-
