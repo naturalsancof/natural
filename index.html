@@ -103,6 +103,7 @@ async function loadNotes() {
 }
 
 loadNotes();
+// 改用每2秒轮询，完全移除WebSocket订阅
 setInterval(loadNotes, 2000);
 </script>
 </body>
