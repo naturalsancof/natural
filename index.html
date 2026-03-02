@@ -32,8 +32,8 @@ button{background:#4285f4;color:white;border:none;cursor:pointer}
 </div>
 
 <script>
-// 云端后台配置（只定义一次）
-const supabase = supabase.createClient(
+// 云端后台配置（变量名改为 supabaseClient，避免重复）
+const supabaseClient = supabase.createClient(
   "https://wciaqrhzyvbvnwjnvtktl.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjaWFxcmh6eXZidm53am52dGt0bCIsInJvbGUiOiJjaWVudCIsImlhdCI6MTc0MDk5OTYwMCwiZXhwIjoyMDU2NTc1NjAwfQ.oD7WlM4Zp8vZ4Fg5Y5k5Y5k5Y5k5Y5k5Y5k5Y5k5Y5k"
 );
@@ -62,15 +62,15 @@ async function sendNote() {
 
   if (file) {
     const fileName = `images/${Date.now()}_${Math.random().toString(36).substr(2,8)}.jpg`;
-    const { data } = await supabase.storage
+    const { data } = await supabaseClient.storage
       .from('notes')
       .upload(fileName, file);
-    const { data: urlData } = supabase
+    const { data: urlData } = supabaseClient
       .storage.from('notes').getPublicUrl(data.path);
     imgUrl = urlData.publicUrl;
   }
 
-  await supabase.from('notes').insert([
+  await supabaseClient.from('notes').insert([
     { author, content, img_url: imgUrl }
   ]);
 
@@ -84,7 +84,7 @@ async function sendNote() {
 
 // 实时加载云端数据
 async function loadNotes() {
-  const { data } = await supabase
+  const { data } = await supabaseClient
     .from('notes')
     .select('*')
     .order('created_at', { ascending: false });
@@ -102,8 +102,8 @@ async function loadNotes() {
 // 初始化加载
 loadNotes();
 
-// 实时订阅数据库变化（替代轮询，更实时）
-supabase
+// 实时订阅数据库变化
+supabaseClient
   .channel('notes-channel')
   .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notes' }, payload => {
     loadNotes();
