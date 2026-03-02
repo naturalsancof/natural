@@ -89,7 +89,7 @@ async function sendNote() {
 
     const { data: urlData } = supabaseClient
       .storage.from('notes').getPublicUrl(data.path);
-    imgUrl = urlData.publicUrl; // 只存 URL，不存 HTML
+    imgUrl = urlData.publicUrl;
   }
 
   const { error: insertError } = await supabaseClient.from('notes').insert([
@@ -142,15 +142,45 @@ async function loadNotes() {
     return;
   }
 
-  document.getElementById('list').innerHTML = data.map(n => `
-    <div class="box">
-      <button class="delete-btn" onclick="deleteNote(${n.id})">删除</button>
-      <div><strong>${n.author}</strong></div>
-      <div style="margin:6px 0;white-space:pre-wrap">${n.content}</div>
-      ${n.img_url ? `< img src="${n.img_url}" class="note-img">` : ''}
-      <div class="time">${new Date(n.created_at).toLocaleString()}</div>
-    </div>
-  `).join('');
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+
+  data.forEach(n => {
+    const noteBox = document.createElement('div');
+    noteBox.className = 'box';
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.textContent = '删除';
+    deleteBtn.onclick = () => deleteNote(n.id);
+    noteBox.appendChild(deleteBtn);
+
+    const authorDiv = document.createElement('div');
+    const strong = document.createElement('strong');
+    strong.textContent = n.author;
+    authorDiv.appendChild(strong);
+    noteBox.appendChild(authorDiv);
+
+    const contentDiv = document.createElement('div');
+    contentDiv.style.margin = '6px 0';
+    contentDiv.style.whiteSpace = 'pre-wrap';
+    contentDiv.textContent = n.content;
+    noteBox.appendChild(contentDiv);
+
+    if (n.img_url) {
+      const img = document.createElement('img');
+      img.src = n.img_url;
+      img.className = 'note-img';
+      noteBox.appendChild(img);
+    }
+
+    const timeDiv = document.createElement('div');
+    timeDiv.className = 'time';
+    timeDiv.textContent = new Date(n.created_at).toLocaleString();
+    noteBox.appendChild(timeDiv);
+
+    list.appendChild(noteBox);
+  });
 }
 
 loadNotes();
