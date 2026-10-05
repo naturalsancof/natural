@@ -105,11 +105,8 @@ adminLoginForm.addEventListener('submit', async (event) => {
   }
 
   currentUser = data.user;
-
   adminPassword.value = '';
-
   updateAdminUI();
-
   showAdminMessage('登录成功。', 'success');
 });
 
@@ -141,12 +138,10 @@ function updateAdminUI() {
 
   adminLoginButton.hidden = loggedIn;
   adminLogoutButton.hidden = !loggedIn;
-
   adminEmail.hidden = loggedIn;
   adminPassword.hidden = loggedIn;
 
   const labels = adminLoginForm.querySelectorAll('label');
-
   labels.forEach(label => {
     label.hidden = loggedIn;
   });
@@ -205,12 +200,15 @@ imageInput.addEventListener('change', () => {
 
   preview.src = URL.createObjectURL(file);
   previewWrap.hidden = false;
-
   showFormMessage('');
 });
 
 
 function clearImagePreview() {
+  if (preview.src.startsWith('blob:')) {
+    URL.revokeObjectURL(preview.src);
+  }
+
   preview.src = '';
   previewWrap.hidden = true;
 }
@@ -281,9 +279,7 @@ form.addEventListener('submit', async (event) => {
 
     form.reset();
     clearImagePreview();
-
     showFormMessage('发布成功。', 'success');
-
     await renderNotes();
 
   } catch (error) {
@@ -307,7 +303,6 @@ async function renderNotes() {
 
   try {
     const notes = await fetchNotes(client);
-
     notesList.innerHTML = '';
 
     if (!notes.length) {
@@ -322,39 +317,38 @@ async function renderNotes() {
       const author = fragment.querySelector('.note-author');
       const time = fragment.querySelector('.note-time');
       const content = fragment.querySelector('.note-content');
+      const imageWrap = fragment.querySelector('.note-image-wrap');
       const image = fragment.querySelector('.note-image');
       const deleteButton = fragment.querySelector('.delete-note-button');
 
       author.textContent = note.author || '匿名';
 
       const date = new Date(note.created_at);
-
       time.textContent = Number.isNaN(date.getTime())
         ? ''
         : date.toLocaleString('zh-CN');
-
       time.dateTime = note.created_at;
 
       content.textContent = note.content || '';
+      content.hidden = !note.content;
 
-      if (!note.content) {
-        content.hidden = true;
-      }
-
-      /* 图片 */
+      /* 只有真正存在图片时才创建图片区域 */
       if (note.img_url) {
         image.src = note.img_url;
         image.hidden = false;
+        imageWrap.hidden = false;
 
         image.addEventListener('click', () => {
           openLightbox(note.img_url);
         });
+      } else {
+        imageWrap.hidden = true;
+        image.hidden = true;
       }
 
       /* 管理员删除按钮 */
       if (currentUser) {
         deleteButton.hidden = false;
-
         deleteButton.addEventListener('click', async () => {
           await handleDeleteNote(note);
         });
@@ -369,11 +363,7 @@ async function renderNotes() {
 
   } catch (error) {
     console.error('加载留言失败:', error);
-
-    setNotesStatus(
-      '无法加载留言，请检查网络连接。',
-      true
-    );
+    setNotesStatus('无法加载留言，请检查网络连接。', true);
   }
 }
 
@@ -398,12 +388,9 @@ async function handleDeleteNote(note) {
 
   try {
     await deleteNote(client, note.id);
-
     await renderNotes();
-
   } catch (error) {
     console.error('删除留言失败:', error);
-
     alert(
       error.message ||
       '删除失败，请确认你拥有管理员权限。'
@@ -418,23 +405,17 @@ async function handleDeleteNote(note) {
 
 function openLightbox(url) {
   lightboxImage.src = url;
-
   lightbox.hidden = false;
   lightbox.setAttribute('aria-hidden', 'false');
-
   document.body.classList.add('lightbox-open');
 }
-
 
 function closeLightbox() {
   lightbox.hidden = true;
   lightbox.setAttribute('aria-hidden', 'true');
-
   lightboxImage.src = '';
-
   document.body.classList.remove('lightbox-open');
 }
-
 
 lightboxClose.addEventListener('click', closeLightbox);
 
@@ -443,7 +424,6 @@ lightbox.addEventListener('click', event => {
     closeLightbox();
   }
 });
-
 
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && !lightbox.hidden) {
