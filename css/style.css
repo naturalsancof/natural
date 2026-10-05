@@ -384,7 +384,6 @@ input[type=file] {
   /*
    * Hover 时文字稍微更亮
    */
-  color: #fff8ea;
 
   box-shadow:
     0 8px 20px rgba(42, 120, 113, .20);
@@ -395,7 +394,6 @@ input[type=file] {
 .primary-button:active:not(:disabled) {
   background: var(--teal-active);
 
-  color: #ffffff;
 
   transform: translateY(0);
 }
