@@ -348,7 +348,7 @@ input[type=file] {
    * 这里改的是“发布”文字颜色
    * 使用醒目的暖橙色，与整体旅行手账风格呼应
    */
-  color: #fff4df;
+  color: #124f4a;
 
   cursor: pointer;
 
@@ -823,7 +823,7 @@ textarea:focus-visible {
     /*
      * 手机端同样保持醒目的按钮文字
      */
-    color: #fff4df;
+    color: #124f4a;
   }
 
   .lightbox {
