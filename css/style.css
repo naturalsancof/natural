@@ -188,11 +188,8 @@ h2 {
   margin: 0;
 }
 
-/*
- * “发布留言”使用更醒目的蓝绿色
- */
 .section-heading h2 {
-  color: #187a70;
+  color: #14776e;
   font-weight: 800;
 }
 
@@ -344,21 +341,26 @@ input[type=file] {
   border: 1px solid rgba(42, 120, 113, .35);
   border-radius: 14px;
 
+  /* 背景保持半透明蓝绿色 */
   background: var(--teal-soft);
 
-  color: #ffffff;
+  /*
+   * 这里改的是“发布”文字颜色
+   * 使用醒目的暖橙色，与整体旅行手账风格呼应
+   */
+  color: #fff4df;
 
   cursor: pointer;
 
   font: inherit;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: .02em;
 
   margin-top: 18px;
   padding: 13px 18px;
 
   text-shadow:
-    0 1px 2px rgba(20, 70, 68, .18);
+    0 1px 2px rgba(20, 70, 68, .15);
 
   box-shadow:
     0 6px 16px rgba(42, 120, 113, .16);
@@ -369,6 +371,7 @@ input[type=file] {
   transition:
     background .2s ease,
     border-color .2s ease,
+    color .2s ease,
     box-shadow .2s ease,
     transform .2s ease;
 }
@@ -378,6 +381,11 @@ input[type=file] {
 
   border-color: rgba(42, 120, 113, .48);
 
+  /*
+   * Hover 时文字稍微更亮
+   */
+  color: #fff8ea;
+
   box-shadow:
     0 8px 20px rgba(42, 120, 113, .20);
 
@@ -386,6 +394,8 @@ input[type=file] {
 
 .primary-button:active:not(:disabled) {
   background: var(--teal-active);
+
+  color: #ffffff;
 
   transform: translateY(0);
 }
@@ -567,6 +577,8 @@ button:disabled {
   gap: 12px;
 
   justify-content: space-between;
+
+  width: 100%;
 }
 
 .note-time {
@@ -575,6 +587,8 @@ button:disabled {
   font-size: .8rem;
 
   white-space: nowrap;
+
+  text-align: right;
 }
 
 .note-content {
@@ -742,12 +756,11 @@ textarea:focus-visible {
     border-radius: 20px;
   }
 
-  /*
-   * 手机端发布留言标题更加醒目
-   */
   .section-heading h2 {
     font-size: 1.18rem;
+
     color: #14776e;
+
     font-weight: 800;
   }
 
@@ -758,34 +771,39 @@ textarea:focus-visible {
   }
 
   /*
-   * 手机端：
-   * 昵称和时间保持在同一行
+   * 手机端时间：
+   * 昵称在左
+   * 时间在最右
    */
   .note-meta {
-    align-items: baseline;
+    display: flex;
 
     flex-direction: row;
 
-    justify-content: flex-start;
+    align-items: baseline;
 
-    gap: 8px;
+    justify-content: space-between;
+
+    gap: 12px;
 
     width: 100%;
   }
 
   /*
-   * 时间日志字体缩小一倍
-   * 原来：0.8rem
-   * 现在：0.4rem
+   * 时间稍微缩小，但保持清晰
    */
   .note-time {
-    font-size: .4rem;
+    margin-left: auto;
+
+    font-size: .7rem;
 
     line-height: 1.2;
 
     white-space: nowrap;
 
-    color: rgba(113, 133, 138, .78);
+    text-align: right;
+
+    color: rgba(113, 133, 138, .82);
   }
 
   .img-preview,
@@ -801,6 +819,11 @@ textarea:focus-visible {
     border-radius: 13px;
 
     padding: 13px 16px;
+
+    /*
+     * 手机端同样保持醒目的按钮文字
+     */
+    color: #fff4df;
   }
 
   .lightbox {
