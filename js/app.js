@@ -313,7 +313,6 @@ async function renderNotes() {
     notes.forEach(note => {
       const fragment = noteTemplate.content.cloneNode(true);
 
-      const card = fragment.querySelector('.note-card');
       const author = fragment.querySelector('.note-author');
       const time = fragment.querySelector('.note-time');
       const content = fragment.querySelector('.note-content');
@@ -332,7 +331,6 @@ async function renderNotes() {
       content.textContent = note.content || '';
       content.hidden = !note.content;
 
-      /* 只有真正存在图片时才创建图片区域 */
       if (note.img_url) {
         image.src = note.img_url;
         image.hidden = false;
@@ -346,7 +344,6 @@ async function renderNotes() {
         image.hidden = true;
       }
 
-      /* 管理员删除按钮 */
       if (currentUser) {
         deleteButton.hidden = false;
         deleteButton.addEventListener('click', async () => {
@@ -387,7 +384,7 @@ async function handleDeleteNote(note) {
   }
 
   try {
-    await deleteNote(client, note.id);
+    await deleteNote(client, note);
     await renderNotes();
   } catch (error) {
     console.error('删除留言失败:', error);
