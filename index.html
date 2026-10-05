@@ -8,61 +8,260 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
     <link rel="stylesheet" href="./css/style.css" />
   </head>
+
   <body>
     <main class="container">
+
       <header class="hero">
         <p class="eyebrow">TRAVEL NOTES</p>
         <h1>Bon voyage</h1>
         <p class="subtitle">留下此刻，带走回忆。</p>
       </header>
 
+
+      <!-- 管理员区域 -->
+      <section class="admin-card card" aria-labelledby="admin-title">
+        <div class="section-heading">
+          <h2 id="admin-title">管理员</h2>
+          <p id="admin-status">管理员登录后可以删除留言。</p>
+        </div>
+
+        <form id="admin-login-form">
+          <label for="admin-email">邮箱</label>
+          <input
+            id="admin-email"
+            type="email"
+            autocomplete="username"
+            placeholder="管理员邮箱"
+          />
+
+          <label for="admin-password">密码</label>
+          <input
+            id="admin-password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="管理员密码"
+          />
+
+          <p id="admin-message" class="form-message"></p>
+
+          <div class="admin-actions">
+            <button
+              id="admin-login-button"
+              class="primary-button"
+              type="submit"
+            >
+              管理员登录
+            </button>
+
+            <button
+              id="admin-logout-button"
+              class="text-button"
+              type="button"
+              hidden
+            >
+              退出管理员
+            </button>
+          </div>
+        </form>
+      </section>
+
+
+      <!-- 发布留言 -->
       <section class="composer card" aria-labelledby="composer-title">
         <div class="section-heading">
           <h2 id="composer-title">写一则旅途留言</h2>
           <p>昵称必填，文字或图片至少选一项。</p>
         </div>
+
         <form id="note-form" novalidate>
-          <label for="author">昵称 <span aria-hidden="true">*</span></label>
-          <input id="author" name="author" type="text" maxlength="60" autocomplete="nickname" required placeholder="例如：小林" />
+
+          <label for="author">
+            昵称 <span aria-hidden="true">*</span>
+          </label>
+
+          <input
+            id="author"
+            name="author"
+            type="text"
+            maxlength="60"
+            autocomplete="nickname"
+            required
+            placeholder="例如：小林"
+          />
+
 
           <label for="content">想记录什么？</label>
-          <textarea id="content" name="content" maxlength="2000" rows="5" placeholder="今天的风、路上的人，或一个值得纪念的瞬间…"></textarea>
+
+          <textarea
+            id="content"
+            name="content"
+            maxlength="2000"
+            rows="5"
+            placeholder="今天的风、路上的人，或一个值得纪念的瞬间…"
+          ></textarea>
+
 
           <label for="img-file">照片（可选）</label>
-          <input id="img-file" name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
-          <p class="field-hint">支持 JPEG、PNG、WebP、GIF，最大 5 MB。</p>
+
+          <input
+            id="img-file"
+            name="image"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+          />
+
+          <p class="field-hint">
+            支持 JPEG、PNG、WebP、GIF，最大 5 MB。
+          </p>
+
+
           <div id="preview-wrap" class="preview-wrap" hidden>
-            <img id="preview" class="img-preview" alt="待发布图片的预览" />
-            <button id="remove-image" class="text-button" type="button">移除照片</button>
+            <img
+              id="preview"
+              class="img-preview"
+              alt="待发布图片的预览"
+            />
+
+            <button
+              id="remove-image"
+              class="text-button"
+              type="button"
+            >
+              移除照片
+            </button>
           </div>
 
-          <p id="form-message" class="form-message" role="status" aria-live="polite"></p>
-          <button id="submit-button" class="primary-button" type="submit">发布留言</button>
+
+          <p
+            id="form-message"
+            class="form-message"
+            role="status"
+            aria-live="polite"
+          ></p>
+
+          <button
+            id="submit-button"
+            class="primary-button"
+            type="submit"
+          >
+            发布留言
+          </button>
+
         </form>
       </section>
 
-      <section class="notes-section" aria-labelledby="notes-title">
+
+      <!-- 留言列表 -->
+      <section
+        class="notes-section"
+        aria-labelledby="notes-title"
+      >
+
         <div class="notes-heading">
           <h2 id="notes-title">旅行足迹</h2>
-          <button id="retry-button" class="text-button" type="button" hidden>重新加载</button>
+
+          <button
+            id="retry-button"
+            class="text-button"
+            type="button"
+            hidden
+          >
+            重新加载
+          </button>
         </div>
-        <div id="notes-status" class="status-card" role="status" aria-live="polite">正在加载留言…</div>
-        <div id="notes-list" class="notes-list" aria-live="polite"></div>
+
+        <div
+          id="notes-status"
+          class="status-card"
+          role="status"
+          aria-live="polite"
+        >
+          正在加载留言…
+        </div>
+
+        <div
+          id="notes-list"
+          class="notes-list"
+          aria-live="polite"
+        ></div>
+
       </section>
+
     </main>
 
+
+    <!-- 留言模板 -->
     <template id="note-template">
+
       <article class="note-card card">
+
         <div class="note-meta">
           <strong class="note-author"></strong>
+
           <time class="note-time"></time>
         </div>
+
         <p class="note-content"></p>
-        <img class="note-image" alt="留言附带的照片" hidden />
+
+        <div class="note-image-wrap">
+          <img
+            class="note-image"
+            alt="留言附带的照片"
+            hidden
+          />
+        </div>
+
+        <!-- 管理员删除按钮 -->
+        <button
+          class="delete-note-button"
+          type="button"
+          hidden
+        >
+          删除留言
+        </button>
+
       </article>
+
     </template>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-    <script type="module" src="./js/app.js"></script>
+
+    <!-- 图片大图查看 -->
+    <div
+      id="lightbox"
+      class="lightbox"
+      hidden
+      aria-hidden="true"
+    >
+
+      <button
+        id="lightbox-close"
+        class="lightbox-close"
+        type="button"
+        aria-label="关闭图片"
+      >
+        ×
+      </button>
+
+      <img
+        id="lightbox-image"
+        class="lightbox-image"
+        alt="大图预览"
+      />
+
+    </div>
+
+
+    <!-- Supabase -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+      defer
+    ></script>
+
+    <script
+      type="module"
+      src="./js/app.js"
+    ></script>
+
   </body>
 </html>
