@@ -1,36 +1,89 @@
+```css
 :root {
   color-scheme: light;
+
   --ink: #18343e;
-  --muted: #60757c;
+  --muted: #71858a;
+
   --paper: #fffdf8;
-  --line: #dce7e7;
-  --accent: #df6b47;
-  --accent-dark: #bd4c2c;
+  --line: rgba(120, 150, 155, 0.20);
+
+  /* 旅行手账主色：低饱和蓝绿色 */
   --teal: #2a9d8f;
-  --shadow: 0 14px 35px rgba(28, 61, 68, .12);
+  --teal-soft: rgba(72, 151, 143, 0.78);
+  --teal-hover: rgba(62, 142, 134, 0.88);
+  --teal-active: rgba(55, 132, 125, 0.92);
+
+  /* 保留暖色作为页面背景氛围 */
+  --accent: #d97858;
+  --accent-dark: #bd5f42;
+
+  --shadow:
+    0 12px 35px rgba(35, 65, 72, 0.08),
+    0 2px 8px rgba(35, 65, 72, 0.04);
+
+  --card-shadow:
+    0 10px 30px rgba(35, 65, 72, 0.07),
+    0 2px 8px rgba(35, 65, 72, 0.035);
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   min-width: 320px;
   margin: 0;
-  background: linear-gradient(150deg, #e8f5f3, #fdf4e6 60%, #fae7df);
+
+  background:
+    radial-gradient(
+      circle at 12% 8%,
+      rgba(255, 255, 255, 0.72),
+      transparent 32%
+    ),
+    linear-gradient(
+      150deg,
+      #e8f5f3 0%,
+      #f5f5ee 42%,
+      #fdf4e6 72%,
+      #fae7df 100%
+    );
+
+  background-attachment: fixed;
+
   color: var(--ink);
-  font: 16px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  font:
+    16px/1.55 system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
 }
 
 body.lightbox-open {
   overflow: hidden;
 }
 
+
+/* ========================================
+   页面容器
+   ======================================== */
+
 .container {
   width: min(100% - 32px, 760px);
   margin: 0 auto;
   padding: 42px 0 64px;
 }
+
+
+/* ========================================
+   Hero / 页面标题
+   ======================================== */
 
 .hero {
   text-align: center;
@@ -39,17 +92,25 @@ body.lightbox-open {
 
 .eyebrow {
   color: var(--teal);
-  font-size: .75rem;
+
+  font-size: 0.75rem;
   font-weight: 800;
-  letter-spacing: .16em;
+  letter-spacing: 0.16em;
+
   margin: 0;
 }
 
 .hero h1 {
-  font-family: Georgia, "Times New Roman", serif;
+  margin: 8px 0;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
   font-size: clamp(2.5rem, 10vw, 4.5rem);
   line-height: 1;
-  margin: 8px 0;
+  letter-spacing: -0.035em;
 }
 
 .subtitle {
@@ -57,35 +118,91 @@ body.lightbox-open {
   color: var(--muted);
 }
 
+
+/* ========================================
+   通用卡片
+   ======================================== */
+
 .card,
 .status-card,
 .admin-panel {
-  background: rgba(255, 253, 248, .92);
-  border: 1px solid rgba(255, 255, 255, .85);
-  border-radius: 20px;
-  box-shadow: var(--shadow);
+  background: rgba(255, 255, 255, 0.72);
+
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 22px;
+
+  box-shadow: var(--card-shadow);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
+
+/* ========================================
+   发布框
+   ======================================== */
+
 .composer {
-  padding: clamp(20px, 4vw, 32px);
+  position: relative;
+
+  padding: clamp(22px, 4vw, 32px);
+  margin-top: 20px;
+
+  background: rgba(255, 255, 255, 0.72);
+
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 24px;
+
+  box-shadow:
+    0 12px 35px rgba(35, 65, 72, 0.08),
+    0 2px 8px rgba(35, 65, 72, 0.04);
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
+
+
+/* ========================================
+   标题区域
+   ======================================== */
 
 h2 {
   font-size: 1.25rem;
   margin: 0;
 }
 
+.composer .section-heading {
+  margin-bottom: 22px;
+}
+
+.composer .section-heading h2 {
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+}
+
 .section-heading p,
+.composer .section-heading p,
 .field-hint {
   color: var(--muted);
-  font-size: .9rem;
-  margin: .25rem 0 1rem;
+  font-size: 0.9rem;
+  margin: 0.25rem 0 1rem;
 }
+
+.composer .section-heading p {
+  margin-top: 6px;
+}
+
+
+/* ========================================
+   表单 Label
+   ======================================== */
 
 label {
   display: block;
-  font-size: .92rem;
+
+  font-size: 0.92rem;
   font-weight: 700;
+
   margin: 16px 0 6px;
 }
 
@@ -93,16 +210,47 @@ label span {
   color: var(--accent);
 }
 
+
+/* ========================================
+   输入框
+   ======================================== */
+
 input,
 textarea {
   width: 100%;
+
   border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
-  padding: 12px;
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.82);
+
+  padding: 12px 13px;
+
   font: inherit;
   color: inherit;
+
   outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+input:hover,
+textarea:hover {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+input:focus,
+textarea:focus {
+  background: rgba(255, 255, 255, 0.98);
+
+  border-color: rgba(42, 157, 143, 0.45);
+
+  box-shadow:
+    0 0 0 4px rgba(42, 157, 143, 0.08);
 }
 
 textarea {
@@ -110,33 +258,42 @@ textarea {
   min-height: 110px;
 }
 
-input:focus,
-textarea:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(42, 157, 143, .15);
-}
-
-input[type=file] {
+input[type="file"] {
   padding: 9px;
+  cursor: pointer;
 }
 
-/* 图片预览：限制尺寸，但绝不裁切原图 */
+
+/* ========================================
+   图片预览
+   ======================================== */
+
 .preview-wrap {
   position: relative;
   margin-top: 12px;
 }
 
+/*
+ * 限制显示尺寸，但不裁切原图。
+ * object-fit: contain 保证照片完整显示。
+ */
+
 .img-preview,
 .note-image {
   display: block;
+
   width: 100%;
   max-width: 100%;
+
   height: auto;
   max-height: 520px;
+
   object-fit: contain;
   object-position: center;
-  border-radius: 14px;
-  background: #f3f6f5;
+
+  border-radius: 16px;
+
+  background: rgba(243, 246, 245, 0.8);
 }
 
 .img-preview {
@@ -146,50 +303,140 @@ input[type=file] {
 .note-image {
   margin-top: 14px;
   cursor: zoom-in;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.note-image:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 20px rgba(35, 65, 72, 0.08);
 }
 
 .preview-wrap .text-button {
   margin-top: 4px;
 }
 
+
+/* ========================================
+   普通文字按钮
+   ======================================== */
+
 .text-button {
   border: 0;
   background: transparent;
+
   color: var(--teal);
+
   cursor: pointer;
+
   font: inherit;
   font-weight: 700;
+
   padding: 6px 0;
+
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
 }
+
+.text-button:hover {
+  color: #227f74;
+}
+
+
+/* ========================================
+   发布按钮
+   ======================================== */
 
 .primary-button {
   width: 100%;
-  border: 0;
-  border-radius: 12px;
-  background: var(--accent);
-  color: #fff;
+
+  border: 1px solid rgba(72, 151, 143, 0.25);
+  border-radius: 14px;
+
+  /*
+   * 重点：
+   * 使用半透明蓝绿色，而不是实心绿色。
+   */
+  background: var(--teal-soft);
+
+  color: rgba(255, 255, 255, 0.96);
+
   cursor: pointer;
+
   font: inherit;
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+
   margin-top: 18px;
   padding: 13px 18px;
-  transition: background .2s, transform .2s;
+
+  box-shadow:
+    0 6px 18px rgba(42, 157, 143, 0.16);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .primary-button:hover:not(:disabled) {
-  background: var(--accent-dark);
+  background: var(--teal-hover);
+
+  border-color: rgba(72, 151, 143, 0.34);
+
+  box-shadow:
+    0 8px 22px rgba(42, 157, 143, 0.20);
+
   transform: translateY(-1px);
 }
 
+.primary-button:active:not(:disabled) {
+  background: var(--teal-active);
+
+  box-shadow:
+    0 4px 12px rgba(42, 157, 143, 0.14);
+
+  transform: translateY(0);
+}
+
+.primary-button:focus-visible {
+  outline: none;
+
+  box-shadow:
+    0 0 0 4px rgba(42, 157, 143, 0.12),
+    0 6px 18px rgba(42, 157, 143, 0.16);
+}
+
+
+/* ========================================
+   Disabled 状态
+   ======================================== */
+
 button:disabled {
   cursor: wait;
-  opacity: .7;
+  opacity: 0.7;
 }
+
+
+/* ========================================
+   表单消息
+   ======================================== */
 
 .form-message {
   min-height: 1.5em;
+
   margin: 10px 0 0;
-  font-size: .92rem;
+
+  font-size: 0.92rem;
 }
 
 .form-message.error {
@@ -200,27 +447,48 @@ button:disabled {
   color: #087f5b;
 }
 
-/* 管理员区域 */
+
+/* ========================================
+   管理员区域
+   ======================================== */
+
 .admin-area {
   margin-bottom: 18px;
 }
 
 .admin-toggle {
   display: block;
+
   margin: 0 auto;
   padding: 7px 13px;
-  border: 1px solid rgba(24, 52, 62, .15);
+
+  border: 1px solid rgba(24, 52, 62, 0.15);
   border-radius: 999px;
-  background: rgba(255, 253, 248, .72);
+
+  background: rgba(255, 255, 255, 0.62);
+
   color: var(--muted);
+
   cursor: pointer;
+
   font: inherit;
-  font-size: .82rem;
+  font-size: 0.82rem;
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .admin-toggle:hover {
   color: var(--ink);
-  background: rgba(255, 253, 248, .95);
+
+  background: rgba(255, 255, 255, 0.92);
+
+  border-color: rgba(24, 52, 62, 0.2);
 }
 
 .admin-panel {
@@ -238,52 +506,105 @@ button:disabled {
   margin-top: 10px;
 }
 
+
+/* ========================================
+   留言区域
+   ======================================== */
+
 .notes-section {
   margin-top: 30px;
 }
 
 .notes-heading {
   align-items: center;
+
   display: flex;
+
   justify-content: space-between;
+
   margin: 0 4px 12px;
 }
 
 .status-card {
   color: var(--muted);
+
   padding: 22px;
+
   text-align: center;
 }
 
-.status-card[data-kind=error] {
+.status-card[data-kind="error"] {
   color: #b42318;
 }
+
+
+/* ========================================
+   留言列表
+   ======================================== */
 
 .notes-list {
   display: grid;
   gap: 14px;
 }
 
+
+/* ========================================
+   留言卡片
+   ======================================== */
+
 .note-card {
   padding: 20px;
+
+  /*
+   * 与发布框保持一致的轻玻璃效果
+   */
+  background: rgba(255, 255, 255, 0.70);
+
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 20px;
+
+  box-shadow:
+    0 10px 28px rgba(35, 65, 72, 0.065),
+    0 2px 7px rgba(35, 65, 72, 0.03);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.note-card:hover {
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 14px 32px rgba(35, 65, 72, 0.08),
+    0 3px 9px rgba(35, 65, 72, 0.035);
 }
 
 .note-meta {
   align-items: baseline;
+
   display: flex;
+
   gap: 12px;
+
   justify-content: space-between;
 }
 
 .note-time {
   color: var(--muted);
-  font-size: .8rem;
+
+  font-size: 0.8rem;
+
   white-space: nowrap;
 }
 
 .note-content {
   white-space: pre-wrap;
   word-break: break-word;
+
   margin: 14px 0;
 }
 
@@ -291,24 +612,47 @@ button:disabled {
   display: none;
 }
 
+
+/* ========================================
+   删除留言按钮
+   ======================================== */
+
 .delete-note-button {
   margin-top: 12px;
   padding: 7px 12px;
+
   border: 0;
-  border-radius: 8px;
-  background: #b42318;
+  border-radius: 9px;
+
+  background: rgba(180, 35, 24, 0.9);
+
   color: #fff;
+
   cursor: pointer;
+
   font: inherit;
-  font-size: .85rem;
+  font-size: 0.85rem;
   font-weight: 700;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .delete-note-button:hover {
-  background: #8f1c14;
+  background: rgba(143, 28, 20, 0.95);
+  transform: translateY(-1px);
 }
 
-/* 大图预览 */
+.delete-note-button:active {
+  transform: translateY(0);
+}
+
+
+/* ========================================
+   大图 Lightbox
+   ======================================== */
+
 .lightbox[hidden] {
   display: none;
 }
@@ -316,58 +660,157 @@ button:disabled {
 .lightbox {
   position: fixed;
   inset: 0;
+
   z-index: 1000;
+
   display: flex;
+
   align-items: center;
   justify-content: center;
+
   padding: 28px;
-  background: rgba(12, 25, 29, .86);
+
+  background: rgba(12, 25, 29, 0.86);
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
 .lightbox-image {
   display: block;
+
   width: auto;
   height: auto;
+
   max-width: min(94vw, 1200px);
   max-height: 90vh;
+
   object-fit: contain;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, .35);
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.35);
 }
 
 .lightbox-close {
   position: fixed;
+
   top: 16px;
   right: 18px;
+
   z-index: 1001;
+
   width: 42px;
   height: 42px;
+
   border: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, .14);
+
+  background: rgba(255, 255, 255, 0.14);
+
   color: #fff;
+
   cursor: pointer;
+
   font-size: 30px;
   line-height: 1;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
+
+.lightbox-close:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: scale(1.04);
+}
+
+
+/* ========================================
+   键盘焦点
+   ======================================== */
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgba(42, 157, 143, 0.42);
+  outline-offset: 2px;
+}
+
+
+/* ========================================
+   手机端
+   ======================================== */
 
 @media (max-width: 480px) {
   .container {
     width: min(100% - 24px, 760px);
+
     padding-top: 26px;
+    padding-bottom: 48px;
   }
 
+  .hero {
+    margin-top: 8px;
+    margin-bottom: 22px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.35rem, 13vw, 3.4rem);
+  }
+
+  .subtitle {
+    padding: 0 8px;
+  }
+
+  /*
+   * 手机端发布框：
+   * 边距更舒服，同时保留玻璃卡片感觉
+   */
   .composer {
+    margin-top: 16px;
     padding: 20px 16px;
+    border-radius: 20px;
+  }
+
+  .composer .section-heading {
+    margin-bottom: 18px;
+  }
+
+  .composer .section-heading h2 {
+    font-size: 1.25rem;
+  }
+
+  /*
+   * 触控区域至少保持舒适尺寸
+   */
+  input,
+  textarea {
+    border-radius: 13px;
+  }
+
+  .primary-button {
+    min-height: 48px;
+    padding: 12px 18px;
+    border-radius: 13px;
+  }
+
+  .admin-panel {
+    padding: 17px;
+    border-radius: 18px;
   }
 
   .note-card {
     padding: 16px;
+    border-radius: 18px;
   }
 
   .note-meta {
     align-items: flex-start;
+
     flex-direction: column;
+
     gap: 2px;
   }
 
@@ -378,9 +821,64 @@ button:disabled {
   .img-preview,
   .note-image {
     max-height: 420px;
+    border-radius: 14px;
   }
 
   .lightbox {
     padding: 16px;
   }
+
+  .lightbox-image {
+    max-width: 96vw;
+    max-height: 88vh;
+    border-radius: 10px;
+  }
+
+  .lightbox-close {
+    top: 12px;
+    right: 12px;
+  }
 }
+
+
+/* ========================================
+   更小屏幕
+   ======================================== */
+
+@media (max-width: 360px) {
+  .container {
+    width: calc(100% - 20px);
+  }
+
+  .composer {
+    padding: 18px 14px;
+  }
+
+  .hero h1 {
+    font-size: 2.25rem;
+  }
+
+  .note-card {
+    padding: 14px;
+  }
+}
+
+
+/* ========================================
+   减少动画 / 无障碍
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+```
