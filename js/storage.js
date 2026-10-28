@@ -7,10 +7,15 @@ const ALLOWED_TYPES = new Set([
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 
-// 压缩参数：长边不超过 1600px，JPEG 质量 0.82
-const MAX_EDGE = 1600;
-const JPEG_QUALITY = 0.82;
-const SKIP_BYTES = 700 * 1024;
+// 压缩参数：长边 1280px，优先输出 WebP
+const MAX_EDGE = 1280;
+const TARGET_BYTES = 260 * 1024;
+
+// 普通照片 / 文字截图各自的质量阶梯（不够小就往下走一档）
+const QUALITY_STEPS = {
+  photo: [0.72, 0.62, 0.52],
+  text: [0.82, 0.72, 0.62]
+};
 
 export function validateImage(file) {
   if (!file) {
@@ -46,7 +51,7 @@ function extensionFor(file) {
     'image/png': 'png',
     'image/webp': 'webp',
     'image/gif': 'gif'
-  })[file.type];
+  })[file.type] || 'jpg';
 }
 
 function outputName(file, extension) {
@@ -62,8 +67,8 @@ function toBlob(canvas, type, quality) {
 }
 
 /**
- * 上传前压缩图片：长边缩到 1600px 以内，JPEG 走 0.82 质量。
- * GIF 保持原样（保住动画），小图也直接放过。
+ * 上传前压缩：长边 1280px，输出 WebP，单张尽量压到 260KB 以内。
+ * GIF 保持原样（保住动画）；压完反而更大就用原图。
  */
 export async function compressImage(file) {
   if (!file || !file.type) {
@@ -84,12 +89,6 @@ export async function compressImage(file) {
     const longest = Math.max(bitmap.width, bitmap.height);
     const scale = longest > MAX_EDGE ? MAX_EDGE / longest : 1;
 
-    // 本来就不大，直接传原图
-    if (scale === 1 && file.size <= SKIP_BYTES) {
-      bitmap.close?.();
-      return file;
-    }
-
     const width = Math.max(1, Math.round(bitmap.width * scale));
     const height = Math.max(1, Math.round(bitmap.height * scale));
 
@@ -103,18 +102,40 @@ export async function compressImage(file) {
     context.drawImage(bitmap, 0, 0, width, height);
     bitmap.close?.();
 
-    // PNG 截图保留 PNG，避免文字发糊
-    const outputType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-    const blob = await toBlob(canvas, outputType, JPEG_QUALITY);
+    // PNG 多为截图，文字需要高一点的质量
+    const steps = file.type === 'image/png'
+      ? QUALITY_STEPS.text
+      : QUALITY_STEPS.photo;
+
+    let blob = null;
+
+    for (const quality of steps) {
+      const webp = await toBlob(canvas, 'image/webp', quality);
+
+      // 个别浏览器给不出 WebP 时会退回 PNG，这时改用 JPEG
+      const candidate = webp && webp.type === 'image/webp'
+        ? webp
+        : await toBlob(canvas, 'image/jpeg', quality);
+
+      if (!candidate) {
+        continue;
+      }
+
+      blob = candidate;
+
+      if (candidate.size <= TARGET_BYTES) {
+        break;
+      }
+    }
 
     if (!blob || blob.size >= file.size) {
       return file;
     }
 
-    const extension = outputType === 'image/png' ? 'png' : 'jpg';
+    const extension = blob.type === 'image/webp' ? 'webp' : 'jpg';
 
     return new File([blob], outputName(file, extension), {
-      type: outputType,
+      type: blob.type,
       lastModified: Date.now()
     });
   } catch (error) {
