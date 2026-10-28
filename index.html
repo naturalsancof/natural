@@ -213,6 +213,40 @@
           </p>
 
 
+          <!-- 地点 -->
+
+          <label for="composer-location">
+            地点（可选）
+          </label>
+
+          <div class="location-field">
+
+            <button
+              id="composer-location"
+              class="location-button"
+              type="button"
+            >
+              📍 添加地点
+            </button>
+
+            <span
+              id="composer-location-name"
+              class="location-chip"
+              hidden
+            ></span>
+
+            <button
+              id="composer-location-clear"
+              class="text-button"
+              type="button"
+              hidden
+            >
+              移除
+            </button>
+
+          </div>
+
+
           <!-- 图片预览 -->
 
           <div
@@ -257,6 +291,36 @@
           </button>
 
         </form>
+
+      </section>
+
+
+      <!-- =========================
+           足迹地图
+      ========================== -->
+
+      <section
+        class="map-section"
+        aria-labelledby="map-title"
+      >
+
+        <div class="notes-heading">
+
+          <h2 id="map-title">
+            足迹地图
+          </h2>
+
+        </div>
+
+        <div class="map-card card">
+
+          <div id="map-canvas" class="map-canvas"></div>
+
+          <p id="map-empty" class="map-empty">
+            还没有带地点的留言，发帖时标一个位置就会出现在地图上。
+          </p>
+
+        </div>
 
       </section>
 
@@ -343,6 +407,9 @@
         <p class="note-content"></p>
 
 
+        <p class="note-location" hidden></p>
+
+
         <div class="note-image-wrap">
 
           <img
@@ -399,6 +466,15 @@
           </form>
 
         </section>
+
+
+        <button
+          class="edit-location-button"
+          type="button"
+          hidden
+        >
+          编辑地点
+        </button>
 
 
         <!-- 管理员删除 -->
@@ -482,6 +558,138 @@
       </article>
 
     </template>
+
+
+    <!-- =========================
+         选择地点
+    ========================== -->
+
+    <div
+      id="location-modal"
+      class="modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="location-modal-title"
+      aria-hidden="true"
+      hidden
+    >
+
+      <div class="modal-panel">
+
+        <div class="modal-head">
+
+          <h2 id="location-modal-title">
+            选择地点
+          </h2>
+
+          <button
+            id="location-close"
+            class="modal-close"
+            type="button"
+            aria-label="关闭"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="location-search">
+
+          <input
+            id="location-query"
+            type="search"
+            placeholder="搜索城市或地名，如 大理、京都、Lisbon"
+            autocomplete="off"
+          />
+
+          <button
+            id="location-search-button"
+            class="text-button"
+            type="button"
+          >
+            搜索
+          </button>
+
+        </div>
+
+
+        <ul
+          id="location-results"
+          class="location-results"
+        ></ul>
+
+
+        <div class="location-hint-row">
+
+          <button
+            id="location-locate"
+            class="text-button"
+            type="button"
+          >
+            📍 使用当前位置
+          </button>
+
+          <span class="location-hint">
+            或直接在地图上点选
+          </span>
+
+        </div>
+
+
+        <div id="location-map" class="map-canvas map-canvas-small"></div>
+
+
+        <div class="location-selected">
+
+          <span id="location-label" class="location-label">
+            未选择地点
+          </span>
+
+          <button
+            id="location-clear"
+            class="text-button"
+            type="button"
+            hidden
+          >
+            清除
+          </button>
+
+        </div>
+
+
+        <p
+          id="location-message"
+          class="form-message"
+          role="status"
+          aria-live="polite"
+        ></p>
+
+
+        <div class="modal-actions">
+
+          <button
+            id="location-cancel"
+            class="text-button"
+            type="button"
+          >
+            取消
+          </button>
+
+          <button
+            id="location-confirm"
+            class="modal-confirm primary-button"
+            type="button"
+            disabled
+          >
+            确定
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
 
 
     <!-- =========================
