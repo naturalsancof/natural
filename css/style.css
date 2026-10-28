@@ -2421,22 +2421,18 @@ body.modal-open {
 
     z-index: 950;
 
-    width: min(94vw, 500px);
+    /* 占满宽度，左右两条边都对到屏幕边 */
+    width: 100%;
     margin: 0;
-    padding: 52px 16px 20px;
+    padding: 48px 0 0;
 
     overflow-y: auto;
     overscroll-behavior: contain;
 
-    /* 悬浮玻璃：不再铺一块实心底 */
-    background: rgba(255, 253, 248, .42);
+    /* 不再铺面板底色：只有地图本身 */
+    background: transparent;
 
-    border-right: 1px solid rgba(255, 255, 255, .45);
-
-    backdrop-filter: blur(22px) saturate(160%);
-    -webkit-backdrop-filter: blur(22px) saturate(160%);
-
-    box-shadow: 24px 0 60px rgba(0, 0, 0, .18);
+    box-shadow: none;
 
     transform: translateX(-102%);
     transition: transform .34s cubic-bezier(.22, .61, .36, 1);
@@ -2473,8 +2469,17 @@ body.modal-open {
     cursor: pointer;
   }
 
+  .map-section .map-card {
+    padding: 0;
+
+    border: 0;
+    border-radius: 0;
+  }
+
   .map-section .map-canvas {
     aspect-ratio: 4 / 5;
+
+    border-radius: 0;
   }
 
   /* ---- 卡片密度 ---- */
@@ -2550,11 +2555,9 @@ body.modal-open {
   }
 
   [data-theme="dark"] .map-section {
-    background: rgba(10, 22, 26, .38);
+    background: transparent;
 
-    border-right-color: rgba(170, 205, 200, .16);
-
-    box-shadow: 24px 0 60px rgba(0, 0, 0, .38);
+    box-shadow: none;
   }
 }
 
