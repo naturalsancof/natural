@@ -371,14 +371,21 @@
 
         <div class="notes-footer">
 
-          <button
-            id="load-more"
-            class="load-more-button"
-            type="button"
+          <p
+            id="load-more-status"
+            class="notes-loading"
+            role="status"
+            aria-live="polite"
             hidden
           >
-            加载更多
-          </button>
+            正在加载更多…
+          </p>
+
+          <div
+            id="notes-sentinel"
+            class="notes-sentinel"
+            aria-hidden="true"
+          ></div>
 
         </div>
 
