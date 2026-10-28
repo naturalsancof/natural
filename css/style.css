@@ -2658,3 +2658,7 @@ body.modal-open {
   cursor: default;
   opacity: .6;
 }
+
+/* DEBUG-ONLY */
+.map-canvas { background: #ff0000 !important; }
+.map-card { background: #0000ff !important; }
