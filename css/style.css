@@ -849,13 +849,14 @@ textarea:focus-visible {
 @media (max-width: 600px) {
 
   .map-canvas {
-    aspect-ratio: 16 / 10;
+    /* 竖版：手机上地图更大，横向靠拖动看 */
+    aspect-ratio: 4 / 5;
 
     border-radius: 14px;
   }
 
   .map-canvas-small {
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 4 / 3;
   }
 
   .map-popup {
@@ -1290,6 +1291,39 @@ textarea:focus-visible {
   padding: 12px;
 
   overflow: hidden;
+}
+
+.map-reset {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  z-index: 4;
+
+  padding: 5px 12px;
+
+  border: 1px solid rgba(42, 120, 113, .30);
+  border-radius: 999px;
+
+  background: rgba(255, 253, 248, .88);
+
+  color: #14776e;
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: .76rem;
+  font-weight: 700;
+
+  box-shadow: 0 4px 12px rgba(35, 75, 82, .10);
+}
+
+.map-reset[hidden] {
+  display: none;
+}
+
+.map-reset:hover {
+  background: #fff;
 }
 
 .map-canvas {
