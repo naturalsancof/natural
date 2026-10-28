@@ -73,7 +73,8 @@ async function fromOpenMeteo(query) {
       label: detail ? `${item.name} · ${detail}` : item.name,
       lat: item.latitude,
       lng: item.longitude,
-      type: 'city'
+      type: 'city',
+      source: 'open-meteo'
     };
   });
 }
@@ -118,7 +119,8 @@ async function fromNominatim(query) {
       label: detail ? `${name} · ${detail}` : name,
       lat: Number(item.lat),
       lng: Number(item.lon),
-      type: item.type || ''
+      type: item.type || '',
+      source: 'nominatim'
     };
   }).filter(item => item && Number.isFinite(item.lat) && Number.isFinite(item.lng));
 }
@@ -181,7 +183,10 @@ function fuzzyScore(query, item) {
     }
   }
 
-  return score + (TYPE_BONUS[item.type] || 0);
+  // OSM 的行政区层级更可靠，同分时优先
+  const sourceBonus = item.source === 'nominatim' ? 6 : 0;
+
+  return score + (TYPE_BONUS[item.type] || 0) + sourceBonus;
 }
 
 /**
