@@ -538,6 +538,20 @@ export function createMap(host, options = {}) {
     svg.classList.add('is-interactive');
   }
 
+  // 把视野挪到足迹中间（不改缩放）
+  function centerOnPins() {
+    const points = pins.map(pin => projectPoint(pin.lat, pin.lng));
+    const xs = points.map(point => point.x);
+    const ys = points.map(point => point.y);
+
+    center = {
+      x: (Math.min(...xs) + Math.max(...xs)) / 2,
+      y: (Math.min(...ys) + Math.max(...ys)) / 2
+    };
+
+    applyView();
+  }
+
   function fitToPins() {
     if (!pins.length) {
       return;
@@ -646,9 +660,14 @@ export function createMap(host, options = {}) {
     // 手机竖屏：第一次有数据时自动框住所有足迹，别只显示一小块
     const isNarrow = window.matchMedia('(max-width: 860px)').matches;
 
-    if (!userMoved && !fitted && pins.length && isNarrow) {
+    if (!userMoved && !fitted && pins.length) {
       fitted = true;
-      fitToPins();
+
+      if (isNarrow) {
+        fitToPins();
+      } else {
+        centerOnPins();
+      }
     }
   }
 
