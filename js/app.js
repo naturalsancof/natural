@@ -10,7 +10,9 @@ import {
   deleteComment,
   subscribeToComments
 } from './notes.js';
-import { validateImage, uploadImage } from './storage.js';
+import { validateImage, uploadImage, compressImage } from './storage.js';
+
+const PAGE_SIZE = 10;
 
 const client = getSupabaseClient();
 
@@ -30,16 +32,21 @@ const composerPanel = composerToggle.closest('.composer');
 const notesList = document.getElementById('notes-list');
 const notesStatus = document.getElementById('notes-status');
 const retryButton = document.getElementById('retry-button');
+const loadMoreButton = document.getElementById('load-more');
 const noteTemplate = document.getElementById('note-template');
 const commentTemplate = document.getElementById('comment-template');
+const skeletonTemplate = document.getElementById('skeleton-template');
+const toast = document.getElementById('toast');
 
 const adminToggle = document.getElementById('admin-toggle');
 const adminPanel = document.getElementById('admin-panel');
+const adminHeading = document.getElementById('admin-heading');
 const adminLoginForm = document.getElementById('admin-login-form');
 const adminEmail = document.getElementById('admin-email');
 const adminPassword = document.getElementById('admin-password');
 const adminLoginButton = document.getElementById('admin-login-button');
 const adminLogoutButton = document.getElementById('admin-logout-button');
+const adminSession = document.getElementById('admin-session');
 const adminStatus = document.getElementById('admin-status');
 const adminMessage = document.getElementById('admin-message');
 
@@ -49,6 +56,10 @@ const lightboxClose = document.getElementById('lightbox-close');
 
 let currentUser = null;
 let commentsByNote = new Map();
+let loadedNotes = [];
+let hasMore = true;
+let loadingNotes = false;
+let toastTimer = 0;
 
 
 /* =========================
@@ -71,6 +82,27 @@ function setNotesStatus(message, showRetry = false) {
   retryButton.hidden = !showRetry;
 }
 
+function showToast(message) {
+  if (!message) {
+    return;
+  }
+
+  toast.textContent = message;
+  toast.hidden = false;
+
+  window.clearTimeout(toastTimer);
+
+  toastTimer = window.setTimeout(() => {
+    toast.hidden = true;
+  }, 2600);
+}
+
+function updateLoadMore() {
+  loadMoreButton.hidden = !hasMore || loadedNotes.length === 0;
+  loadMoreButton.disabled = false;
+  loadMoreButton.textContent = '加载更多';
+}
+
 
 /* =========================
    管理员登录面板
@@ -82,7 +114,7 @@ adminToggle.addEventListener('click', () => {
   adminPanel.hidden = !isHidden;
   adminToggle.setAttribute('aria-expanded', String(isHidden));
 
-  if (isHidden) {
+  if (isHidden && !currentUser) {
     adminEmail.focus();
   }
 });
@@ -121,8 +153,13 @@ adminLoginForm.addEventListener('submit', async (event) => {
 
   currentUser = data.user;
   adminPassword.value = '';
+  showAdminMessage('');
   updateAdminUI();
-  showAdminMessage('登录成功。', 'success');
+
+  // 登录成功就把面板收起来，别一直占着屏幕
+  adminPanel.hidden = true;
+  adminToggle.setAttribute('aria-expanded', 'false');
+  showToast('已登录管理员');
 });
 
 
@@ -141,6 +178,7 @@ adminLogoutButton.addEventListener('click', async () => {
 
   currentUser = null;
   updateAdminUI();
+  showToast('已退出登录');
 });
 
 
@@ -151,15 +189,11 @@ adminLogoutButton.addEventListener('click', async () => {
 function updateAdminUI() {
   const loggedIn = !!currentUser;
 
-  adminLoginButton.hidden = loggedIn;
-  adminLogoutButton.hidden = !loggedIn;
-  adminEmail.hidden = loggedIn;
-  adminPassword.hidden = loggedIn;
+  adminLoginForm.hidden = loggedIn;
+  adminSession.hidden = !loggedIn;
 
-  const labels = adminLoginForm.querySelectorAll('label');
-  labels.forEach(label => {
-    label.hidden = loggedIn;
-  });
+  adminHeading.textContent = loggedIn ? '管理员' : '管理员登录';
+  adminToggle.classList.toggle('is-admin', loggedIn);
 
   if (loggedIn) {
     adminStatus.textContent = `已登录：${currentUser.email}`;
@@ -169,7 +203,21 @@ function updateAdminUI() {
     adminPassword.value = '';
   }
 
-  renderNotes();
+  refreshAdminButtons();
+}
+
+function refreshAdminButtons() {
+  loadedNotes.forEach(note => {
+    const card = commentCard(note.id);
+
+    if (!card) {
+      return;
+    }
+
+    card.querySelector('.delete-note-button').hidden = !currentUser;
+  });
+
+  commentsByNote.forEach((_list, noteId) => renderComments(noteId));
 }
 
 
@@ -239,13 +287,17 @@ removeImageButton.addEventListener('click', () => {
    发布框折叠
 ========================= */
 
+function setComposerOpen(open) {
+  form.hidden = !open;
+  composerToggleLabel.textContent = open ? '收起' : '写一则旅途留言';
+  composerToggle.setAttribute('aria-expanded', String(open));
+  composerPanel.classList.toggle('is-open', open);
+}
+
 composerToggle.addEventListener('click', () => {
   const willOpen = form.hidden;
 
-  form.hidden = !willOpen;
-  composerToggleLabel.textContent = willOpen ? '收起' : '写一则旅途留言';
-  composerToggle.setAttribute('aria-expanded', String(willOpen));
-  composerPanel.classList.toggle('is-open', willOpen);
+  setComposerOpen(willOpen);
 
   if (willOpen) {
     authorInput.focus();
@@ -295,16 +347,23 @@ form.addEventListener('submit', async (event) => {
   }
 
   submitButton.disabled = true;
-  showFormMessage('正在发布…');
+  showFormMessage(file ? '正在压缩图片…' : '正在发布…');
 
   try {
-    let imageUrl = '';
+    let uploadFile = file;
 
     if (file) {
-      imageUrl = await uploadImage(client, file);
+      uploadFile = await compressImage(file);
+      showFormMessage('正在上传图片…');
     }
 
-    await createNote(client, {
+    let imageUrl = '';
+
+    if (uploadFile) {
+      imageUrl = await uploadImage(client, uploadFile);
+    }
+
+    const created = await createNote(client, {
       author,
       content,
       img_url: imageUrl
@@ -312,9 +371,13 @@ form.addEventListener('submit', async (event) => {
 
     form.reset();
     clearImagePreview();
-    showFormMessage('发布成功。', 'success');
-    await renderNotes();
+    showFormMessage('');
+    setComposerOpen(false);
+    showToast('发布成功');
 
+    if (created) {
+      prependNote(created);
+    }
   } catch (error) {
     console.error('发布留言失败:', error);
     showFormMessage(
@@ -331,74 +394,197 @@ form.addEventListener('submit', async (event) => {
    加载留言
 ========================= */
 
+function showSkeletons(count = 3) {
+  notesList.innerHTML = '';
+
+  if (!skeletonTemplate) {
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+
+  for (let i = 0; i < count; i += 1) {
+    fragment.appendChild(skeletonTemplate.content.cloneNode(true));
+  }
+
+  notesList.appendChild(fragment);
+}
+
 async function renderNotes() {
-  setNotesStatus('正在加载留言…');
+  loadedNotes = [];
+  commentsByNote = new Map();
+  hasMore = true;
+
+  setNotesStatus('');
+  showSkeletons(3);
+
+  await loadNextPage();
+}
+
+async function loadNextPage() {
+  if (loadingNotes) {
+    return;
+  }
+
+  loadingNotes = true;
+  loadMoreButton.disabled = true;
+  loadMoreButton.textContent = '加载中…';
 
   try {
-    const notes = await fetchNotes(client);
-    commentsByNote = await loadCommentsForNotes(notes);
-    notesList.innerHTML = '';
+    const before = loadedNotes.length
+      ? loadedNotes[loadedNotes.length - 1]
+      : null;
 
-    if (!notes.length) {
-      setNotesStatus('还没有留言，成为第一个留下足迹的人吧。');
+    const page = await fetchNotes(client, { limit: PAGE_SIZE, before });
+
+    if (!loadedNotes.length) {
+      notesList.innerHTML = '';
+    }
+
+    if (!page.length) {
+      hasMore = false;
+
+      if (!loadedNotes.length) {
+        setNotesStatus('还没有留言，成为第一个留下足迹的人吧。');
+      }
+
       return;
     }
 
-    notes.forEach(note => {
-      const fragment = noteTemplate.content.cloneNode(true);
-
-      fragment.querySelector('.note-card').dataset.noteId = note.id;
-
-      const author = fragment.querySelector('.note-author');
-      const time = fragment.querySelector('.note-time');
-      const content = fragment.querySelector('.note-content');
-      const imageWrap = fragment.querySelector('.note-image-wrap');
-      const image = fragment.querySelector('.note-image');
-      const deleteButton = fragment.querySelector('.delete-note-button');
-
-      author.textContent = note.author || '匿名';
-
-      const date = new Date(note.created_at);
-      time.textContent = Number.isNaN(date.getTime())
-        ? ''
-        : date.toLocaleString('zh-CN');
-      time.dateTime = note.created_at;
-
-      content.textContent = note.content || '';
-      content.hidden = !note.content;
-
-      if (note.img_url) {
-        image.src = note.img_url;
-        image.hidden = false;
-        imageWrap.hidden = false;
-
-        image.addEventListener('click', () => {
-          openLightbox(note.img_url);
-        });
-      } else {
-        imageWrap.hidden = true;
-        image.hidden = true;
-      }
-
-      if (currentUser) {
-        deleteButton.hidden = false;
-        deleteButton.addEventListener('click', async () => {
-          await handleDeleteNote(note);
-        });
-      } else {
-        deleteButton.hidden = true;
-      }
-
-      notesList.appendChild(fragment);
-      initCommentBlock(note.id);
+    const pageComments = await loadCommentsForNotes(page);
+    pageComments.forEach((list, noteId) => {
+      commentsByNote.set(noteId, list);
     });
 
+    const fragment = document.createDocumentFragment();
+
+    page.forEach(note => {
+      loadedNotes.push(note);
+      fragment.appendChild(createNoteCard(note));
+    });
+
+    notesList.appendChild(fragment);
     setNotesStatus('');
 
+    hasMore = page.length === PAGE_SIZE;
   } catch (error) {
     console.error('加载留言失败:', error);
-    setNotesStatus('无法加载留言，请检查网络连接。', true);
+
+    if (!loadedNotes.length) {
+      notesList.innerHTML = '';
+      setNotesStatus('无法加载留言，请检查网络连接。', true);
+    } else {
+      showToast('加载失败，请稍后再试');
+    }
+  } finally {
+    loadingNotes = false;
+    updateLoadMore();
   }
+}
+
+function prependNote(note) {
+  if (!note || note.id === undefined || note.id === null) {
+    return;
+  }
+
+  if (loadedNotes.some(item => item.id === note.id)) {
+    return;
+  }
+
+  loadedNotes.unshift(note);
+
+  const card = createNoteCard(note);
+
+  if (notesList.firstChild) {
+    notesList.insertBefore(card, notesList.firstChild);
+  } else {
+    notesList.appendChild(card);
+  }
+
+  setNotesStatus('');
+  updateLoadMore();
+}
+
+function removeNoteCard(noteId) {
+  const before = loadedNotes.length;
+
+  loadedNotes = loadedNotes.filter(item => item.id !== noteId);
+
+  if (loadedNotes.length === before) {
+    return;
+  }
+
+  const card = commentCard(noteId);
+
+  if (card) {
+    card.remove();
+  }
+
+  commentsByNote.delete(noteId);
+
+  if (!loadedNotes.length) {
+    if (hasMore) {
+      loadNextPage();
+    } else {
+      setNotesStatus('还没有留言，成为第一个留下足迹的人吧。');
+    }
+  }
+
+  updateLoadMore();
+}
+
+function createNoteCard(note) {
+  const fragment = noteTemplate.content.cloneNode(true);
+  const card = fragment.querySelector('.note-card');
+
+  card.dataset.noteId = note.id;
+
+  card.querySelector('.note-author').textContent = note.author || '匿名';
+
+  const time = card.querySelector('.note-time');
+  const date = new Date(note.created_at);
+
+  time.textContent = Number.isNaN(date.getTime())
+    ? ''
+    : date.toLocaleString('zh-CN');
+  time.dateTime = note.created_at;
+
+  const content = card.querySelector('.note-content');
+  content.textContent = note.content || '';
+  content.hidden = !note.content;
+
+  const imageWrap = card.querySelector('.note-image-wrap');
+  const image = card.querySelector('.note-image');
+
+  if (note.img_url) {
+    image.src = note.img_url;
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    image.hidden = false;
+    imageWrap.hidden = false;
+
+    image.addEventListener('click', () => {
+      openLightbox(note.img_url);
+    });
+  } else {
+    imageWrap.hidden = true;
+    image.hidden = true;
+  }
+
+  const deleteButton = card.querySelector('.delete-note-button');
+
+  if (currentUser) {
+    deleteButton.hidden = false;
+    deleteButton.addEventListener('click', async () => {
+      await handleDeleteNote(note);
+    });
+  } else {
+    deleteButton.hidden = true;
+  }
+
+  initCommentBlock(card, note.id);
+
+  return card;
 }
 
 
@@ -441,13 +627,7 @@ function commentCard(noteId) {
 }
 
 
-function initCommentBlock(noteId) {
-  const card = commentCard(noteId);
-
-  if (!card) {
-    return;
-  }
-
+function initCommentBlock(card, noteId) {
   const form = card.querySelector('.comment-form');
   const toggle = card.querySelector('.comment-toggle');
 
@@ -467,18 +647,18 @@ function initCommentBlock(noteId) {
     }
   });
 
-  renderComments(noteId);
+  renderComments(noteId, card);
 }
 
 
-function renderComments(noteId) {
-  const card = commentCard(noteId);
+function renderComments(noteId, card) {
+  const node = card || commentCard(noteId);
 
-  if (!card) {
+  if (!node) {
     return;
   }
 
-  const list = card.querySelector('.comment-list');
+  const list = node.querySelector('.comment-list');
   const items = commentsByNote.get(noteId) || [];
 
   list.innerHTML = '';
@@ -513,6 +693,10 @@ function renderComments(noteId) {
 
 
 async function refreshCommentsForNote(noteId) {
+  if (!commentCard(noteId)) {
+    return;
+  }
+
   try {
     const list = await fetchCommentsForNote(client, noteId);
 
@@ -622,6 +806,7 @@ async function handleCommentDelete(noteId, comment) {
 
     commentsByNote.set(noteId, list);
     renderComments(noteId);
+    showToast('评论已删除');
   } catch (error) {
     console.error('删除评论失败:', error);
     alert(
@@ -630,6 +815,7 @@ async function handleCommentDelete(noteId, comment) {
     );
   }
 }
+
 
 /* =========================
    删除留言
@@ -651,7 +837,8 @@ async function handleDeleteNote(note) {
 
   try {
     await deleteNote(client, note);
-    await renderNotes();
+    removeNoteCard(note.id);
+    showToast('留言已删除');
   } catch (error) {
     console.error('删除留言失败:', error);
     alert(
@@ -696,18 +883,35 @@ document.addEventListener('keydown', event => {
 
 
 /* =========================
-   重试
+   重试 / 加载更多
 ========================= */
 
 retryButton.addEventListener('click', renderNotes);
+
+loadMoreButton.addEventListener('click', () => {
+  loadNextPage();
+});
 
 
 /* =========================
    Realtime
 ========================= */
 
-subscribeToNotes(client, async () => {
-  await renderNotes();
+subscribeToNotes(client, payload => {
+  const eventType = payload?.eventType;
+
+  if (eventType === 'INSERT') {
+    prependNote(payload.new);
+    return;
+  }
+
+  if (eventType === 'DELETE') {
+    const noteId = payload?.old?.id;
+
+    if (noteId !== undefined && noteId !== null) {
+      removeNoteCard(noteId);
+    }
+  }
 });
 
 subscribeToComments(client, payload => {
