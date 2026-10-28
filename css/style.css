@@ -1740,7 +1740,7 @@ body.modal-open {
 }
 
 .location-results {
-  max-height: 160px;
+  max-height: 220px;
 
   margin: 8px 0 0;
   padding: 0;
