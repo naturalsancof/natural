@@ -74,6 +74,7 @@ let commentsByNote = new Map();
 let loadedNotes = [];
 let extraNotes = new Map();
 let gapElement = null;
+let autoLoadPaused = false;
 let hasMore = true;
 let loadingNotes = false;
 let toastTimer = 0;
@@ -547,10 +548,23 @@ async function loadNextPage() {
       fragment.appendChild(createNoteCard(note));
     });
 
-    if (gapElement && gapElement.parentNode === notesList) {
+    // 记录插入点位置，用于插入后补偿滚动（别把当前看的内容顶走）
+    const gapMounted = gapElement && gapElement.parentNode === notesList;
+    const anchorTop = gapMounted ? gapElement.getBoundingClientRect().top : null;
+    const heightBefore = document.documentElement.scrollHeight;
+
+    if (gapMounted) {
       notesList.insertBefore(fragment, gapElement);
     } else {
       notesList.appendChild(fragment);
+    }
+
+    if (anchorTop !== null && anchorTop < 0) {
+      const grown = document.documentElement.scrollHeight - heightBefore;
+
+      if (grown > 0) {
+        window.scrollBy(0, grown);
+      }
     }
 
     setNotesStatus('');
@@ -992,8 +1006,13 @@ function placeGap() {
     button.type = 'button';
     button.className = 'notes-gap-button';
     button.textContent = '加载中间被跳过的帖子';
-    button.addEventListener('click', () => {
-      loadNextPage();
+    button.addEventListener('click', async () => {
+      await loadNextPage();
+
+      // 补完之后把占位条（或新内容）拉回视野，别让人找不着
+      if (gapElement) {
+        gapElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     });
 
     gapElement.appendChild(hint);
@@ -1086,6 +1105,9 @@ async function focusNote(noteId) {
 
     insertNoteInOrder(note);
   }
+
+  // 跳到远处时先别自动补页，否则会把刚定位到的帖子挤走
+  autoLoadPaused = true;
 
   const card = commentCard(noteId);
 
@@ -1221,12 +1243,23 @@ retryButton.addEventListener('click', renderNotes);
 
 // 滚到底部附近自动加载下一页
 const noteObserver = new IntersectionObserver(entries => {
+  if (autoLoadPaused) {
+    return;
+  }
+
   if (entries.some(entry => entry.isIntersecting)) {
     loadNextPage();
   }
 }, { rootMargin: '700px 0px' });
 
 noteObserver.observe(loadMoreSentinel);
+
+// 用户一动（滚轮 / 触摸 / 键盘）就恢复自动加载
+['wheel', 'touchstart', 'keydown'].forEach(type => {
+  window.addEventListener(type, () => {
+    autoLoadPaused = false;
+  }, { passive: true });
+});
 
 
 /* =========================
