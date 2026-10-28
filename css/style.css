@@ -2560,18 +2560,19 @@ body.modal-open {
    地图去底色：落在页面背景上
    ========================= */
 
+/* html[...] 提高特异性，压过前面 [data-theme="dark"] .map-canvas 的深色渐变 */
 .map-canvas,
-[data-theme="dark"] .map-canvas {
-  background: none;
+html[data-theme="dark"] .map-canvas {
+  background: transparent !important;
 }
 
 .map-card,
-[data-theme="dark"] .map-card {
-  background: transparent;
+html[data-theme="dark"] .map-card {
+  background: transparent !important;
 
   box-shadow: none;
 
-  /* 关键：.card 通用类带的磨砂会在地图上糊出一块方形色斑 */
+  /* .card 通用类带的磨砂也会糊出一块方形色斑 */
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -2658,7 +2659,3 @@ body.modal-open {
   cursor: default;
   opacity: .6;
 }
-
-/* DEBUG-ONLY */
-.map-canvas { background: #ff0000 !important; }
-.map-card { background: #0000ff !important; }
