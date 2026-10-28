@@ -644,7 +644,9 @@ export function createMap(host, options = {}) {
     applyActivePin();
 
     // 手机竖屏：第一次有数据时自动框住所有足迹，别只显示一小块
-    if (!userMoved && !fitted && pins.length && host.clientHeight > host.clientWidth) {
+    const isNarrow = window.matchMedia('(max-width: 860px)').matches;
+
+    if (!userMoved && !fitted && pins.length && isNarrow) {
       fitted = true;
       fitToPins();
     }
