@@ -122,7 +122,11 @@ const lightboxImage = document.getElementById('lightbox-image');
 const lightboxClose = document.getElementById('lightbox-close');
 
 const mapApi = createMap(mapCanvas, {
-  onSelectNote: noteId => focusNote(noteId)
+  onSelectNote: noteId => {
+    // 从地图跳到帖子上时，把地图收起来
+    setMapOpen(false);
+    focusNote(noteId);
+  }
 });
 
 let currentUser = null;
