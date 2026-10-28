@@ -10,7 +10,8 @@ import {
   deleteComment,
   subscribeToComments,
   fetchNoteById,
-  updateNoteLocation
+  updateNoteLocation,
+  fetchPlaces
 } from './notes.js';
 import { validateImage, uploadImage, compressImage } from './storage.js';
 import { createMap, clusterNotes } from './map.js';
@@ -36,7 +37,8 @@ const composerPanel = composerToggle.closest('.composer');
 const notesList = document.getElementById('notes-list');
 const notesStatus = document.getElementById('notes-status');
 const retryButton = document.getElementById('retry-button');
-const loadMoreButton = document.getElementById('load-more');
+const loadMoreStatus = document.getElementById('load-more-status');
+const loadMoreSentinel = document.getElementById('notes-sentinel');
 const noteTemplate = document.getElementById('note-template');
 const commentTemplate = document.getElementById('comment-template');
 const skeletonTemplate = document.getElementById('skeleton-template');
@@ -74,6 +76,7 @@ let hasMore = true;
 let loadingNotes = false;
 let toastTimer = 0;
 let composerLocation = null;
+let mapNotes = [];
 
 
 /* =========================
@@ -111,19 +114,20 @@ function showToast(message) {
   }, 2600);
 }
 
-function refreshMap() {
-  const pinned = loadedNotes.filter(
-    note => Number.isFinite(note.lat) && Number.isFinite(note.lng)
-  );
+async function refreshMap() {
+  try {
+    mapNotes = await fetchPlaces(client);
+  } catch (error) {
+    console.error('加载地图坐标失败:', error);
+    return;
+  }
 
-  mapApi.setPins(clusterNotes(pinned));
-  mapEmpty.hidden = pinned.length > 0;
+  mapApi.setPins(clusterNotes(mapNotes));
+  mapEmpty.hidden = mapNotes.length > 0;
 }
 
 function updateLoadMore() {
-  loadMoreButton.hidden = !hasMore || loadedNotes.length === 0;
-  loadMoreButton.disabled = false;
-  loadMoreButton.textContent = '加载更多';
+  loadMoreStatus.hidden = !loadingNotes;
 }
 
 
@@ -485,13 +489,12 @@ async function renderNotes() {
 }
 
 async function loadNextPage() {
-  if (loadingNotes) {
+  if (loadingNotes || !hasMore) {
     return;
   }
 
   loadingNotes = true;
-  loadMoreButton.disabled = true;
-  loadMoreButton.textContent = '加载中…';
+  loadMoreStatus.hidden = false;
 
   try {
     const before = loadedNotes.length
@@ -1080,9 +1083,14 @@ document.addEventListener('keydown', event => {
 
 retryButton.addEventListener('click', renderNotes);
 
-loadMoreButton.addEventListener('click', () => {
-  loadNextPage();
-});
+// 滚到底部附近自动加载下一页
+const noteObserver = new IntersectionObserver(entries => {
+  if (entries.some(entry => entry.isIntersecting)) {
+    loadNextPage();
+  }
+}, { rootMargin: '700px 0px' });
+
+noteObserver.observe(loadMoreSentinel);
 
 
 /* =========================
