@@ -7,6 +7,11 @@ const ALLOWED_TYPES = new Set([
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 
+// 压缩参数：长边不超过 1600px，JPEG 质量 0.82
+const MAX_EDGE = 1600;
+const JPEG_QUALITY = 0.82;
+const SKIP_BYTES = 700 * 1024;
+
 export function validateImage(file) {
   if (!file) {
     return {
@@ -42,6 +47,80 @@ function extensionFor(file) {
     'image/webp': 'webp',
     'image/gif': 'gif'
   })[file.type];
+}
+
+function outputName(file, extension) {
+  const base = (file.name || 'image').replace(/\.[^.]+$/, '');
+
+  return `${base}.${extension}`;
+}
+
+function toBlob(canvas, type, quality) {
+  return new Promise(resolve => {
+    canvas.toBlob(resolve, type, quality);
+  });
+}
+
+/**
+ * 上传前压缩图片：长边缩到 1600px 以内，JPEG 走 0.82 质量。
+ * GIF 保持原样（保住动画），小图也直接放过。
+ */
+export async function compressImage(file) {
+  if (!file || !file.type) {
+    return file;
+  }
+
+  // GIF 动图不压缩，避免掉帧
+  if (file.type === 'image/gif') {
+    return file;
+  }
+
+  if (typeof createImageBitmap !== 'function') {
+    return file;
+  }
+
+  try {
+    const bitmap = await createImageBitmap(file);
+    const longest = Math.max(bitmap.width, bitmap.height);
+    const scale = longest > MAX_EDGE ? MAX_EDGE / longest : 1;
+
+    // 本来就不大，直接传原图
+    if (scale === 1 && file.size <= SKIP_BYTES) {
+      bitmap.close?.();
+      return file;
+    }
+
+    const width = Math.max(1, Math.round(bitmap.width * scale));
+    const height = Math.max(1, Math.round(bitmap.height * scale));
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+
+    const context = canvas.getContext('2d');
+
+    context.imageSmoothingQuality = 'high';
+    context.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close?.();
+
+    // PNG 截图保留 PNG，避免文字发糊
+    const outputType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+    const blob = await toBlob(canvas, outputType, JPEG_QUALITY);
+
+    if (!blob || blob.size >= file.size) {
+      return file;
+    }
+
+    const extension = outputType === 'image/png' ? 'png' : 'jpg';
+
+    return new File([blob], outputName(file, extension), {
+      type: outputType,
+      lastModified: Date.now()
+    });
+  } catch (error) {
+    console.warn('图片压缩失败，使用原图：', error);
+    return file;
+  }
 }
 
 export async function uploadImage(client, file) {
