@@ -595,6 +595,7 @@ async function loadNextPage() {
     }
 
     updateLoadMore();
+    maybeAutoLoad();
   }
 }
 
@@ -1242,24 +1243,48 @@ document.addEventListener('keydown', event => {
 retryButton.addEventListener('click', renderNotes);
 
 // 滚到底部附近自动加载下一页
-const noteObserver = new IntersectionObserver(entries => {
-  if (autoLoadPaused) {
+// 统一入口：暂停中不自动补，但仍然可以在下方继续加载
+function maybeAutoLoad() {
+  if (autoLoadPaused || loadingNotes || !hasMore || !loadMoreSentinel) {
     return;
   }
 
-  if (entries.some(entry => entry.isIntersecting)) {
+  const rect = loadMoreSentinel.getBoundingClientRect();
+
+  // 哨兵进入视口（含 700px 预取余量）就加载下一页
+  if (rect.top <= window.innerHeight + 700) {
     loadNextPage();
   }
+}
+
+const noteObserver = new IntersectionObserver(() => {
+  maybeAutoLoad();
 }, { rootMargin: '700px 0px' });
 
 noteObserver.observe(loadMoreSentinel);
 
-// 用户一动（滚轮 / 触摸 / 键盘）就恢复自动加载
-['wheel', 'touchstart', 'keydown'].forEach(type => {
+// 用户一动就恢复自动加载，并立刻试一次（哨兵可能早就在视口里，
+// 不补这一下的话 IntersectionObserver 不会再触发，下方就断流了）
+['wheel', 'touchstart', 'pointerdown', 'keydown'].forEach(type => {
   window.addEventListener(type, () => {
     autoLoadPaused = false;
+    maybeAutoLoad();
   }, { passive: true });
 });
+
+// 滚动时再兜一层（拖动滚动条没有 wheel 事件）
+let autoLoadTick = 0;
+
+window.addEventListener('scroll', () => {
+  if (autoLoadTick) {
+    return;
+  }
+
+  autoLoadTick = window.requestAnimationFrame(() => {
+    autoLoadTick = 0;
+    maybeAutoLoad();
+  });
+}, { passive: true });
 
 
 /* =========================
