@@ -427,13 +427,25 @@
 
           <ul class="comment-list"></ul>
 
-          <button
-            class="comment-toggle"
-            type="button"
-            aria-expanded="false"
-          >
-            写评论
-          </button>
+          <div class="comment-actions">
+
+            <button
+              class="edit-location-button"
+              type="button"
+              hidden
+            >
+              编辑地点
+            </button>
+
+            <button
+              class="comment-toggle"
+              type="button"
+              aria-expanded="false"
+            >
+              写评论
+            </button>
+
+          </div>
 
           <form class="comment-form" hidden>
 
@@ -466,15 +478,6 @@
           </form>
 
         </section>
-
-
-        <button
-          class="edit-location-button"
-          type="button"
-          hidden
-        >
-          编辑地点
-        </button>
 
 
         <!-- 管理员删除 -->
