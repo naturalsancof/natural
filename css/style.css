@@ -846,6 +846,24 @@ textarea:focus-visible {
    减少动画
    ========================= */
 
+@media (max-width: 600px) {
+
+  .map-canvas {
+    aspect-ratio: 16 / 10;
+
+    border-radius: 14px;
+  }
+
+  .map-canvas-small {
+    aspect-ratio: 16 / 9;
+  }
+
+  .map-popup {
+    max-height: 200px;
+  }
+}
+
+
 @media (prefers-reduced-motion: reduce) {
 
   html {
@@ -926,6 +944,14 @@ textarea:focus-visible {
 
 .delete-comment-button:hover {
   background: #8f1c14;
+}
+
+.comment-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
 }
 
 .comment-toggle {
@@ -1255,6 +1281,8 @@ textarea:focus-visible {
   width: 100%;
   aspect-ratio: 2 / 1;
 
+  touch-action: none;
+
   border-radius: 16px;
 
   background:
@@ -1351,7 +1379,11 @@ textarea:focus-visible {
   position: absolute;
   z-index: 5;
 
-  width: min(260px, 80%);
+  width: min(270px, 82%);
+  max-height: 240px;
+
+  display: flex;
+  flex-direction: column;
 
   transform: translate(-50%, calc(-100% - 12px));
 
@@ -1405,6 +1437,15 @@ textarea:focus-visible {
 
   color: var(--muted);
   font-size: .76rem;
+}
+
+.map-popup-list {
+  min-height: 0;
+
+  overflow-y: auto;
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .map-popup-item {
@@ -1479,7 +1520,7 @@ textarea:focus-visible {
 }
 
 .edit-location-button {
-  margin-top: 8px;
+  margin-top: 0;
   padding: 5px 11px;
 
   border: 1px solid rgba(42, 120, 113, .28);
