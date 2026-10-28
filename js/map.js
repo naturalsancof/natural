@@ -107,6 +107,17 @@ export function createMap(host, options = {}) {
   popup.hidden = true;
   host.appendChild(popup);
 
+  const resetButton = document.createElement('button');
+  resetButton.type = 'button';
+  resetButton.className = 'map-reset';
+  resetButton.textContent = '全览';
+  resetButton.hidden = true;
+  resetButton.addEventListener('click', event => {
+    event.stopPropagation();
+    resetView();
+  });
+  host.appendChild(resetButton);
+
   let pins = [];
   let marker = null;
   let scale = 1;
@@ -114,6 +125,8 @@ export function createMap(host, options = {}) {
 
   let dragging = false;
   let dragMoved = false;
+  let userMoved = false;
+  let fitted = false;
   let lastPoint = null;
   let suppressClick = false;
   const pointers = new Map();
@@ -133,6 +146,8 @@ export function createMap(host, options = {}) {
     svg.setAttribute('viewBox', `${x} ${y} ${width} ${height}`);
     syncPinScale();
     closePopup();
+
+    resetButton.hidden = scale <= 1.02;
   }
 
   function syncPinScale() {
@@ -172,6 +187,8 @@ export function createMap(host, options = {}) {
   }
 
   function zoomAt(clientX, clientY, factor) {
+    userMoved = true;
+
     const anchor = clientToMap(clientX, clientY);
     const nextScale = clamp(scale * factor, MIN_SCALE, MAX_SCALE);
 
@@ -424,6 +441,7 @@ export function createMap(host, options = {}) {
 
     dragMoved = true;
     suppressClick = true;
+    userMoved = true;
 
     const before = clientToMap(lastPoint.x, lastPoint.y);
     const after = clientToMap(event.clientX, event.clientY);
@@ -499,10 +517,48 @@ export function createMap(host, options = {}) {
     svg.classList.add('is-interactive');
   }
 
+  function fitToPins() {
+    if (!pins.length) {
+      return;
+    }
+
+    const points = pins.map(pin => projectPoint(pin.lat, pin.lng));
+    const xs = points.map(point => point.x);
+    const ys = points.map(point => point.y);
+
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+
+    const spanX = Math.max(maxX - minX, 40);
+    const spanY = Math.max(maxY - minY, 40);
+    const pad = 30;
+
+    const nextScale = clamp(
+      Math.min(
+        MAP_WIDTH / (spanX + pad * 2),
+        MAP_HEIGHT / (spanY + pad * 2)
+      ),
+      1,
+      3.2
+    );
+
+    scale = nextScale;
+    center = { x: (minX + maxX) / 2, y: (minY + maxY) / 2 };
+    applyView();
+  }
+
   function setPins(next) {
     pins = Array.isArray(next) ? next : [];
     closePopup();
     renderPins();
+
+    // 手机竖屏：第一次有数据时自动框住所有足迹，别只显示一小块
+    if (!userMoved && !fitted && pins.length && host.clientHeight > host.clientWidth) {
+      fitted = true;
+      fitToPins();
+    }
   }
 
   function setMarker(next) {
