@@ -238,12 +238,6 @@ function refreshAdminButtons() {
     }
 
     card.querySelector('.delete-note-button').hidden = !currentUser;
-
-    const editLocation = card.querySelector('.edit-location-button');
-
-    if (editLocation) {
-      editLocation.hidden = !currentUser;
-    }
   });
 
   commentsByNote.forEach((_list, noteId) => renderComments(noteId));
@@ -656,14 +650,10 @@ function createNoteCard(note) {
 
   const editLocationButton = card.querySelector('.edit-location-button');
 
-  if (currentUser) {
-    editLocationButton.hidden = false;
-    editLocationButton.addEventListener('click', () => {
-      handleEditLocation(note);
-    });
-  } else {
-    editLocationButton.hidden = true;
-  }
+  editLocationButton.hidden = false;
+  editLocationButton.addEventListener('click', () => {
+    handleEditLocation(note);
+  });
 
   const deleteButton = card.querySelector('.delete-note-button');
 
@@ -978,11 +968,6 @@ async function focusNote(noteId) {
 ========================= */
 
 async function handleEditLocation(note) {
-  if (!currentUser) {
-    alert('请先登录管理员账号。');
-    return;
-  }
-
   let result = null;
 
   try {
