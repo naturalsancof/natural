@@ -1275,6 +1275,17 @@ textarea:focus-visible {
   padding: 12px;
 
   overflow: hidden;
+
+  /* 卡片不铺底色，地图直接落在页面背景上 */
+  background: transparent;
+
+  border: 0;
+  border-radius: 0;
+
+  box-shadow: none;
+
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .map-reset {
@@ -1318,11 +1329,9 @@ textarea:focus-visible {
 
   touch-action: none;
 
-  border-radius: 16px;
+  border-radius: 0;
 
-  background:
-    radial-gradient(circle at 28% 16%, rgba(255, 255, 255, .9), transparent 58%),
-    linear-gradient(160deg, #eaf6f4 0%, #f7f2e7 100%);
+  background: none;
 
   overflow: hidden;
 }
@@ -2157,7 +2166,6 @@ body.modal-open {
 [data-theme="dark"] .status-card,
 [data-theme="dark"] .admin-panel,
 [data-theme="dark"] .composer,
-[data-theme="dark"] .map-card,
 [data-theme="dark"] .composer-toggle {
   background: rgba(255, 255, 255, .045);
   border-color: rgba(170, 205, 200, .14);
@@ -2270,9 +2278,7 @@ body.modal-open {
   background: rgba(255, 255, 255, .07);
 }
 [data-theme="dark"] .map-canvas {
-  background:
-    radial-gradient(circle at 26% 14%, rgba(70, 130, 122, .30), transparent 58%),
-    linear-gradient(160deg, #10222a 0%, #131a1d 100%);
+  background: none;
 }
 
 [data-theme="dark"] .composer-toggle,
@@ -2560,19 +2566,18 @@ body.modal-open {
    地图去底色：落在页面背景上
    ========================= */
 
-/* html[...] 提高特异性，压过前面 [data-theme="dark"] .map-canvas 的深色渐变 */
 .map-canvas,
-html[data-theme="dark"] .map-canvas {
-  background: transparent !important;
+[data-theme="dark"] .map-canvas {
+  background: none;
 }
 
 .map-card,
-html[data-theme="dark"] .map-card {
-  background: transparent !important;
+[data-theme="dark"] .map-card {
+  background: transparent;
 
   box-shadow: none;
 
-  /* .card 通用类带的磨砂也会糊出一块方形色斑 */
+  /* 关键：.card 通用类带的磨砂会在地图上糊出一块方形色斑 */
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -2658,54 +2663,4 @@ html[data-theme="dark"] .map-card {
 .notes-gap-button:disabled {
   cursor: default;
   opacity: .6;
-}
-
-/* 地图卡：彻底去掉通用 .card 的影响 */
-.map-card,
-[data-theme="dark"] .map-card {
-  background: transparent !important;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none !important;
-
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-/* =========================
-   页面底：改成独立固定层
-   （原来写在 body 上的渐变会被某些元素的合成层重绘，
-     在地图那块留下一个偏暗的方块）
-   ========================= */
-
-html {
-  background: #f6f3ec;
-}
-
-body {
-  background: transparent;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-
-  z-index: -1;
-  pointer-events: none;
-
-  background:
-    radial-gradient(circle at 20% 0%, rgba(255, 255, 255, .75), transparent 34%),
-    radial-gradient(circle at 100% 20%, rgba(220, 242, 239, .55), transparent 32%),
-    linear-gradient(150deg, #e8f5f3 0%, #fdf4e6 58%, #fae7df 100%);
-}
-
-[data-theme="dark"] html {
-  background: #0f1418;
-}
-
-[data-theme="dark"] body::before {
-  background:
-    radial-gradient(circle at 16% 0%, rgba(44, 98, 92, .40), transparent 44%),
-    radial-gradient(circle at 100% 10%, rgba(118, 72, 54, .26), transparent 42%),
-    linear-gradient(155deg, #0a1317 0%, #101d22 55%, #141a1d 100%);
 }
