@@ -1821,6 +1821,151 @@ body.modal-open {
 }
 
 
+/* =========================
+   视觉精修 · 第一档
+   ========================= */
+
+.note-card {
+  padding: 22px 22px 18px;
+}
+
+.note-meta {
+  gap: 10px;
+}
+
+.note-author {
+  font-size: .95rem;
+  letter-spacing: .012em;
+}
+
+.note-time {
+  color: rgba(105, 145, 150, .95);
+
+  font-size: .75rem;
+  letter-spacing: .04em;
+
+  font-variant-numeric: tabular-nums;
+}
+
+.note-content {
+  max-width: 34em;
+
+  margin: 12px 0 0;
+
+  font-size: 1.0625rem;
+  line-height: 1.72;
+  letter-spacing: .012em;
+}
+
+/* 地点：从彩色胶囊改成安静的小字 + 圆点 */
+.note-location {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin: 12px 0 0;
+  padding: 0;
+
+  border-radius: 0;
+  background: none;
+
+  color: #69878a;
+
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+.note-location[hidden] {
+  display: none;
+}
+
+.note-location::before {
+  content: '';
+
+  flex: 0 0 auto;
+
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: var(--teal);
+
+  box-shadow: 0 0 0 3px rgba(42, 157, 143, .14);
+}
+
+/* 照片：边到边，不再缩在灰框里 */
+.note-image-wrap {
+  margin: 16px -22px 0;
+
+  overflow: hidden;
+}
+
+.note-image {
+  width: 100%;
+  height: auto;
+  max-height: 620px;
+
+  object-fit: cover;
+  object-position: center;
+
+  border-radius: 0;
+  background: #eef2f1;
+
+  cursor: zoom-in;
+
+  transition:
+    transform .55s cubic-bezier(.22, .61, .36, 1),
+    opacity .45s ease;
+}
+
+.note-image.is-loading {
+  opacity: 0;
+}
+
+.note-image.is-ready {
+  opacity: 1;
+}
+
+.note-card:hover .note-image {
+  transform: scale(1.015);
+}
+
+/* 次级按钮：安静下来，hover 才显得可点 */
+.comment-toggle,
+.edit-location-button {
+  border-color: transparent;
+  background: transparent;
+
+  color: #6d8c8f;
+
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+
+.comment-toggle:hover,
+.edit-location-button:hover {
+  border-color: rgba(42, 120, 113, .22);
+  background: rgba(42, 157, 143, .08);
+
+  color: #14776e;
+}
+
+/* 分割线收细 */
+.comments {
+  margin-top: 18px;
+  padding-top: 14px;
+
+  border-top: 1px solid rgba(105, 145, 150, .16);
+}
+
+.comment-text {
+  font-size: .95rem;
+  line-height: 1.7;
+}
+
 @media (max-width: 600px) {
 
   .map-canvas {
