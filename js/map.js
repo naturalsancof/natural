@@ -367,7 +367,6 @@ export function createMap(host, options = {}) {
       dragMoved = false;
       suppressClick = false;
       lastPoint = { x: event.clientX, y: event.clientY };
-      svg.setPointerCapture(event.pointerId);
       return;
     }
 
@@ -412,6 +411,15 @@ export function createMap(host, options = {}) {
 
     if (!dragMoved && Math.hypot(dx, dy) < DRAG_THRESHOLD) {
       return;
+    }
+
+    if (!dragMoved) {
+      // 真正开始拖动了才捕获指针，避免吃掉图钉的 click
+      try {
+        svg.setPointerCapture(event.pointerId);
+      } catch {
+        // 忽略
+      }
     }
 
     dragMoved = true;
