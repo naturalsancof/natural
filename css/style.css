@@ -1287,6 +1287,12 @@ textarea:focus-visible {
   cursor: pointer;
 }
 
+.map-pin-hit {
+  fill: transparent;
+
+  pointer-events: all;
+}
+
 .map-pin-halo {
   fill: rgba(223, 107, 71, .16);
 
@@ -1361,6 +1367,19 @@ textarea:focus-visible {
 
 .map-popup[hidden] {
   display: none;
+}
+
+.map-popup.is-below {
+  transform: translate(-50%, 12px);
+}
+
+.map-popup.is-below::after {
+  top: -6px;
+  bottom: auto;
+
+  border: 0;
+  border-top: 1px solid rgba(105, 145, 150, .25);
+  border-left: 1px solid rgba(105, 145, 150, .25);
 }
 
 .map-popup::after {
