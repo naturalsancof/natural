@@ -2671,3 +2671,6 @@ html[data-theme="dark"] .map-card {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+
+/* DEBUG-ONLY */
+body { background-attachment: scroll !important; }
