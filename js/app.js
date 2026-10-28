@@ -965,7 +965,7 @@ function placeGap() {
   // 已加载区间追上来的，就从额外区里摘掉
   if (oldest !== null) {
     [...extraNotes.entries()].forEach(([id, item]) => {
-      if (new Date(item.created_at).getTime() <= oldest) {
+      if (new Date(item.created_at).getTime() >= oldest) {
         extraNotes.delete(id);
       }
     });
