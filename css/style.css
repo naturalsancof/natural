@@ -1058,12 +1058,6 @@ textarea:focus-visible {
   text-align: center;
 }
 
-.composer-hint {
-  margin: 0 0 14px;
-
-  color: var(--muted);
-  font-size: .9rem;
-}
 
 .composer form[hidden] {
   display: none;
