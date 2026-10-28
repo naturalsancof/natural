@@ -2659,9 +2659,3 @@ html[data-theme="dark"] .map-card {
   cursor: default;
   opacity: .6;
 }
-
-/* DEBUG-ONLY */
-.map-section { background: #ffff00 !important; }
-.map-card { background: #0000ff !important; padding: 40px !important; }
-.map-canvas { background: #ff0000 !important; }
-.world-map { background: rgba(0, 255, 0, .45) !important; }
