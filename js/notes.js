@@ -239,3 +239,21 @@ export async function updateNoteLocation(client, noteId, patch) {
 
   return Array.isArray(data) ? data[0] : data;
 }
+
+/**
+ * 只取地图需要的字段（不含图片），用于一次拿到全部坐标
+ */
+export async function fetchPlaces(client) {
+  const { data, error } = await client
+    .from('notes')
+    .select('id, author, content, location, lat, lng, created_at')
+    .not('lat', 'is', null)
+    .not('lng', 'is', null)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return data || [];
+}
