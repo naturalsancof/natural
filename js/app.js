@@ -21,6 +21,35 @@ const PAGE_SIZE = 10;
 
 const client = getSupabaseClient();
 
+const themeToggle = document.getElementById('theme-toggle');
+const THEME_KEY = 'bonvoyage-theme';
+
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.documentElement.dataset.theme = 'dark';
+  } else {
+    delete document.documentElement.dataset.theme;
+  }
+
+  themeToggle?.setAttribute('aria-pressed', String(theme === 'dark'));
+}
+
+if (themeToggle) {
+  applyTheme(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
+
+  themeToggle.addEventListener('click', () => {
+    const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+
+    applyTheme(next);
+
+    try {
+      localStorage.setItem(THEME_KEY, next);
+    } catch (error) {
+      /* 忽略 */
+    }
+  });
+}
+
 const form = document.getElementById('note-form');
 const authorInput = document.getElementById('author');
 const contentInput = document.getElementById('content');
@@ -79,6 +108,8 @@ let tailCursor = null;
 let hasMoreTail = true;
 let tailMode = false;
 let autoLoadPaused = false;
+let cardObserver = null;
+const visibleCards = new Set();
 let hasMore = true;
 let loadingNotes = false;
 let toastTimer = 0;
@@ -686,6 +717,7 @@ function removeNoteCard(noteId) {
 
   commentsByNote.delete(noteId);
   extraNotes.delete(noteId);
+  visibleCards.delete(String(noteId));
 
   if (tailNotes.some(item => item.id === noteId)) {
     tailNotes = tailNotes.filter(item => item.id !== noteId);
@@ -739,6 +771,10 @@ function createNoteCard(note) {
   const imageWrap = card.querySelector('.note-image-wrap');
   const image = card.querySelector('.note-image');
 
+  if (cardObserver) {
+    cardObserver.observe(card);
+  }
+
   if (note.img_url) {
     image.src = note.img_url;
     image.loading = 'lazy';
@@ -763,6 +799,8 @@ function createNoteCard(note) {
   } else {
     imageWrap.hidden = true;
     image.hidden = true;
+
+    card.classList.add('is-text-only');
   }
 
   const editLocationButton = card.querySelector('.edit-location-button');
@@ -1377,6 +1415,30 @@ async function loadTailPage() {
     maybeAutoLoad();
   }
 }
+
+cardObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    const noteId = entry.target.dataset.noteId;
+
+    if (!noteId) {
+      return;
+    }
+
+    if (entry.isIntersecting) {
+      visibleCards.add(noteId);
+    } else {
+      visibleCards.delete(noteId);
+    }
+  });
+
+  const first = [...notesList.children].find(node => {
+    const noteId = node.dataset.noteId;
+
+    return noteId && visibleCards.has(noteId);
+  });
+
+  mapApi.setActiveNote(first ? Number(first.dataset.noteId) : null);
+}, { rootMargin: '-15% 0px -55% 0px' });
 
 const noteObserver = new IntersectionObserver(() => {
   maybeAutoLoad();
