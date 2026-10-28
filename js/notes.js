@@ -222,17 +222,20 @@ export async function fetchNoteById(client, noteId) {
 }
 
 
+/**
+ * 改地点走 RPC：任何访客都能改，但服务端只允许动 location / lat / lng 三列
+ */
 export async function updateNoteLocation(client, noteId, patch) {
-  const { data, error } = await client
-    .from('notes')
-    .update(patch)
-    .eq('id', noteId)
-    .select()
-    .single();
+  const { data, error } = await client.rpc('set_note_location', {
+    p_note_id: noteId,
+    p_location: patch.location ?? null,
+    p_lat: patch.lat ?? null,
+    p_lng: patch.lng ?? null
+  });
 
   if (error) {
     throw error;
   }
 
-  return data;
+  return Array.isArray(data) ? data[0] : data;
 }
