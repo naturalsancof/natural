@@ -427,8 +427,23 @@ function initCommentBlock(noteId) {
     return;
   }
 
-  card.querySelector('.comment-form').addEventListener('submit', event => {
+  const form = card.querySelector('.comment-form');
+  const toggle = card.querySelector('.comment-toggle');
+
+  form.addEventListener('submit', event => {
     handleCommentSubmit(event, noteId);
+  });
+
+  toggle.addEventListener('click', () => {
+    const willOpen = form.hidden;
+
+    form.hidden = !willOpen;
+    toggle.textContent = willOpen ? '取消' : '写评论';
+    toggle.setAttribute('aria-expanded', String(willOpen));
+
+    if (willOpen) {
+      form.querySelector('.comment-author').focus();
+    }
   });
 
   renderComments(noteId);
