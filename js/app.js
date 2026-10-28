@@ -25,6 +25,7 @@ const submitButton = document.getElementById('submit-button');
 const formMessage = document.getElementById('form-message');
 const composerToggle = document.getElementById('composer-toggle');
 const composerToggleLabel = document.querySelector('.composer-toggle-label');
+const composerPanel = composerToggle.closest('.composer');
 
 const notesList = document.getElementById('notes-list');
 const notesStatus = document.getElementById('notes-status');
@@ -244,6 +245,7 @@ composerToggle.addEventListener('click', () => {
   form.hidden = !willOpen;
   composerToggleLabel.textContent = willOpen ? '收起' : '写一则旅途留言';
   composerToggle.setAttribute('aria-expanded', String(willOpen));
+  composerPanel.classList.toggle('is-open', willOpen);
 
   if (willOpen) {
     authorInput.focus();
