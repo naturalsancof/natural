@@ -2023,20 +2023,20 @@ body.modal-open {
 }
 
 .note-card.is-text-only {
-  padding-bottom: 22px;
+  padding-bottom: 14px;
 }
 
 .note-card.is-text-only .note-content {
-  max-width: 30em;
+  max-width: 32em;
 
-  margin: 16px 0 4px;
-  padding-left: 18px;
+  margin: 10px 0 0;
+  padding-left: 13px;
 
-  border-left: 2px solid rgba(42, 157, 143, .38);
+  border-left: 2px solid rgba(42, 157, 143, .34);
 
-  font-size: 1.22rem;
-  line-height: 1.9;
-  letter-spacing: .02em;
+  font-size: 1rem;
+  line-height: 1.62;
+  letter-spacing: .01em;
 
   color: #14313a;
 }
