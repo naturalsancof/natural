@@ -325,15 +325,15 @@ export function createMap(host, options = {}) {
       group.setAttribute('transform', `translate(${point.x} ${point.y}) scale(${k})`);
 
       const hit = document.createElementNS(SVG_NS, 'circle');
-      hit.setAttribute('r', 12);
+      hit.setAttribute('r', 10);
       hit.setAttribute('class', 'map-pin-hit');
 
       const halo = document.createElementNS(SVG_NS, 'circle');
-      halo.setAttribute('r', 9);
+      halo.setAttribute('r', 6.4);
       halo.setAttribute('class', 'map-pin-halo');
 
       const dot = document.createElementNS(SVG_NS, 'circle');
-      dot.setAttribute('r', 4.2);
+      dot.setAttribute('r', 3.1);
       dot.setAttribute('class', 'map-pin-dot');
 
       group.appendChild(hit);
@@ -343,7 +343,7 @@ export function createMap(host, options = {}) {
       if (pin.notes.length > 1) {
         const count = document.createElementNS(SVG_NS, 'text');
         count.setAttribute('class', 'map-pin-count');
-        count.setAttribute('y', 2.6);
+        count.setAttribute('y', 1.9);
         count.textContent = String(pin.notes.length);
         group.appendChild(count);
       }
