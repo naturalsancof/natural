@@ -458,13 +458,9 @@ function renderComments(noteId) {
   }
 
   const list = card.querySelector('.comment-list');
-  const count = card.querySelector('.comment-count');
-  const empty = card.querySelector('.comment-empty');
   const items = commentsByNote.get(noteId) || [];
 
   list.innerHTML = '';
-  count.textContent = String(items.length);
-  empty.hidden = items.length > 0;
 
   items.forEach(comment => {
     const fragment = commentTemplate.content.cloneNode(true);
