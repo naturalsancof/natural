@@ -1978,6 +1978,10 @@ body.modal-open {
 
 @media (min-width: 1080px) {
 
+  .container {
+    width: min(100% - 48px, 1180px);
+  }
+
   .board {
     grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
 
@@ -2004,6 +2008,19 @@ body.modal-open {
 /* =========================
    杂志式：纯文字帖当引用块
    ========================= */
+
+/* 窄屏时卡片内边距更小，图片边距跟着缩 */
+@media (max-width: 600px) {
+
+  .note-card {
+    padding: 18px 16px 16px;
+  }
+
+  .note-image-wrap {
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+}
 
 .note-card.is-text-only {
   padding-bottom: 22px;
