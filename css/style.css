@@ -2671,6 +2671,37 @@ html[data-theme="dark"] .map-card {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+/* =========================
+   页面底：改成独立固定层
+   （原来写在 body 上的渐变会被某些元素的合成层重绘，
+     在地图那块留下一个偏暗的方块）
+   ========================= */
 
-/* DEBUG-ONLY */
-body { background-attachment: scroll !important; }
+body {
+  background: #f6f3ec;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+
+  z-index: -1;
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 255, 255, .75), transparent 34%),
+    radial-gradient(circle at 100% 20%, rgba(220, 242, 239, .55), transparent 32%),
+    linear-gradient(150deg, #e8f5f3 0%, #fdf4e6 58%, #fae7df 100%);
+}
+
+[data-theme="dark"] body {
+  background: #0f1418;
+}
+
+[data-theme="dark"] body::before {
+  background:
+    radial-gradient(circle at 16% 0%, rgba(44, 98, 92, .40), transparent 44%),
+    radial-gradient(circle at 100% 10%, rgba(118, 72, 54, .26), transparent 42%),
+    linear-gradient(155deg, #0a1317 0%, #101d22 55%, #141a1d 100%);
+}
