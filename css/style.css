@@ -2659,3 +2659,8 @@ html[data-theme="dark"] .map-card {
   cursor: default;
   opacity: .6;
 }
+
+/* DEBUG-ONLY */
+.map-card { background: #0000ff !important; }
+.map-canvas { background: #ff0000 !important; }
+.world-map { background: #00ff00 !important; }
