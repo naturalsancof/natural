@@ -2570,6 +2570,16 @@ body.modal-open {
   background: transparent;
 
   box-shadow: none;
+
+  /* 关键：.card 通用类带的磨砂会在地图上糊出一块方形色斑 */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* 夜间：图片的补底不能再是白色 */
+[data-theme="dark"] .note-image,
+[data-theme="dark"] .img-preview {
+  background: #16232a;
 }
 
 .map-card {
