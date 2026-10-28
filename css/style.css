@@ -2042,7 +2042,10 @@ body.modal-open {
 }
 /* 时间线联动：当前帖子对应的图钉 */
 .map-pin.is-active .map-pin-halo {
-  fill: rgba(223, 107, 71, .34);
+  fill: rgba(223, 107, 71, .30);
+
+  stroke: rgba(223, 107, 71, .80);
+  stroke-width: 1.1;
 }
 
 .map-pin.is-active .map-pin-dot {
