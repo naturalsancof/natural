@@ -858,8 +858,8 @@ textarea:focus-visible {
    ========================= */
 
 .comments {
-  margin-top: 26px;
-  padding-top: 16px;
+  margin-top: 16px;
+  padding-top: 12px;
   border-top: 1px dashed rgba(105, 145, 150, .45);
 }
 
@@ -992,4 +992,71 @@ textarea:focus-visible {
 .comment-submit:disabled {
   opacity: .7;
   cursor: wait;
+}
+
+/* =========================
+   发布框折叠
+   ========================= */
+
+.composer-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  width: 100%;
+  min-height: 52px;
+
+  padding: 0 18px;
+
+  border: 1px dashed rgba(42, 120, 113, .45);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, .55);
+
+  color: #14776e;
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: .95rem;
+  font-weight: 800;
+  letter-spacing: .02em;
+
+  transition:
+    background .2s ease,
+    border-color .2s ease;
+}
+
+.composer-toggle:hover {
+  background: rgba(42, 157, 143, .10);
+
+  border-color: rgba(42, 120, 113, .62);
+}
+
+.composer-toggle-icon {
+  display: inline-block;
+
+  width: 20px;
+  height: 20px;
+
+  border-radius: 50%;
+
+  background: rgba(42, 157, 143, .16);
+
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+}
+
+.composer-hint {
+  margin: 0 0 14px;
+
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.composer form[hidden] {
+  display: none;
 }
