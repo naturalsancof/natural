@@ -1068,3 +1068,173 @@ textarea:focus-visible {
 .composer form[hidden] {
   display: none;
 }
+
+/* =========================
+   骨架屏
+   ========================= */
+
+.skeleton-card {
+  pointer-events: none;
+}
+
+.skeleton {
+  display: block;
+
+  border-radius: 8px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(105, 145, 150, .10) 25%,
+      rgba(105, 145, 150, .20) 37%,
+      rgba(105, 145, 150, .10) 63%
+    );
+
+  background-size: 400% 100%;
+
+  animation: skeleton-shine 1.4s ease infinite;
+}
+
+.skeleton-row {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 16px;
+}
+
+.skeleton-avatar {
+  flex: none;
+
+  width: 34px;
+  height: 34px;
+
+  border-radius: 50%;
+}
+
+.skeleton-line {
+  height: 12px;
+
+  margin-bottom: 10px;
+}
+
+.skeleton-name {
+  width: 120px;
+
+  margin-bottom: 0;
+}
+
+.skeleton-block {
+  height: 160px;
+
+  margin-top: 16px;
+
+  border-radius: 14px;
+}
+
+@keyframes skeleton-shine {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+
+/* =========================
+   加载更多
+   ========================= */
+
+.notes-footer {
+  display: flex;
+  justify-content: center;
+
+  margin-top: 16px;
+}
+
+.load-more-button {
+  padding: 9px 22px;
+
+  border: 1px solid rgba(42, 120, 113, .32);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, .7);
+
+  color: #14776e;
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: .86rem;
+  font-weight: 700;
+}
+
+.load-more-button:hover:not(:disabled) {
+  background: rgba(42, 157, 143, .12);
+}
+
+.load-more-button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
+
+
+/* =========================
+   轻提示
+   ========================= */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+
+  z-index: 1200;
+
+  transform: translateX(-50%);
+
+  padding: 10px 18px;
+
+  border-radius: 999px;
+
+  background: rgba(24, 52, 62, .92);
+
+  color: #fff;
+
+  font-size: .86rem;
+  font-weight: 700;
+
+  box-shadow: 0 10px 30px rgba(12, 25, 29, .28);
+}
+
+.toast[hidden] {
+  display: none;
+}
+
+
+/* =========================
+   管理员已登录
+   ========================= */
+
+.admin-session {
+  margin-top: 14px;
+}
+
+.admin-toggle.is-admin::before {
+  content: '';
+
+  display: inline-block;
+
+  width: 7px;
+  height: 7px;
+
+  margin-right: 7px;
+
+  border-radius: 50%;
+
+  background: #2a9d8f;
+
+  vertical-align: middle;
+}
