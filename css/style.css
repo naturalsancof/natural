@@ -948,9 +948,35 @@ textarea:focus-visible {
   background: #8f1c14;
 }
 
+.comment-toggle {
+  margin: 0 0 10px;
+  padding: 7px 14px;
+
+  border: 1px solid rgba(42, 120, 113, .32);
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, .7);
+
+  color: #14776e;
+
+  cursor: pointer;
+
+  font: inherit;
+  font-size: .86rem;
+  font-weight: 700;
+}
+
+.comment-toggle:hover {
+  background: rgba(42, 157, 143, .12);
+}
+
 .comment-form {
   display: grid;
   gap: 8px;
+}
+
+.comment-form[hidden] {
+  display: none;
 }
 
 .comment-form input,
