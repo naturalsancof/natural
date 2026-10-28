@@ -344,7 +344,7 @@ function renderComposerLocation() {
   composerLocationButton.hidden = hasPoint;
   composerLocationClear.hidden = !hasPoint;
   composerLocationName.hidden = !hasPoint;
-  composerLocationName.textContent = hasPoint ? 📍  : '';
+  composerLocationName.textContent = hasPoint ? `📍 ${composerLocation.location}` : '';
 }
 
 composerLocationButton.addEventListener('click', async () => {
@@ -630,7 +630,7 @@ function createNoteCard(note) {
   const hasPoint = Number.isFinite(note.lat) && Number.isFinite(note.lng);
 
   if (note.location && hasPoint) {
-    locationEl.textContent = 📍 ;
+    locationEl.textContent = `📍 ${note.location}`;
     locationEl.hidden = false;
   } else {
     locationEl.hidden = true;
