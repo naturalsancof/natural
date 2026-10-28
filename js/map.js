@@ -157,8 +157,12 @@ export function createMap(host, options = {}) {
       popup.appendChild(item);
     });
 
-    popup.style.left = `${(point.x / MAP_WIDTH) * 100}%`;
-    popup.style.top = `${(point.y / MAP_HEIGHT) * 100}%`;
+    const leftPercent = Math.min(88, Math.max(12, (point.x / MAP_WIDTH) * 100));
+    const topPercent = (point.y / MAP_HEIGHT) * 100;
+
+    popup.classList.toggle('is-below', topPercent < 34);
+    popup.style.left = `${leftPercent}%`;
+    popup.style.top = `${topPercent}%`;
     popup.hidden = false;
   }
 
@@ -172,6 +176,10 @@ export function createMap(host, options = {}) {
       group.setAttribute('class', 'map-pin');
       group.setAttribute('transform', `translate(${point.x} ${point.y})`);
 
+      const hit = document.createElementNS(SVG_NS, 'circle');
+      hit.setAttribute('r', 12);
+      hit.setAttribute('class', 'map-pin-hit');
+
       const halo = document.createElementNS(SVG_NS, 'circle');
       halo.setAttribute('r', 9);
       halo.setAttribute('class', 'map-pin-halo');
@@ -180,6 +188,7 @@ export function createMap(host, options = {}) {
       dot.setAttribute('r', 4.2);
       dot.setAttribute('class', 'map-pin-dot');
 
+      group.appendChild(hit);
       group.appendChild(halo);
       group.appendChild(dot);
 
