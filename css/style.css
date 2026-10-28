@@ -2542,20 +2542,23 @@ body.modal-open {
   }
 }
 
-/* 夜间模式：侧边条与抽屉 */
-[data-theme="dark"] .map-toggle {
-  border-color: rgba(170, 205, 200, .20);
-  background: rgba(255, 255, 255, .08);
+/* 夜间模式：侧边条与抽屉（必须是窄屏专属，否则桌面端也会铺一层玻璃底） */
+@media (max-width: 1079px) {
 
-  color: #9fe0d2;
-}
+  [data-theme="dark"] .map-toggle {
+    border-color: rgba(170, 205, 200, .20);
+    background: rgba(255, 255, 255, .08);
 
-[data-theme="dark"] .map-section {
-  background: rgba(10, 22, 26, .38);
+    color: #9fe0d2;
+  }
 
-  border-right-color: rgba(170, 205, 200, .16);
+  [data-theme="dark"] .map-section {
+    background: rgba(10, 22, 26, .38);
 
-  box-shadow: 24px 0 60px rgba(0, 0, 0, .38);
+    border-right-color: rgba(170, 205, 200, .16);
+
+    box-shadow: 24px 0 60px rgba(0, 0, 0, .38);
+  }
 }
 
 [data-theme="dark"] .comments-summary {
@@ -2664,6 +2667,3 @@ body.modal-open {
   cursor: default;
   opacity: .6;
 }
-
-/* DEBUG-ONLY */
-.world-land { display: none !important; }
