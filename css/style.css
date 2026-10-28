@@ -1967,6 +1967,288 @@ body.modal-open {
   line-height: 1.7;
 }
 
+/* =========================
+   桌面双栏：地图吸附 + 时间线
+   ========================= */
+
+.board {
+  display: grid;
+  gap: 28px;
+}
+
+@media (min-width: 1080px) {
+
+  .board {
+    grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+
+    align-items: start;
+
+    gap: 32px;
+  }
+
+  .board .map-section {
+    position: sticky;
+    top: 22px;
+
+    z-index: 2;
+  }
+
+  .board .map-canvas {
+    aspect-ratio: auto;
+
+    height: min(64vh, 620px);
+  }
+}
+
+
+/* =========================
+   杂志式：纯文字帖当引用块
+   ========================= */
+
+.note-card.is-text-only {
+  padding-bottom: 22px;
+}
+
+.note-card.is-text-only .note-content {
+  max-width: 30em;
+
+  margin: 16px 0 4px;
+  padding-left: 18px;
+
+  border-left: 2px solid rgba(42, 157, 143, .38);
+
+  font-size: 1.22rem;
+  line-height: 1.9;
+  letter-spacing: .02em;
+
+  color: #14313a;
+}
+/* 时间线联动：当前帖子对应的图钉 */
+.map-pin.is-active .map-pin-halo {
+  fill: rgba(223, 107, 71, .34);
+}
+
+.map-pin.is-active .map-pin-dot {
+  fill: #c8492a;
+  stroke-width: 1.6;
+}
+
+.map-pin.is-active .map-pin-halo,
+.map-pin.is-active .map-pin-dot {
+  animation: pin-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes pin-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: .55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-pin.is-active .map-pin-halo,
+  .map-pin.is-active .map-pin-dot {
+    animation: none;
+  }
+}
+/* =========================
+   夜间纸感
+   ========================= */
+
+.theme-toggle {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+
+  z-index: 900;
+
+  width: 40px;
+  height: 40px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(105, 145, 150, .28);
+  border-radius: 50%;
+
+  background: rgba(255, 253, 248, .82);
+
+  color: #14776e;
+
+  cursor: pointer;
+
+  font-size: 1rem;
+  line-height: 1;
+
+  box-shadow: 0 6px 18px rgba(35, 75, 82, .12);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.theme-toggle:hover {
+  background: #fff;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ink: #e6efea;
+  --muted: #8ea5a2;
+  --paper: #0f1b20;
+  --line: rgba(170, 205, 200, .16);
+
+  --shadow:
+    0 14px 34px rgba(0, 0, 0, .45),
+    0 2px 8px rgba(0, 0, 0, .35);
+
+  --shadow-hover:
+    0 20px 44px rgba(0, 0, 0, .5),
+    0 3px 10px rgba(0, 0, 0, .4);
+
+  --teal-soft: rgba(58, 156, 143, .22);
+  --teal-hover: rgba(70, 180, 165, .30);
+}
+
+[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at 16% 0%, rgba(44, 98, 92, .40), transparent 44%),
+    radial-gradient(circle at 100% 10%, rgba(118, 72, 54, .26), transparent 42%),
+    linear-gradient(155deg, #0a1317 0%, #101d22 55%, #141a1d 100%);
+
+  color: var(--ink);
+}
+
+[data-theme="dark"] .theme-toggle {
+  border-color: rgba(170, 205, 200, .22);
+  background: rgba(255, 255, 255, .08);
+
+  color: #9fe0d2;
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+  background: rgba(255, 255, 255, .14);
+}
+
+[data-theme="dark"] .note-card,
+[data-theme="dark"] .status-card,
+[data-theme="dark"] .admin-panel,
+[data-theme="dark"] .composer,
+[data-theme="dark"] .map-card,
+[data-theme="dark"] .composer-toggle {
+  background: rgba(255, 255, 255, .045);
+  border-color: rgba(170, 205, 200, .14);
+}
+
+[data-theme="dark"] .note-card:hover,
+[data-theme="dark"] .note-card:focus-within {
+  background: rgba(255, 255, 255, .065);
+}
+
+[data-theme="dark"] .note-content,
+[data-theme="dark"] .note-card.is-text-only .note-content {
+  color: #dbe7e2;
+  border-left-color: rgba(90, 190, 172, .45);
+}
+
+[data-theme="dark"] .note-time {
+  color: rgba(150, 178, 174, .85);
+}
+
+[data-theme="dark"] .note-location {
+  color: #93b0ac;
+}
+
+[data-theme="dark"] .comments {
+  border-top-color: rgba(170, 205, 200, .14);
+}
+
+[data-theme="dark"] .comment-item {
+  border-color: rgba(170, 205, 200, .12);
+  background: rgba(255, 255, 255, .035);
+}
+
+[data-theme="dark"] .comment-toggle,
+[data-theme="dark"] .edit-location-button {
+  color: #93b0ac;
+}
+
+[data-theme="dark"] .comment-toggle:hover,
+[data-theme="dark"] .edit-location-button:hover {
+  border-color: rgba(90, 190, 172, .30);
+  background: rgba(90, 190, 172, .12);
+
+  color: #9fe0d2;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea {
+  background: rgba(255, 255, 255, .06);
+  border-color: rgba(170, 205, 200, .18);
+
+  color: var(--ink);
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: rgba(150, 178, 174, .70);
+}
+
+[data-theme="dark"] .notes-gap {
+  border-color: rgba(90, 190, 172, .32);
+  background: rgba(90, 190, 172, .06);
+}
+
+[data-theme="dark"] .notes-gap-button {
+  border-color: rgba(90, 190, 172, .28);
+  background: rgba(255, 255, 255, .06);
+
+  color: #9fe0d2;
+}
+
+[data-theme="dark"] .world-land {
+  fill: rgba(120, 190, 178, .12);
+  stroke: rgba(140, 210, 196, .26);
+}
+
+[data-theme="dark"] .map-pin-dot {
+  stroke: #101d22;
+}
+
+[data-theme="dark"] .map-popup {
+  border-color: rgba(170, 205, 200, .18);
+  background: #16262b;
+
+  color: var(--ink);
+}
+
+[data-theme="dark"] .modal-panel {
+  border-color: rgba(170, 205, 200, .16);
+  background: #14232a;
+
+  color: var(--ink);
+}
+
+[data-theme="dark"] .location-result:hover,
+[data-theme="dark"] .map-popup-item:hover {
+  background: rgba(255, 255, 255, .06);
+}
+
+[data-theme="dark"] .lightbox {
+  background: rgba(4, 10, 12, .92);
+}
+
+[data-theme="dark"] .toast {
+  background: rgba(24, 40, 46, .95);
+  color: var(--ink);
+}
+
+[data-theme="dark"] .skeleton {
+  background: rgba(255, 255, 255, .07);
+}
 @media (max-width: 600px) {
 
   .map-canvas {
