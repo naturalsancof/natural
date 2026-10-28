@@ -1,8 +1,22 @@
-export async function fetchNotes(client) {
-  const { data, error } = await client
+/**
+ * 分页拉取留言。
+ * @param {object} options
+ * @param {number} options.limit  每页条数
+ * @param {object} [options.before] 上一页最后一条（用它做游标）
+ */
+export async function fetchNotes(client, { limit = 10, before = null } = {}) {
+  let query = client
     .from('notes')
     .select('*')
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: false })
+    .limit(limit);
+
+  if (before && before.created_at) {
+    query = query.lt('created_at', before.created_at);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     throw error;
