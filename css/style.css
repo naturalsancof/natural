@@ -1,4 +1,3 @@
-```css
 :root {
   color-scheme: light;
 
@@ -854,3 +853,140 @@ textarea:focus-visible {
   }
 }
 ```
+
+/* =========================
+   评论
+   ========================= */
+
+.comments {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(105, 145, 150, .35);
+}
+
+.comments-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  font-size: .95rem;
+  color: #14776e;
+}
+
+.comment-count {
+  display: inline-block;
+  min-width: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: rgba(42, 157, 143, .14);
+  color: #14776e;
+  font-size: .76rem;
+  font-weight: 800;
+  line-height: 20px;
+  text-align: center;
+}
+
+.comment-empty {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-size: .86rem;
+}
+
+.comment-list {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.comment-item {
+  padding: 10px 12px;
+  border: 1px solid rgba(105, 145, 150, .18);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, .62);
+}
+
+.comment-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.comment-author-name {
+  font-size: .9rem;
+}
+
+.comment-time {
+  color: var(--muted);
+  font-size: .74rem;
+  white-space: nowrap;
+}
+
+.comment-text {
+  margin: 6px 0 0;
+  font-size: .92rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.delete-comment-button {
+  margin-top: 8px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(180, 35, 24, .92);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+.delete-comment-button:hover {
+  background: #8f1c14;
+}
+
+.comment-form {
+  display: grid;
+  gap: 8px;
+}
+
+.comment-form input,
+.comment-form textarea {
+  font-size: .9rem;
+}
+
+.comment-form textarea {
+  min-height: 64px;
+}
+
+.comment-form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.comment-submit {
+  flex: none;
+  padding: 9px 16px;
+  border: 1px solid rgba(42, 120, 113, .32);
+  border-radius: 11px;
+  background: var(--teal-soft);
+  color: #124f4a;
+  cursor: pointer;
+  font: inherit;
+  font-size: .88rem;
+  font-weight: 800;
+}
+
+.comment-submit:hover:not(:disabled) {
+  background: var(--teal-hover);
+}
+
+.comment-submit:disabled {
+  opacity: .7;
+  cursor: wait;
+}
