@@ -13,9 +13,35 @@
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
     <link rel="stylesheet" href="./css/style.css" />
-  </head>
+    <script>
+    try {
+      var saved = localStorage.getItem('bonvoyage-theme');
+      var dark = saved
+        ? saved === 'dark'
+        : window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      if (dark) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    } catch (error) {
+      /* 忽略：隐私模式下 localStorage 可能不可用 */
+    }
+  </script>
+
+</head>
 
   <body>
+
+    <button
+      id="theme-toggle"
+      class="theme-toggle"
+      type="button"
+      aria-label="切换夜间纸感"
+      title="切换夜间纸感"
+    >
+      <span aria-hidden="true">◐</span>
+    </button>
+
     <main class="container">
 
       <!-- 页面标题 -->
@@ -299,6 +325,8 @@
            足迹地图
       ========================== -->
 
+      <div class="board">
+
       <section
         class="map-section"
         aria-labelledby="map-title"
@@ -390,6 +418,8 @@
         </div>
 
       </section>
+
+      </div>
 
     </main>
 
