@@ -8,6 +8,8 @@ let miniMap = null;
 let resolver = null;
 let draft = null;
 let cleared = false;
+let searchToken = 0;
+let searchTimer = 0;
 
 function setMessage(message, type = '') {
   const node = $('location-message');
@@ -102,25 +104,37 @@ function renderResults(results) {
 async function runSearch() {
   const query = $('location-query').value.trim();
 
-  if (!query) {
-    setMessage('先输入一个地名，比如「大理」', 'error');
+  if (query.length < 2) {
+    $('location-results').innerHTML = '';
+    setMessage(query ? '再多输一个字试试' : '');
     return;
   }
+
+  const token = ++searchToken;
 
   setMessage('搜索中…');
 
   try {
     const results = await searchPlaces(query);
 
+    // 期间用户又改了输入，丢弃这次结果
+    if (token !== searchToken) {
+      return;
+    }
+
     if (!results.length) {
       $('location-results').innerHTML = '';
-      setMessage('没找到这个地名，换个写法试试', 'error');
+      setMessage('没找到，试试更短的词（如「大理」），或直接在地图上点选', 'error');
       return;
     }
 
     renderResults(results);
     setMessage('');
   } catch (error) {
+    if (token !== searchToken) {
+      return;
+    }
+
     console.error('地名搜索失败:', error);
     setMessage('搜索失败，可以直接在地图上点选', 'error');
   }
@@ -160,8 +174,25 @@ function ensureBound() {
   $('location-query').addEventListener('keydown', event => {
     if (event.key === 'Enter') {
       event.preventDefault();
+      window.clearTimeout(searchTimer);
       runSearch();
     }
+  });
+
+  // 边打边搜，350ms 防抖
+  $('location-query').addEventListener('input', () => {
+    window.clearTimeout(searchTimer);
+
+    const value = $('location-query').value.trim();
+
+    if (value.length < 2) {
+      searchToken += 1;
+      $('location-results').innerHTML = '';
+      setMessage('');
+      return;
+    }
+
+    searchTimer = window.setTimeout(runSearch, 350);
   });
 
   $('location-locate').addEventListener('click', useCurrentPosition);
