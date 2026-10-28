@@ -2677,8 +2677,12 @@ html[data-theme="dark"] .map-card {
      在地图那块留下一个偏暗的方块）
    ========================= */
 
-body {
+html {
   background: #f6f3ec;
+}
+
+body {
+  background: transparent;
 }
 
 body::before {
@@ -2695,7 +2699,7 @@ body::before {
     linear-gradient(150deg, #e8f5f3 0%, #fdf4e6 58%, #fae7df 100%);
 }
 
-[data-theme="dark"] body {
+[data-theme="dark"] html {
   background: #0f1418;
 }
 
