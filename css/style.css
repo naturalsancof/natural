@@ -155,8 +155,8 @@ button {
 .composer {
   position: relative;
 
-  margin-top: 20px;
-  padding: clamp(22px, 4vw, 32px);
+  margin-top: 12px;
+  padding: 10px;
 
   background: rgba(255, 255, 255, .78);
 
@@ -170,6 +170,10 @@ button {
 
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+}
+
+.composer.is-open {
+  padding: clamp(20px, 3.4vw, 28px);
 }
 
 
@@ -746,11 +750,15 @@ textarea:focus-visible {
   }
 
   .composer {
-    margin-top: 16px;
+    margin-top: 10px;
 
-    padding: 20px 16px;
+    padding: 8px;
 
     border-radius: 20px;
+  }
+
+  .composer.is-open {
+    padding: 18px 14px;
   }
 
   .section-heading h2 {
@@ -926,7 +934,7 @@ textarea:focus-visible {
   width: fit-content;
 
   /* 靠右放，避开上方图片的圆角 */
-  margin: 0 0 12px auto;
+  margin: 0 0 0 auto;
   padding: 5px 12px;
 
   border: 1px solid rgba(42, 120, 113, .28);
@@ -1005,7 +1013,7 @@ textarea:focus-visible {
   gap: 10px;
 
   width: 100%;
-  min-height: 52px;
+  min-height: 46px;
 
   padding: 0 18px;
 
