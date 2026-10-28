@@ -5,7 +5,7 @@ const ALLOWED_TYPES = new Set([
   'image/gif'
 ]);
 
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 
 export function validateImage(file) {
   if (!file) {
@@ -25,7 +25,7 @@ export function validateImage(file) {
   if (file.size > MAX_IMAGE_BYTES) {
     return {
       valid: false,
-      message: '图片不能超过 5 MB。'
+      message: '图片不能超过 10 MB。'
     };
   }
 
