@@ -101,3 +101,94 @@ export function subscribeToNotes(client, onChange) {
       console.log('Realtime status:', status);
     });
 }
+
+
+/* =========================
+   评论
+========================= */
+
+export async function fetchComments(client, noteIds = []) {
+  const ids = (noteIds || []).filter(id => id !== null && id !== undefined);
+
+  if (!ids.length) {
+    return [];
+  }
+
+  const { data, error } = await client
+    .from('comments')
+    .select('*')
+    .in('note_id', ids)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return data || [];
+}
+
+
+export async function fetchCommentsForNote(client, noteId) {
+  const { data, error } = await client
+    .from('comments')
+    .select('*')
+    .eq('note_id', noteId)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  return data || [];
+}
+
+
+export async function createComment(client, payload) {
+  const { data, error } = await client
+    .from('comments')
+    .insert([payload])
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+
+export async function deleteComment(client, commentId) {
+  if (!commentId) {
+    throw new Error('缺少评论 ID。');
+  }
+
+  const { error } = await client
+    .from('comments')
+    .delete()
+    .eq('id', commentId);
+
+  if (error) {
+    throw error;
+  }
+}
+
+
+export function subscribeToComments(client, onChange) {
+  return client
+    .channel('comments-realtime')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'comments'
+      },
+      payload => {
+        if (typeof onChange === 'function') {
+          onChange(payload);
+        }
+      }
+    )
+    .subscribe();
+}
