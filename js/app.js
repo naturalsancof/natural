@@ -72,6 +72,8 @@ const mapApi = createMap(mapCanvas, {
 let currentUser = null;
 let commentsByNote = new Map();
 let loadedNotes = [];
+let extraNotes = new Map();
+let gapElement = null;
 let hasMore = true;
 let loadingNotes = false;
 let toastTimer = 0;
@@ -479,8 +481,15 @@ function showSkeletons(count = 3) {
 
 async function renderNotes() {
   loadedNotes = [];
+  extraNotes = new Map();
   commentsByNote = new Map();
   hasMore = true;
+
+  if (gapElement && gapElement.parentNode) {
+    gapElement.remove();
+  }
+
+  gapElement = null;
 
   setNotesStatus('');
   showSkeletons(3);
@@ -495,6 +504,15 @@ async function loadNextPage() {
 
   loadingNotes = true;
   loadMoreStatus.hidden = false;
+
+  if (gapElement) {
+    const gapButton = gapElement.querySelector('.notes-gap-button');
+
+    if (gapButton) {
+      gapButton.disabled = true;
+      gapButton.textContent = '加载中…';
+    }
+  }
 
   try {
     const before = loadedNotes.length
@@ -529,10 +547,16 @@ async function loadNextPage() {
       fragment.appendChild(createNoteCard(note));
     });
 
-    notesList.appendChild(fragment);
+    if (gapElement && gapElement.parentNode === notesList) {
+      notesList.insertBefore(fragment, gapElement);
+    } else {
+      notesList.appendChild(fragment);
+    }
+
     setNotesStatus('');
 
     hasMore = page.length === PAGE_SIZE;
+    placeGap();
 
     refreshMap();
   } catch (error) {
@@ -546,6 +570,16 @@ async function loadNextPage() {
     }
   } finally {
     loadingNotes = false;
+
+    if (gapElement) {
+      const gapButton = gapElement.querySelector('.notes-gap-button');
+
+      if (gapButton) {
+        gapButton.disabled = false;
+        gapButton.textContent = '加载中间被跳过的帖子';
+      }
+    }
+
     updateLoadMore();
   }
 }
@@ -590,6 +624,8 @@ function removeNoteCard(noteId) {
   }
 
   commentsByNote.delete(noteId);
+  extraNotes.delete(noteId);
+  placeGap();
 
   if (!loadedNotes.length) {
     if (hasMore) {
@@ -908,21 +944,118 @@ async function handleCommentDelete(noteId, comment) {
    地图 → 定位到留言
 ========================= */
 
-function insertNoteInOrder(note) {
-  const index = loadedNotes.findIndex(
-    item => new Date(item.created_at) < new Date(note.created_at)
+function mergedNotes() {
+  return [...loadedNotes, ...extraNotes.values()].sort(
+    (a, b) => new Date(b.created_at) - new Date(a.created_at)
   );
+}
 
-  if (index === -1) {
-    loadedNotes.push(note);
-    notesList.appendChild(createNoteCard(note));
+function oldestLoadedTime() {
+  const last = loadedNotes[loadedNotes.length - 1];
+
+  return last ? new Date(last.created_at).getTime() : null;
+}
+
+/**
+ * 维护「中间还有帖子没加载」的占位条
+ */
+function placeGap() {
+  const oldest = oldestLoadedTime();
+
+  // 已加载区间追上来的，就从额外区里摘掉
+  if (oldest !== null) {
+    [...extraNotes.entries()].forEach(([id, item]) => {
+      if (new Date(item.created_at).getTime() <= oldest) {
+        extraNotes.delete(id);
+      }
+    });
+  }
+
+  if (!extraNotes.size) {
+    if (gapElement && gapElement.parentNode) {
+      gapElement.remove();
+    }
+
+    gapElement = null;
     return;
   }
 
-  loadedNotes.splice(index, 0, note);
+  if (!gapElement) {
+    gapElement = document.createElement('div');
+    gapElement.className = 'notes-gap';
 
-  const target = notesList.children[index];
+    const hint = document.createElement('p');
+    hint.className = 'notes-gap-hint';
+    hint.textContent = '这里和下面的帖子之间，还有没加载出来的内容';
 
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'notes-gap-button';
+    button.textContent = '加载中间被跳过的帖子';
+    button.addEventListener('click', () => {
+      loadNextPage();
+    });
+
+    gapElement.appendChild(hint);
+    gapElement.appendChild(button);
+  }
+
+  // 永远放在最靠后的那条额外帖子之前
+  let anchor = null;
+  let anchorTime = Infinity;
+
+  extraNotes.forEach((item, id) => {
+    const time = new Date(item.created_at).getTime();
+
+    if (time < anchorTime) {
+      anchorTime = time;
+      anchor = commentCard(id);
+    }
+  });
+
+  if (anchor && anchor.parentNode === notesList) {
+    notesList.insertBefore(gapElement, anchor);
+  } else {
+    notesList.appendChild(gapElement);
+  }
+}
+
+function insertNoteInOrder(note) {
+  const oldest = oldestLoadedTime();
+
+  // 比已加载的末端还新：并进链条（不影响分页游标）
+  if (oldest === null || new Date(note.created_at).getTime() >= oldest) {
+    const index = loadedNotes.findIndex(
+      item => new Date(item.created_at) < new Date(note.created_at)
+    );
+
+    if (index === -1) {
+      loadedNotes.push(note);
+    } else {
+      loadedNotes.splice(index, 0, note);
+    }
+
+    const merged = mergedNotes();
+    const next = merged[merged.findIndex(item => item.id === note.id) + 1];
+    const target = next ? commentCard(next.id) : null;
+    const card = createNoteCard(note);
+
+    if (target) {
+      notesList.insertBefore(card, target);
+    } else {
+      notesList.appendChild(card);
+    }
+
+    placeGap();
+    return;
+  }
+
+  // 比末端还老：链条还没加载到这，不能塞进 loadedNotes（会把分页游标顶飞）
+  extraNotes.set(note.id, note);
+
+  const merged = mergedNotes();
+  const next = merged[merged.findIndex(item => item.id === note.id) + 1];
+  const target = next ? commentCard(next.id) : null;
   const card = createNoteCard(note);
 
   if (target) {
@@ -930,10 +1063,13 @@ function insertNoteInOrder(note) {
   } else {
     notesList.appendChild(card);
   }
+
+  placeGap();
 }
 
 async function focusNote(noteId) {
-  let note = loadedNotes.find(item => item.id === noteId);
+  let note = loadedNotes.find(item => item.id === noteId)
+    || extraNotes.get(noteId);
 
   if (!note) {
     try {
