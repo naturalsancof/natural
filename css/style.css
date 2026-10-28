@@ -1341,7 +1341,7 @@ textarea:focus-visible {
 }
 
 .world-land {
-  fill: rgba(42, 120, 113, .17);
+  fill: rgba(42, 120, 113, .26);
   stroke: rgba(42, 120, 113, .38);
   stroke-width: .5;
   stroke-linejoin: round;
@@ -2235,7 +2235,7 @@ body.modal-open {
 }
 
 [data-theme="dark"] .world-land {
-  fill: rgba(120, 190, 178, .12);
+  fill: rgba(140, 210, 196, .24);
   stroke: rgba(140, 210, 196, .26);
 }
 
@@ -2421,15 +2421,14 @@ body.modal-open {
 
     z-index: 950;
 
-    /* 占满宽度，左右两条边都对到屏幕边 */
+    /* 铺满整屏，左右上下都贴边 */
     width: 100%;
+    height: 100dvh;
     margin: 0;
-    padding: 48px 0 0;
+    padding: 0;
 
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    overflow: hidden;
 
-    /* 不再铺面板底色：只有地图本身 */
     background: transparent;
 
     box-shadow: none;
@@ -2483,7 +2482,15 @@ body.modal-open {
     color: #9fe0d2;
   }
 
+  /* 全屏时不需要小标题 */
+  .map-section .notes-heading {
+    display: none;
+  }
+
   .map-section .map-card {
+    width: 100%;
+    height: 100%;
+
     padding: 0;
 
     border: 0;
@@ -2491,9 +2498,28 @@ body.modal-open {
   }
 
   .map-section .map-canvas {
-    aspect-ratio: 4 / 5;
+    width: 100%;
+    height: 100%;
+
+    aspect-ratio: auto;
 
     border-radius: 0;
+
+    /* 压一层底，别透明到看不清陆地 */
+    background: rgba(250, 250, 244, .70);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  [data-theme="dark"] .map-section .map-canvas {
+    background: rgba(10, 22, 26, .72);
+  }
+
+  /* 全览按钮挪到关闭按钮下方，避免叠在一起 */
+  .map-section .map-reset {
+    top: 58px;
+    right: 12px;
   }
 
   /* ---- 卡片密度 ---- */
