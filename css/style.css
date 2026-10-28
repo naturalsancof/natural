@@ -2707,3 +2707,20 @@ body.modal-open {
   cursor: default;
   opacity: .6;
 }
+
+/* =========================
+   评论始终显示；红点更小
+   ========================= */
+
+.comments-summary {
+  display: none !important;
+}
+
+.comments .comment-list,
+.comments:not(.is-expanded) .comment-list {
+  display: grid !important;
+}
+
+.map-pin-count {
+  font-size: 5px;
+}
