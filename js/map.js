@@ -2,6 +2,10 @@ import { MAP_WIDTH, MAP_HEIGHT, WORLD_PATH } from './world-map.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
+const MIN_SCALE = 1;
+const MAX_SCALE = 9;
+const DRAG_THRESHOLD = 5;
+
 export function projectPoint(lat, lng) {
   return {
     x: ((lng + 180) / 360) * MAP_WIDTH,
@@ -47,7 +51,7 @@ export function clusterNotes(notes, precision = 1) {
   return [...groups.values()];
 }
 
-function shortText(value, length = 42) {
+function shortText(value, length = 48) {
   const text = (value || '').replace(/\s+/g, ' ').trim();
 
   if (text.length <= length) {
@@ -65,10 +69,12 @@ function formatDate(value) {
     : date.toLocaleDateString('zh-CN');
 }
 
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
 /**
- * 世界地图组件
- * @param {HTMLElement} host 容器
- * @param {object} options { onSelectNote, interactive, onPick }
+ * 世界地图组件（支持滚轮 / 双指缩放、拖动平移）
  */
 export function createMap(host, options = {}) {
   const { onSelectNote = null, interactive = false, onPick = null } = options;
@@ -78,7 +84,7 @@ export function createMap(host, options = {}) {
   const svg = document.createElementNS(SVG_NS, 'svg');
   svg.setAttribute('viewBox', `0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`);
   svg.setAttribute('class', 'world-map');
-  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
 
   const land = document.createElementNS(SVG_NS, 'path');
   land.setAttribute('d', WORLD_PATH);
@@ -103,6 +109,88 @@ export function createMap(host, options = {}) {
 
   let pins = [];
   let marker = null;
+  let scale = 1;
+  let center = { x: MAP_WIDTH / 2, y: MAP_HEIGHT / 2 };
+
+  let dragging = false;
+  let dragMoved = false;
+  let lastPoint = null;
+  let suppressClick = false;
+  const pointers = new Map();
+  let pinchStart = null;
+
+  /* ---------- 视图 ---------- */
+
+  function applyView() {
+    const width = MAP_WIDTH / scale;
+    const height = MAP_HEIGHT / scale;
+
+    const x = clamp(center.x - width / 2, 0, MAP_WIDTH - width);
+    const y = clamp(center.y - height / 2, 0, MAP_HEIGHT - height);
+
+    center = { x: x + width / 2, y: y + height / 2 };
+
+    svg.setAttribute('viewBox', `${x} ${y} ${width} ${height}`);
+    syncPinScale();
+    closePopup();
+  }
+
+  function syncPinScale() {
+    const k = 1 / scale;
+
+    pinLayer.querySelectorAll('.map-pin').forEach(node => {
+      node.setAttribute(
+        'transform',
+        `translate(${node.dataset.x} ${node.dataset.y}) scale(${k})`
+      );
+    });
+
+    const markerNode = markerLayer.querySelector('.map-marker');
+
+    if (markerNode) {
+      markerNode.setAttribute(
+        'transform',
+        `translate(${markerNode.dataset.x} ${markerNode.dataset.y}) scale(${k})`
+      );
+    }
+  }
+
+  function clientToMap(clientX, clientY) {
+    const matrix = svg.getScreenCTM();
+
+    if (!matrix) {
+      return { x: 0, y: 0 };
+    }
+
+    const point = svg.createSVGPoint();
+    point.x = clientX;
+    point.y = clientY;
+
+    const local = point.matrixTransform(matrix.inverse());
+
+    return { x: local.x, y: local.y };
+  }
+
+  function zoomAt(clientX, clientY, factor) {
+    const anchor = clientToMap(clientX, clientY);
+    const nextScale = clamp(scale * factor, MIN_SCALE, MAX_SCALE);
+
+    if (nextScale === scale) {
+      return;
+    }
+
+    const ratio = scale / nextScale;
+
+    center = {
+      x: anchor.x + (center.x - anchor.x) * ratio,
+      y: anchor.y + (center.y - anchor.y) * ratio
+    };
+
+    scale = nextScale;
+    applyView();
+  }
+
+  /* ---------- 弹窗 ---------- */
 
   function closePopup() {
     popup.hidden = true;
@@ -111,6 +199,18 @@ export function createMap(host, options = {}) {
 
   function openPopup(pin) {
     const point = projectPoint(pin.lat, pin.lng);
+    const matrix = svg.getScreenCTM();
+
+    if (!matrix) {
+      return;
+    }
+
+    const screen = svg.createSVGPoint();
+    screen.x = point.x;
+    screen.y = point.y;
+
+    const placed = screen.matrixTransform(matrix);
+    const box = host.getBoundingClientRect();
 
     popup.innerHTML = '';
 
@@ -120,6 +220,9 @@ export function createMap(host, options = {}) {
       ? `${pin.notes.length} 条留言在这附近`
       : '这条留言在这里';
     popup.appendChild(title);
+
+    const list = document.createElement('div');
+    list.className = 'map-popup-list';
 
     pin.notes.forEach(note => {
       const item = document.createElement('button');
@@ -146,7 +249,8 @@ export function createMap(host, options = {}) {
       item.appendChild(head);
       item.appendChild(text);
 
-      item.addEventListener('click', () => {
+      item.addEventListener('click', event => {
+        event.stopPropagation();
         closePopup();
 
         if (typeof onSelectNote === 'function') {
@@ -154,27 +258,33 @@ export function createMap(host, options = {}) {
         }
       });
 
-      popup.appendChild(item);
+      list.appendChild(item);
     });
 
-    const leftPercent = Math.min(88, Math.max(12, (point.x / MAP_WIDTH) * 100));
-    const topPercent = (point.y / MAP_HEIGHT) * 100;
+    popup.appendChild(list);
 
-    popup.classList.toggle('is-below', topPercent < 34);
-    popup.style.left = `${leftPercent}%`;
-    popup.style.top = `${topPercent}%`;
+    const topInBox = placed.y - box.top;
+
+    popup.classList.toggle('is-below', topInBox < 130);
+    popup.style.left = `${clamp(placed.x - box.left, 80, Math.max(80, box.width - 80))}px`;
+    popup.style.top = `${topInBox}px`;
     popup.hidden = false;
   }
 
+  /* ---------- 绘制 ---------- */
+
   function renderPins() {
     pinLayer.innerHTML = '';
+    const k = 1 / scale;
 
     pins.forEach(pin => {
       const point = projectPoint(pin.lat, pin.lng);
 
       const group = document.createElementNS(SVG_NS, 'g');
       group.setAttribute('class', 'map-pin');
-      group.setAttribute('transform', `translate(${point.x} ${point.y})`);
+      group.dataset.x = String(point.x);
+      group.dataset.y = String(point.y);
+      group.setAttribute('transform', `translate(${point.x} ${point.y}) scale(${k})`);
 
       const hit = document.createElementNS(SVG_NS, 'circle');
       hit.setAttribute('r', 12);
@@ -202,6 +312,11 @@ export function createMap(host, options = {}) {
 
       group.addEventListener('click', event => {
         event.stopPropagation();
+
+        if (suppressClick) {
+          return;
+        }
+
         openPopup(pin);
       });
 
@@ -217,10 +332,13 @@ export function createMap(host, options = {}) {
     }
 
     const point = projectPoint(marker.lat, marker.lng);
+    const k = 1 / scale;
 
     const group = document.createElementNS(SVG_NS, 'g');
     group.setAttribute('class', 'map-marker');
-    group.setAttribute('transform', `translate(${point.x} ${point.y})`);
+    group.dataset.x = String(point.x);
+    group.dataset.y = String(point.y);
+    group.setAttribute('transform', `translate(${point.x} ${point.y}) scale(${k})`);
 
     const ring = document.createElementNS(SVG_NS, 'circle');
     ring.setAttribute('r', 7);
@@ -235,37 +353,142 @@ export function createMap(host, options = {}) {
     markerLayer.appendChild(group);
   }
 
+  /* ---------- 交互 ---------- */
+
+  svg.addEventListener('pointerdown', event => {
+    if (event.button !== undefined && event.button !== 0) {
+      return;
+    }
+
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+    if (pointers.size === 1) {
+      dragging = true;
+      dragMoved = false;
+      suppressClick = false;
+      lastPoint = { x: event.clientX, y: event.clientY };
+      svg.setPointerCapture(event.pointerId);
+      return;
+    }
+
+    if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      pinchStart = {
+        distance: Math.hypot(a.x - b.x, a.y - b.y),
+        scale
+      };
+    }
+  });
+
+  svg.addEventListener('pointermove', event => {
+    if (!pointers.has(event.pointerId)) {
+      return;
+    }
+
+    pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+    if (pointers.size === 2 && pinchStart) {
+      const [a, b] = [...pointers.values()];
+      const distance = Math.hypot(a.x - b.x, a.y - b.y);
+
+      if (pinchStart.distance > 0) {
+        const factor = distance / pinchStart.distance;
+
+        zoomAt((a.x + b.x) / 2, (a.y + b.y) / 2, factor);
+        pinchStart.distance = distance;
+      }
+
+      dragMoved = true;
+      suppressClick = true;
+      return;
+    }
+
+    if (!dragging || !lastPoint) {
+      return;
+    }
+
+    const dx = event.clientX - lastPoint.x;
+    const dy = event.clientY - lastPoint.y;
+
+    if (!dragMoved && Math.hypot(dx, dy) < DRAG_THRESHOLD) {
+      return;
+    }
+
+    dragMoved = true;
+    suppressClick = true;
+
+    const before = clientToMap(lastPoint.x, lastPoint.y);
+    const after = clientToMap(event.clientX, event.clientY);
+
+    center = {
+      x: center.x - (after.x - before.x),
+      y: center.y - (after.y - before.y)
+    };
+
+    lastPoint = { x: event.clientX, y: event.clientY };
+    applyView();
+  });
+
+  function endPointer(event) {
+    pointers.delete(event.pointerId);
+
+    if (pointers.size < 2) {
+      pinchStart = null;
+    }
+
+    if (pointers.size === 0) {
+      dragging = false;
+      lastPoint = null;
+    }
+  }
+
+  svg.addEventListener('pointerup', endPointer);
+  svg.addEventListener('pointercancel', endPointer);
+
+  svg.addEventListener('wheel', event => {
+    event.preventDefault();
+
+    zoomAt(event.clientX, event.clientY, event.deltaY < 0 ? 1.12 : 1 / 1.12);
+  }, { passive: false });
+
+  svg.addEventListener('dblclick', event => {
+    event.preventDefault();
+    zoomAt(event.clientX, event.clientY, 1.8);
+  });
+
+  svg.addEventListener('click', event => {
+    if (suppressClick) {
+      suppressClick = false;
+      return;
+    }
+
+    // 点空白处：收起弹窗
+    closePopup();
+
+    if (!interactive) {
+      return;
+    }
+
+    const point = clientToMap(event.clientX, event.clientY);
+
+    if (point.x < 0 || point.y < 0 || point.x > MAP_WIDTH || point.y > MAP_HEIGHT) {
+      return;
+    }
+
+    const { lat, lng } = unprojectPoint(point.x, point.y);
+
+    setMarker({ lat, lng });
+
+    if (typeof onPick === 'function') {
+      onPick({
+        lat: Math.max(-85, Math.min(85, lat)),
+        lng
+      });
+    }
+  });
+
   if (interactive) {
     svg.classList.add('is-interactive');
-
-    svg.addEventListener('click', event => {
-      const matrix = svg.getScreenCTM();
-
-      if (!matrix) {
-        return;
-      }
-
-      const point = svg.createSVGPoint();
-      point.x = event.clientX;
-      point.y = event.clientY;
-
-      const local = point.matrixTransform(matrix.inverse());
-
-      if (local.x < 0 || local.y < 0 || local.x > MAP_WIDTH || local.y > MAP_HEIGHT) {
-        return;
-      }
-
-      const { lat, lng } = unprojectPoint(local.x, local.y);
-
-      setMarker({ lat, lng });
-
-      if (typeof onPick === 'function') {
-        onPick({
-          lat: Math.max(-85, Math.min(85, lat)),
-          lng
-        });
-      }
-    });
   }
 
   function setPins(next) {
@@ -281,10 +504,19 @@ export function createMap(host, options = {}) {
     renderMarker();
   }
 
+  function resetView() {
+    scale = 1;
+    center = { x: MAP_WIDTH / 2, y: MAP_HEIGHT / 2 };
+    applyView();
+  }
+
+  applyView();
+
   return {
     element: svg,
     setPins,
     setMarker,
-    closePopup
+    closePopup,
+    resetView
   };
 }
