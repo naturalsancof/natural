@@ -84,7 +84,7 @@ export function createMap(host, options = {}) {
   const svg = document.createElementNS(SVG_NS, 'svg');
   svg.setAttribute('viewBox', `0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`);
   svg.setAttribute('class', 'world-map');
-  svg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
   const land = document.createElementNS(SVG_NS, 'path');
   land.setAttribute('d', WORLD_PATH);
@@ -122,6 +122,7 @@ export function createMap(host, options = {}) {
   let marker = null;
   let scale = 1;
   let center = { x: MAP_WIDTH / 2, y: MAP_HEIGHT / 2 };
+  let baseView = { w: MAP_WIDTH, h: MAP_HEIGHT };
 
   let dragging = false;
   let dragMoved = false;
@@ -134,9 +135,26 @@ export function createMap(host, options = {}) {
 
   /* ---------- 视图 ---------- */
 
+  function computeBaseView() {
+    const rect = host.getBoundingClientRect();
+    const aspect = rect.width > 0 && rect.height > 0
+      ? rect.width / rect.height
+      : MAP_WIDTH / MAP_HEIGHT;
+
+    let height = MAP_HEIGHT;
+    let width = height * aspect;
+
+    if (width > MAP_WIDTH) {
+      width = MAP_WIDTH;
+      height = width / aspect;
+    }
+
+    baseView = { w: width, h: height };
+  }
+
   function applyView() {
-    const width = MAP_WIDTH / scale;
-    const height = MAP_HEIGHT / scale;
+    const width = baseView.w / scale;
+    const height = baseView.h / scale;
 
     const x = clamp(center.x - width / 2, 0, MAP_WIDTH - width);
     const y = clamp(center.y - height / 2, 0, MAP_HEIGHT - height);
@@ -537,8 +555,8 @@ export function createMap(host, options = {}) {
 
     const nextScale = clamp(
       Math.min(
-        MAP_WIDTH / (spanX + pad * 2),
-        MAP_HEIGHT / (spanY + pad * 2)
+        baseView.w / (spanX + pad * 2),
+        baseView.h / (spanY + pad * 2)
       ),
       1,
       3.2
@@ -574,6 +592,17 @@ export function createMap(host, options = {}) {
     applyView();
   }
 
+  // 容器尺寸变化（转屏 / 拉窗口）时重算基准视窗
+  if (typeof ResizeObserver === 'function') {
+    const observer = new ResizeObserver(() => {
+      computeBaseView();
+      applyView();
+    });
+
+    observer.observe(host);
+  }
+
+  computeBaseView();
   applyView();
 
   return {
