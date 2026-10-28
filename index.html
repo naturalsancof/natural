@@ -328,9 +328,19 @@
       <div class="board">
 
       <section
+        id="map-panel"
         class="map-section"
         aria-labelledby="map-title"
       >
+
+        <button
+          id="map-close"
+          class="map-close"
+          type="button"
+          aria-label="收起地图"
+        >
+          ×
+        </button>
 
         <div class="notes-heading">
 
@@ -422,6 +432,18 @@
       </div>
 
     </main>
+
+    <button
+      id="map-toggle"
+      class="map-toggle"
+      type="button"
+      aria-controls="map-panel"
+      aria-expanded="false"
+    >
+      足迹地图
+    </button>
+
+    <div id="map-scrim" class="map-scrim" hidden></div>
 
 
     <!-- =========================
