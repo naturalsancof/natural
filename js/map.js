@@ -120,6 +120,8 @@ export function createMap(host, options = {}) {
 
   let pins = [];
   let marker = null;
+  let activeNoteId = null;
+  let animFrame = 0;
   let scale = 1;
   let center = { x: MAP_WIDTH / 2, y: MAP_HEIGHT / 2 };
   let baseView = { w: MAP_WIDTH, h: MAP_HEIGHT };
@@ -319,6 +321,7 @@ export function createMap(host, options = {}) {
       group.setAttribute('class', 'map-pin');
       group.dataset.x = String(point.x);
       group.dataset.y = String(point.y);
+      group.dataset.noteIds = pin.notes.map(note => note.id).join(',');
       group.setAttribute('transform', `translate(${point.x} ${point.y}) scale(${k})`);
 
       const hit = document.createElementNS(SVG_NS, 'circle');
@@ -567,10 +570,78 @@ export function createMap(host, options = {}) {
     applyView();
   }
 
+  function applyActivePin() {
+    pinLayer.querySelectorAll('.map-pin').forEach(node => {
+      const ids = (node.dataset.noteIds || '').split(',');
+
+      node.classList.toggle(
+        'is-active',
+        activeNoteId !== null && ids.includes(String(activeNoteId))
+      );
+    });
+  }
+
+  function animateTo(target) {
+    cancelAnimationFrame(animFrame);
+
+    const from = { x: center.x, y: center.y };
+    const start = performance.now();
+    const duration = 420;
+
+    const step = now => {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - (1 - progress) ** 3;
+
+      center = {
+        x: from.x + (target.x - from.x) * eased,
+        y: from.y + (target.y - from.y) * eased
+      };
+
+      applyView();
+
+      if (progress < 1) {
+        animFrame = requestAnimationFrame(step);
+      }
+    };
+
+    animFrame = requestAnimationFrame(step);
+  }
+
+  /**
+   * 时间线滚动联动：高亮对应图钉，跑出视野就轻轻移过去
+   */
+  function setActiveNote(noteId) {
+    activeNoteId = noteId === null || noteId === undefined ? null : noteId;
+
+    applyActivePin();
+
+    if (activeNoteId === null) {
+      return;
+    }
+
+    const pin = pins.find(item => item.notes.some(note => String(note.id) === String(activeNoteId)));
+
+    if (!pin) {
+      return;
+    }
+
+    const point = projectPoint(pin.lat, pin.lng);
+    const halfWidth = baseView.w / scale / 2;
+    const halfHeight = baseView.h / scale / 2;
+
+    const inside = Math.abs(point.x - center.x) < halfWidth * 0.7
+      && Math.abs(point.y - center.y) < halfHeight * 0.7;
+
+    if (!inside) {
+      animateTo({ x: point.x, y: point.y });
+    }
+  }
+
   function setPins(next) {
     pins = Array.isArray(next) ? next : [];
     closePopup();
     renderPins();
+    applyActivePin();
 
     // 手机竖屏：第一次有数据时自动框住所有足迹，别只显示一小块
     if (!userMoved && !fitted && pins.length && host.clientHeight > host.clientWidth) {
@@ -609,6 +680,7 @@ export function createMap(host, options = {}) {
     element: svg,
     setPins,
     setMarker,
+    setActiveNote,
     closePopup,
     resetView
   };
