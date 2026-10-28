@@ -135,26 +135,30 @@
 
       <section
         class="composer card"
-        aria-labelledby="composer-title"
+        aria-label="写一则旅途留言"
       >
 
-        <div class="section-heading">
-
-          <h2 id="composer-title">
-            写一则旅途留言
-          </h2>
-
-          <p>
-            昵称必填，文字或图片至少选一项。
-          </p>
-
-        </div>
+        <button
+          id="composer-toggle"
+          class="composer-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="note-form"
+        >
+          <span class="composer-toggle-icon" aria-hidden="true">+</span>
+          <span class="composer-toggle-label">写一则旅途留言</span>
+        </button>
 
 
         <form
           id="note-form"
           novalidate
+          hidden
         >
+
+          <p class="composer-hint">
+            昵称必填，文字或图片至少选一项。
+          </p>
 
           <!-- 昵称 -->
 
