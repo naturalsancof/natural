@@ -8,9 +8,13 @@ import {
   fetchCommentsForNote,
   createComment,
   deleteComment,
-  subscribeToComments
+  subscribeToComments,
+  fetchNoteById,
+  updateNoteLocation
 } from './notes.js';
 import { validateImage, uploadImage, compressImage } from './storage.js';
+import { createMap, clusterNotes } from './map.js';
+import { openLocationPicker } from './location-picker.js';
 
 const PAGE_SIZE = 10;
 
@@ -37,6 +41,11 @@ const noteTemplate = document.getElementById('note-template');
 const commentTemplate = document.getElementById('comment-template');
 const skeletonTemplate = document.getElementById('skeleton-template');
 const toast = document.getElementById('toast');
+const mapCanvas = document.getElementById('map-canvas');
+const mapEmpty = document.getElementById('map-empty');
+const composerLocationButton = document.getElementById('composer-location');
+const composerLocationName = document.getElementById('composer-location-name');
+const composerLocationClear = document.getElementById('composer-location-clear');
 
 const adminToggle = document.getElementById('admin-toggle');
 const adminPanel = document.getElementById('admin-panel');
@@ -54,12 +63,17 @@ const lightbox = document.getElementById('lightbox');
 const lightboxImage = document.getElementById('lightbox-image');
 const lightboxClose = document.getElementById('lightbox-close');
 
+const mapApi = createMap(mapCanvas, {
+  onSelectNote: noteId => focusNote(noteId)
+});
+
 let currentUser = null;
 let commentsByNote = new Map();
 let loadedNotes = [];
 let hasMore = true;
 let loadingNotes = false;
 let toastTimer = 0;
+let composerLocation = null;
 
 
 /* =========================
@@ -95,6 +109,15 @@ function showToast(message) {
   toastTimer = window.setTimeout(() => {
     toast.hidden = true;
   }, 2600);
+}
+
+function refreshMap() {
+  const pinned = loadedNotes.filter(
+    note => Number.isFinite(note.lat) && Number.isFinite(note.lng)
+  );
+
+  mapApi.setPins(clusterNotes(pinned));
+  mapEmpty.hidden = pinned.length > 0;
 }
 
 function updateLoadMore() {
@@ -215,6 +238,12 @@ function refreshAdminButtons() {
     }
 
     card.querySelector('.delete-note-button').hidden = !currentUser;
+
+    const editLocation = card.querySelector('.edit-location-button');
+
+    if (editLocation) {
+      editLocation.hidden = !currentUser;
+    }
   });
 
   commentsByNote.forEach((_list, noteId) => renderComments(noteId));
@@ -306,6 +335,41 @@ composerToggle.addEventListener('click', () => {
 
 
 /* =========================
+   发布框里的地点
+========================= */
+
+function renderComposerLocation() {
+  const hasPoint = !!composerLocation;
+
+  composerLocationButton.hidden = hasPoint;
+  composerLocationClear.hidden = !hasPoint;
+  composerLocationName.hidden = !hasPoint;
+  composerLocationName.textContent = hasPoint ? 📍  : '';
+}
+
+composerLocationButton.addEventListener('click', async () => {
+  const result = await openLocationPicker(composerLocation || {});
+
+  if (!result || result.clear) {
+    return;
+  }
+
+  composerLocation = {
+    location: result.location,
+    lat: result.lat,
+    lng: result.lng
+  };
+
+  renderComposerLocation();
+});
+
+composerLocationClear.addEventListener('click', () => {
+  composerLocation = null;
+  renderComposerLocation();
+});
+
+
+/* =========================
    发布留言
 ========================= */
 
@@ -366,11 +430,16 @@ form.addEventListener('submit', async (event) => {
     const created = await createNote(client, {
       author,
       content,
-      img_url: imageUrl
+      img_url: imageUrl,
+      location: composerLocation?.location || null,
+      lat: composerLocation?.lat ?? null,
+      lng: composerLocation?.lng ?? null
     });
 
     form.reset();
     clearImagePreview();
+    composerLocation = null;
+    renderComposerLocation();
     showFormMessage('');
     setComposerOpen(false);
     showToast('发布成功');
@@ -467,6 +536,8 @@ async function loadNextPage() {
     setNotesStatus('');
 
     hasMore = page.length === PAGE_SIZE;
+
+    refreshMap();
   } catch (error) {
     console.error('加载留言失败:', error);
 
@@ -502,6 +573,7 @@ function prependNote(note) {
   }
 
   setNotesStatus('');
+  refreshMap();
   updateLoadMore();
 }
 
@@ -530,6 +602,7 @@ function removeNoteCard(noteId) {
     }
   }
 
+  refreshMap();
   updateLoadMore();
 }
 
@@ -553,6 +626,16 @@ function createNoteCard(note) {
   content.textContent = note.content || '';
   content.hidden = !note.content;
 
+  const locationEl = card.querySelector('.note-location');
+  const hasPoint = Number.isFinite(note.lat) && Number.isFinite(note.lng);
+
+  if (note.location && hasPoint) {
+    locationEl.textContent = 📍 ;
+    locationEl.hidden = false;
+  } else {
+    locationEl.hidden = true;
+  }
+
   const imageWrap = card.querySelector('.note-image-wrap');
   const image = card.querySelector('.note-image');
 
@@ -569,6 +652,17 @@ function createNoteCard(note) {
   } else {
     imageWrap.hidden = true;
     image.hidden = true;
+  }
+
+  const editLocationButton = card.querySelector('.edit-location-button');
+
+  if (currentUser) {
+    editLocationButton.hidden = false;
+    editLocationButton.addEventListener('click', () => {
+      handleEditLocation(note);
+    });
+  } else {
+    editLocationButton.hidden = true;
   }
 
   const deleteButton = card.querySelector('.delete-note-button');
@@ -813,6 +907,119 @@ async function handleCommentDelete(noteId, comment) {
       error.message ||
       '删除失败，请确认你拥有管理员权限。'
     );
+  }
+}
+
+
+/* =========================
+   地图 → 定位到留言
+========================= */
+
+function insertNoteInOrder(note) {
+  const index = loadedNotes.findIndex(
+    item => new Date(item.created_at) < new Date(note.created_at)
+  );
+
+  if (index === -1) {
+    loadedNotes.push(note);
+    notesList.appendChild(createNoteCard(note));
+    return;
+  }
+
+  loadedNotes.splice(index, 0, note);
+
+  const target = notesList.children[index];
+
+  const card = createNoteCard(note);
+
+  if (target) {
+    notesList.insertBefore(card, target);
+  } else {
+    notesList.appendChild(card);
+  }
+}
+
+async function focusNote(noteId) {
+  let note = loadedNotes.find(item => item.id === noteId);
+
+  if (!note) {
+    try {
+      note = await fetchNoteById(client, noteId);
+    } catch (error) {
+      console.error('定位留言失败:', error);
+      showToast('这条留言暂时打不开');
+      return;
+    }
+
+    if (!note) {
+      return;
+    }
+
+    insertNoteInOrder(note);
+  }
+
+  const card = commentCard(noteId);
+
+  if (!card) {
+    return;
+  }
+
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  card.classList.add('is-flash');
+
+  window.setTimeout(() => {
+    card.classList.remove('is-flash');
+  }, 1800);
+}
+
+
+/* =========================
+   编辑地点
+========================= */
+
+async function handleEditLocation(note) {
+  if (!currentUser) {
+    alert('请先登录管理员账号。');
+    return;
+  }
+
+  let result = null;
+
+  try {
+    result = await openLocationPicker({
+      location: note.location || '',
+      lat: note.lat,
+      lng: note.lng
+    });
+  } catch (error) {
+    console.error('打开地点选择器失败:', error);
+    return;
+  }
+
+  if (!result) {
+    return;
+  }
+
+  const patch = result.clear
+    ? { location: null, lat: null, lng: null }
+    : { location: result.location, lat: result.lat, lng: result.lng };
+
+  try {
+    const updated = await updateNoteLocation(client, note.id, patch);
+
+    Object.assign(note, patch);
+
+    const oldCard = commentCard(note.id);
+
+    if (oldCard && updated) {
+      oldCard.replaceWith(createNoteCard(note));
+    }
+
+    refreshMap();
+    showToast(result.clear ? '地点已移除' : '地点已更新');
+  } catch (error) {
+    console.error('更新地点失败:', error);
+    alert(error.message || '更新地点失败，请稍后再试。');
   }
 }
 
