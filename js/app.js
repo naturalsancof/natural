@@ -23,6 +23,8 @@ const preview = document.getElementById('preview');
 const removeImageButton = document.getElementById('remove-image');
 const submitButton = document.getElementById('submit-button');
 const formMessage = document.getElementById('form-message');
+const composerToggle = document.getElementById('composer-toggle');
+const composerToggleLabel = document.querySelector('.composer-toggle-label');
 
 const notesList = document.getElementById('notes-list');
 const notesStatus = document.getElementById('notes-status');
@@ -229,6 +231,23 @@ function clearImagePreview() {
 removeImageButton.addEventListener('click', () => {
   imageInput.value = '';
   clearImagePreview();
+});
+
+
+/* =========================
+   发布框折叠
+========================= */
+
+composerToggle.addEventListener('click', () => {
+  const willOpen = form.hidden;
+
+  form.hidden = !willOpen;
+  composerToggleLabel.textContent = willOpen ? '收起' : '写一则旅途留言';
+  composerToggle.setAttribute('aria-expanded', String(willOpen));
+
+  if (willOpen) {
+    authorInput.focus();
+  }
 });
 
 
