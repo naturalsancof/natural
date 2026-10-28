@@ -1276,11 +1276,8 @@ textarea:focus-visible {
 
   overflow: hidden;
 
-  /* 卡片不铺底色，地图直接落在页面背景上 */
+  /* 只去掉底色，卡片本身的形状（圆角 + 描边 + 内边距）保留 */
   background: transparent;
-
-  border: 0;
-  border-radius: 0;
 
   box-shadow: none;
 
@@ -1329,7 +1326,7 @@ textarea:focus-visible {
 
   touch-action: none;
 
-  border-radius: 0;
+  border-radius: 16px;
 
   background: none;
 
