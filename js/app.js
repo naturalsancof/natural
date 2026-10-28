@@ -106,6 +106,44 @@ function setNotesStatus(message, showRetry = false) {
   retryButton.hidden = !showRetry;
 }
 
+/**
+ * 友好的时间显示：刚刚 / N 分钟前 / 今天 / 10月29日
+ */
+function formatTime(value) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+
+  if (diff >= 0 && diff < minute) {
+    return '刚刚';
+  }
+
+  if (diff >= 0 && diff < hour) {
+    return `${Math.floor(diff / minute)} 分钟前`;
+  }
+
+  if (diff >= 0 && diff < day) {
+    return `${Math.floor(diff / hour)} 小时前`;
+  }
+
+  if (diff >= 0 && diff < day * 7) {
+    return `${Math.floor(diff / day)} 天前`;
+  }
+
+  const sameYear = date.getFullYear() === now.getFullYear();
+  const monthDay = `${date.getMonth() + 1}月${date.getDate()}日`;
+
+  return sameYear ? monthDay : `${date.getFullYear()}年${monthDay}`;
+}
+
 function showToast(message) {
   if (!message) {
     return;
@@ -680,11 +718,8 @@ function createNoteCard(note) {
   card.querySelector('.note-author').textContent = note.author || '匿名';
 
   const time = card.querySelector('.note-time');
-  const date = new Date(note.created_at);
 
-  time.textContent = Number.isNaN(date.getTime())
-    ? ''
-    : date.toLocaleString('zh-CN');
+  time.textContent = formatTime(note.created_at);
   time.dateTime = note.created_at;
 
   const content = card.querySelector('.note-content');
@@ -695,7 +730,7 @@ function createNoteCard(note) {
   const hasPoint = Number.isFinite(note.lat) && Number.isFinite(note.lng);
 
   if (note.location && hasPoint) {
-    locationEl.textContent = `📍 ${note.location}`;
+    locationEl.textContent = note.location;
     locationEl.hidden = false;
   } else {
     locationEl.hidden = true;
@@ -710,6 +745,17 @@ function createNoteCard(note) {
     image.decoding = 'async';
     image.hidden = false;
     imageWrap.hidden = false;
+
+    image.classList.add('is-loading');
+
+    const reveal = () => image.classList.add('is-ready');
+
+    if (image.complete) {
+      reveal();
+    } else {
+      image.addEventListener('load', reveal, { once: true });
+      image.addEventListener('error', reveal, { once: true });
+    }
 
     image.addEventListener('click', () => {
       openLightbox(note.img_url);
@@ -824,11 +870,8 @@ function renderComments(noteId, card) {
     fragment.querySelector('.comment-author-name').textContent = comment.author || '匿名';
 
     const time = fragment.querySelector('.comment-time');
-    const date = new Date(comment.created_at);
 
-    time.textContent = Number.isNaN(date.getTime())
-      ? ''
-      : date.toLocaleString('zh-CN');
+    time.textContent = formatTime(comment.created_at);
     time.dateTime = comment.created_at;
 
     fragment.querySelector('.comment-text').textContent = comment.content || '';
