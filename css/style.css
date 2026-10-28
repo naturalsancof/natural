@@ -2338,6 +2338,214 @@ body.modal-open {
   background: #16262b;
   border-color: rgba(170, 205, 200, .18);
 }
+/* =========================
+   移动端：地图抽屉 + 密度
+   ========================= */
+
+.comments-summary {
+  display: none;
+}
+
+.map-toggle,
+.map-close,
+.map-scrim {
+  display: none;
+}
+
+@media (max-width: 1079px) {
+
+  /* 侧边唤起条 */
+  .map-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: fixed;
+    left: 0;
+    top: 50%;
+
+    z-index: 930;
+
+    transform: translateY(-50%);
+
+    padding: 16px 7px;
+
+    border: 1px solid rgba(105, 145, 150, .26);
+    border-left: 0;
+    border-radius: 0 14px 14px 0;
+
+    background: rgba(255, 253, 248, .92);
+    color: #14776e;
+
+    writing-mode: vertical-rl;
+    letter-spacing: .18em;
+
+    font: inherit;
+    font-size: .76rem;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow: 4px 0 18px rgba(35, 75, 82, .12);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .map-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+
+    z-index: 940;
+
+    background: rgba(6, 14, 16, .46);
+
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  .map-scrim[hidden] {
+    display: none;
+  }
+
+  /* 地图面板：从左侧抽出 */
+  .map-section {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+
+    z-index: 950;
+
+    width: min(90vw, 420px);
+    margin: 0;
+    padding: 52px 16px 20px;
+
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    background: var(--paper);
+    box-shadow: 24px 0 60px rgba(0, 0, 0, .26);
+
+    transform: translateX(-102%);
+    transition: transform .34s cubic-bezier(.22, .61, .36, 1);
+  }
+
+  body.map-open .map-section {
+    transform: none;
+  }
+
+  body.map-open {
+    overflow: hidden;
+  }
+
+  .map-close {
+    display: grid;
+    place-items: center;
+
+    position: absolute;
+    top: 12px;
+    right: 14px;
+
+    width: 36px;
+    height: 36px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: transparent;
+    color: var(--muted);
+
+    font-size: 1.5rem;
+    line-height: 1;
+
+    cursor: pointer;
+  }
+
+  .map-section .map-canvas {
+    aspect-ratio: 4 / 5;
+  }
+
+  /* ---- 卡片密度 ---- */
+  .notes-list {
+    gap: 12px;
+  }
+
+  .note-card {
+    padding: 15px 15px 12px;
+  }
+
+  .note-image-wrap {
+    margin: 12px -15px 0;
+  }
+
+  .note-image {
+    max-height: 55vh;
+  }
+
+  .note-content {
+    margin-top: 10px;
+  }
+
+  .note-location {
+    margin-top: 8px;
+
+    font-size: .78rem;
+  }
+
+  /* ---- 评论折叠成一行 ---- */
+  .comments-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    margin: 0 0 8px;
+    padding: 5px 11px;
+
+    border: 0;
+    border-radius: 999px;
+
+    background: rgba(42, 157, 143, .10);
+    color: #14776e;
+
+    font: inherit;
+    font-size: .78rem;
+    font-weight: 700;
+
+    cursor: pointer;
+  }
+
+  .comments-summary[hidden] {
+    display: none;
+  }
+
+  .comments:not(.is-expanded) .comment-list {
+    display: none;
+  }
+
+  .comments.is-expanded .comments-summary {
+    background: rgba(42, 157, 143, .16);
+  }
+}
+
+/* 夜间模式：侧边条与抽屉 */
+[data-theme="dark"] .map-toggle {
+  border-color: rgba(170, 205, 200, .20);
+  background: rgba(255, 255, 255, .08);
+
+  color: #9fe0d2;
+}
+
+[data-theme="dark"] .map-section {
+  background: #101c21;
+  box-shadow: 24px 0 60px rgba(0, 0, 0, .5);
+}
+
+[data-theme="dark"] .comments-summary {
+  background: rgba(90, 190, 172, .14);
+  color: #9fe0d2;
+}
 @media (max-width: 600px) {
 
   .map-canvas {
