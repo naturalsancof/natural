@@ -74,6 +74,10 @@ let commentsByNote = new Map();
 let loadedNotes = [];
 let extraNotes = new Map();
 let gapElement = null;
+let tailNotes = [];
+let tailCursor = null;
+let hasMoreTail = true;
+let tailMode = false;
 let autoLoadPaused = false;
 let hasMore = true;
 let loadingNotes = false;
@@ -483,6 +487,10 @@ function showSkeletons(count = 3) {
 async function renderNotes() {
   loadedNotes = [];
   extraNotes = new Map();
+  tailNotes = [];
+  tailCursor = null;
+  hasMoreTail = true;
+  tailMode = false;
   commentsByNote = new Map();
   hasMore = true;
 
@@ -640,6 +648,15 @@ function removeNoteCard(noteId) {
 
   commentsByNote.delete(noteId);
   extraNotes.delete(noteId);
+
+  if (tailNotes.some(item => item.id === noteId)) {
+    tailNotes = tailNotes.filter(item => item.id !== noteId);
+
+    if (tailCursor && tailCursor.id === noteId) {
+      tailCursor = tailNotes[tailNotes.length - 1] || null;
+    }
+  }
+
   placeGap();
 
   if (!loadedNotes.length) {
@@ -1084,12 +1101,18 @@ function insertNoteInOrder(note) {
     notesList.appendChild(card);
   }
 
+  // 从这条帖子往下继续翻更老的（中间缺口留给按钮补）
+  tailMode = true;
+  tailCursor = note;
+  hasMoreTail = true;
+
   placeGap();
 }
 
 async function focusNote(noteId) {
   let note = loadedNotes.find(item => item.id === noteId)
-    || extraNotes.get(noteId);
+    || extraNotes.get(noteId)
+    || tailNotes.find(item => item.id === noteId);
 
   if (!note) {
     try {
@@ -1245,7 +1268,11 @@ retryButton.addEventListener('click', renderNotes);
 // 滚到底部附近自动加载下一页
 // 统一入口：暂停中不自动补，但仍然可以在下方继续加载
 function maybeAutoLoad() {
-  if (autoLoadPaused || loadingNotes || !hasMore || !loadMoreSentinel) {
+  if (autoLoadPaused || loadingNotes || !loadMoreSentinel) {
+    return;
+  }
+
+  if (tailMode ? !hasMoreTail : !hasMore) {
     return;
   }
 
@@ -1253,7 +1280,58 @@ function maybeAutoLoad() {
 
   // 哨兵进入视口（含 700px 预取余量）就加载下一页
   if (rect.top <= window.innerHeight + 700) {
-    loadNextPage();
+    if (tailMode) {
+      loadTailPage();
+    } else {
+      loadNextPage();
+    }
+  }
+}
+
+/**
+ * 定位之后：接着定位页往下翻更老的帖子
+ */
+async function loadTailPage() {
+  if (loadingNotes || !hasMoreTail || !tailCursor) {
+    return;
+  }
+
+  loadingNotes = true;
+  loadMoreStatus.hidden = false;
+
+  try {
+    const page = await fetchNotes(client, { limit: PAGE_SIZE, before: tailCursor });
+
+    if (!page.length) {
+      hasMoreTail = false;
+      return;
+    }
+
+    const pageComments = await loadCommentsForNotes(page);
+    pageComments.forEach((list, noteId) => {
+      commentsByNote.set(noteId, list);
+    });
+
+    const fragment = document.createDocumentFragment();
+
+    page.forEach(note => {
+      tailNotes.push(note);
+      fragment.appendChild(createNoteCard(note));
+    });
+
+    notesList.appendChild(fragment);
+
+    tailCursor = page[page.length - 1];
+    hasMoreTail = page.length === PAGE_SIZE;
+
+    setNotesStatus('');
+  } catch (error) {
+    console.error('加载留言失败:', error);
+    showToast('加载失败，请稍后再试');
+  } finally {
+    loadingNotes = false;
+    updateLoadMore();
+    maybeAutoLoad();
   }
 }
 
