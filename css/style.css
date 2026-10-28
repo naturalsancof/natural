@@ -2266,6 +2266,75 @@ body.modal-open {
 [data-theme="dark"] .skeleton {
   background: rgba(255, 255, 255, .07);
 }
+[data-theme="dark"] .map-canvas {
+  background:
+    radial-gradient(circle at 26% 14%, rgba(70, 130, 122, .30), transparent 58%),
+    linear-gradient(160deg, #10222a 0%, #131a1d 100%);
+}
+
+[data-theme="dark"] .composer-toggle,
+[data-theme="dark"] .admin-toggle,
+[data-theme="dark"] .map-reset,
+[data-theme="dark"] .location-button,
+[data-theme="dark"] .location-chip {
+  border-color: rgba(90, 190, 172, .30);
+  background: rgba(255, 255, 255, .06);
+
+  color: #9fe0d2;
+}
+
+[data-theme="dark"] .composer-toggle:hover,
+[data-theme="dark"] .admin-toggle:hover,
+[data-theme="dark"] .map-reset:hover,
+[data-theme="dark"] .location-button:hover {
+  background: rgba(90, 190, 172, .16);
+}
+
+[data-theme="dark"] .primary-button,
+[data-theme="dark"] .comment-submit,
+[data-theme="dark"] .modal-confirm {
+  background: rgba(90, 190, 172, .92);
+  border-color: rgba(140, 220, 205, .35);
+
+  color: #06201d;
+}
+
+[data-theme="dark"] .primary-button:hover:not(:disabled),
+[data-theme="dark"] .comment-submit:hover:not(:disabled) {
+  background: rgba(110, 210, 190, .98);
+}
+
+[data-theme="dark"] .eyebrow {
+  color: #7fc0b4;
+}
+
+[data-theme="dark"] .subtitle {
+  color: rgba(206, 224, 219, .78);
+}
+
+[data-theme="dark"] .notes-heading h2,
+[data-theme="dark"] .section-heading h2 {
+  color: #9fe0d2;
+}
+
+[data-theme="dark"] .status-card[data-kind="error"] {
+  color: #f3a39b;
+}
+
+[data-theme="dark"] .location-selected {
+  background: rgba(90, 190, 172, .12);
+}
+
+[data-theme="dark"] .location-label,
+[data-theme="dark"] .modal-head h2 {
+  color: #9fe0d2;
+}
+
+[data-theme="dark"] .map-popup::after,
+[data-theme="dark"] .map-popup.is-below::after {
+  background: #16262b;
+  border-color: rgba(170, 205, 200, .18);
+}
 @media (max-width: 600px) {
 
   .map-canvas {
