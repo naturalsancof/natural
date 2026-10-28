@@ -206,3 +206,33 @@ export function subscribeToComments(client, onChange) {
     )
     .subscribe();
 }
+
+export async function fetchNoteById(client, noteId) {
+  const { data, error } = await client
+    .from('notes')
+    .select('*')
+    .eq('id', noteId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data || null;
+}
+
+
+export async function updateNoteLocation(client, noteId, patch) {
+  const { data, error } = await client
+    .from('notes')
+    .update(patch)
+    .eq('id', noteId)
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
