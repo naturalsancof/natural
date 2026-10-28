@@ -846,23 +846,7 @@ textarea:focus-visible {
    减少动画
    ========================= */
 
-@media (max-width: 600px) {
 
-  .map-canvas {
-    /* 竖版：手机上地图更大，横向靠拖动看 */
-    aspect-ratio: 4 / 5;
-
-    border-radius: 14px;
-  }
-
-  .map-canvas-small {
-    aspect-ratio: 4 / 3;
-  }
-
-  .map-popup {
-    max-height: 200px;
-  }
-}
 
 
 @media (prefers-reduced-motion: reduce) {
@@ -1834,4 +1818,23 @@ body.modal-open {
   color: #14776e;
   font-size: .88rem;
   font-weight: 700;
+}
+
+
+@media (max-width: 600px) {
+
+  .map-canvas {
+    /* 竖版：手机上地图更大，横向靠拖动看 */
+    aspect-ratio: 4 / 5;
+
+    border-radius: 14px;
+  }
+
+  .map-canvas-small {
+    aspect-ratio: 4 / 3;
+  }
+
+  .map-popup {
+    max-height: 200px;
+  }
 }
