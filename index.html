@@ -57,7 +57,7 @@
 
           <div class="section-heading">
 
-            <h2>管理员登录</h2>
+            <h2 id="admin-heading">管理员登录</h2>
 
             <p id="admin-status">
               登录后可以管理留言。
@@ -110,19 +110,26 @@
                 登录
               </button>
 
-
-              <button
-                id="admin-logout-button"
-                class="text-button"
-                type="button"
-                hidden
-              >
-                退出登录
-              </button>
-
             </div>
 
           </form>
+
+
+          <div
+            id="admin-session"
+            class="admin-session"
+            hidden
+          >
+
+            <button
+              id="admin-logout-button"
+              class="text-button"
+              type="button"
+            >
+              退出登录
+            </button>
+
+          </div>
 
         </div>
 
@@ -301,6 +308,20 @@
           aria-live="polite"
         ></div>
 
+
+        <div class="notes-footer">
+
+          <button
+            id="load-more"
+            class="load-more-button"
+            type="button"
+            hidden
+          >
+            加载更多
+          </button>
+
+        </div>
+
       </section>
 
     </main>
@@ -422,6 +443,47 @@
         </button>
 
       </li>
+
+    </template>
+
+
+    <!-- =========================
+         轻提示
+    ========================== -->
+
+    <div
+      id="toast"
+      class="toast"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></div>
+
+
+    <!-- =========================
+         骨架屏模板
+    ========================== -->
+
+    <template id="skeleton-template">
+
+      <article
+        class="note-card card skeleton-card"
+        aria-hidden="true"
+      >
+
+        <div class="skeleton-row">
+
+          <span class="skeleton skeleton-avatar"></span>
+
+          <span class="skeleton skeleton-line skeleton-name"></span>
+
+        </div>
+
+        <div class="skeleton skeleton-line"></div>
+
+        <div class="skeleton skeleton-block"></div>
+
+      </article>
 
     </template>
 
