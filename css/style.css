@@ -1906,9 +1906,10 @@ body.modal-open {
 .note-image {
   width: 100%;
   height: auto;
-  max-height: 620px;
+  max-height: none;
 
-  object-fit: cover;
+  /* 不裁切：截图类内容被裁掉会丢信息 */
+  object-fit: contain;
   object-position: center;
 
   border-radius: 0;
