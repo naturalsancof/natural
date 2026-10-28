@@ -2664,3 +2664,6 @@ body.modal-open {
   cursor: default;
   opacity: .6;
 }
+
+/* DEBUG-ONLY */
+.world-land { display: none !important; }
