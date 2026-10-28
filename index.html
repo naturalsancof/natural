@@ -202,7 +202,7 @@
           />
 
           <p class="field-hint">
-            支持 JPEG、PNG、WebP、GIF，最大 5 MB。
+            支持 JPEG、PNG、WebP、GIF，最大 10 MB。
           </p>
 
 
@@ -333,6 +333,53 @@
         </div>
 
 
+        <!-- 评论 -->
+
+        <section class="comments" aria-label="评论">
+
+          <h3 class="comments-title">
+            评论 <span class="comment-count">0</span>
+          </h3>
+
+          <p class="comment-empty">
+            还没有评论，来说两句吧。
+          </p>
+
+          <ul class="comment-list"></ul>
+
+          <form class="comment-form">
+
+            <input
+              class="comment-author"
+              type="text"
+              maxlength="60"
+              placeholder="昵称"
+              required
+            />
+
+            <textarea
+              class="comment-content"
+              rows="2"
+              maxlength="1000"
+              placeholder="写下你的评论…"
+              required
+            ></textarea>
+
+            <div class="comment-form-row">
+
+              <p class="comment-message" role="status" aria-live="polite"></p>
+
+              <button class="comment-submit" type="submit">
+                发表评论
+              </button>
+
+            </div>
+
+          </form>
+
+        </section>
+
+
         <!-- 管理员删除 -->
 
         <button
@@ -344,6 +391,33 @@
         </button>
 
       </article>
+
+    </template>
+
+
+    <template id="comment-template">
+
+      <li class="comment-item">
+
+        <div class="comment-meta">
+
+          <strong class="comment-author-name"></strong>
+
+          <time class="comment-time"></time>
+
+        </div>
+
+        <p class="comment-text"></p>
+
+        <button
+          class="delete-comment-button"
+          type="button"
+          hidden
+        >
+          删除
+        </button>
+
+      </li>
 
     </template>
 
