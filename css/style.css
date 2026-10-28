@@ -2659,3 +2659,7 @@ html[data-theme="dark"] .map-card {
   cursor: default;
   opacity: .6;
 }
+
+/* DEBUG-ONLY */
+.world-map { display: none !important; }
+.map-canvas { visibility: hidden !important; }
