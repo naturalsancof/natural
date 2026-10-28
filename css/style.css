@@ -2451,22 +2451,36 @@ body.modal-open {
     place-items: center;
 
     position: absolute;
-    top: 12px;
-    right: 14px;
+    top: 10px;
+    right: 12px;
 
-    width: 36px;
-    height: 36px;
+    z-index: 3;
 
-    border: 0;
+    width: 40px;
+    height: 40px;
+
+    border: 1px solid rgba(105, 145, 150, .28);
     border-radius: 50%;
 
-    background: transparent;
-    color: var(--muted);
+    background: rgba(255, 253, 248, .72);
+    color: #14776e;
 
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     line-height: 1;
 
     cursor: pointer;
+
+    box-shadow: 0 4px 16px rgba(35, 75, 82, .16);
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  [data-theme="dark"] .map-close {
+    border-color: rgba(170, 205, 200, .24);
+    background: rgba(255, 255, 255, .12);
+
+    color: #9fe0d2;
   }
 
   .map-section .map-card {
