@@ -2661,5 +2661,4 @@ html[data-theme="dark"] .map-card {
 }
 
 /* DEBUG-ONLY */
-.world-map { display: none !important; }
-.map-canvas { visibility: hidden !important; }
+.map-section, .board, main.container { background: #ff00ff !important; }
