@@ -50,6 +50,33 @@ if (themeToggle) {
   });
 }
 
+const mapPanel = document.getElementById('map-panel');
+const mapToggle = document.getElementById('map-toggle');
+const mapScrim = document.getElementById('map-scrim');
+const mapClose = document.getElementById('map-close');
+
+function setMapOpen(open) {
+  document.body.classList.toggle('map-open', open);
+  mapToggle?.setAttribute('aria-expanded', String(open));
+
+  if (mapScrim) {
+    mapScrim.hidden = !open;
+  }
+}
+
+mapToggle?.addEventListener('click', () => {
+  setMapOpen(!document.body.classList.contains('map-open'));
+});
+
+mapScrim?.addEventListener('click', () => setMapOpen(false));
+mapClose?.addEventListener('click', () => setMapOpen(false));
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && document.body.classList.contains('map-open')) {
+    setMapOpen(false);
+  }
+});
+
 const form = document.getElementById('note-form');
 const authorInput = document.getElementById('author');
 const contentInput = document.getElementById('content');
@@ -901,6 +928,32 @@ function renderComments(noteId, card) {
   const items = commentsByNote.get(noteId) || [];
 
   list.innerHTML = '';
+
+  // 手机上评论默认折叠成一行，点开才展开
+  let summary = node.querySelector('.comments-summary');
+
+  if (!summary) {
+    summary = document.createElement('button');
+    summary.type = 'button';
+    summary.className = 'comments-summary';
+    summary.addEventListener('click', () => {
+      const section = summary.closest('.comments');
+
+      section.classList.toggle('is-expanded');
+      summary.setAttribute(
+        'aria-expanded',
+        String(section.classList.contains('is-expanded'))
+      );
+    });
+
+    node.querySelector('.comments').insertBefore(summary, list);
+  }
+
+  summary.textContent = `${items.length} 条评论`;
+  summary.hidden = items.length === 0;
+  summary.setAttribute('aria-expanded', 'false');
+
+  node.querySelector('.comments').classList.remove('is-expanded');
 
   items.forEach(comment => {
     const fragment = commentTemplate.content.cloneNode(true);
