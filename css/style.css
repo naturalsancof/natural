@@ -41,10 +41,11 @@ body {
   min-width: 320px;
   margin: 0;
 
-  /* Soft high-luminance-contrast scene so blur(2px) + rim lens have structure
-     to reveal. Cool paper base + deeper cool / blue-gray / neutral forms.
-     No muddy cream, no dirty teal/sage. Mid-page forms give the composer band
-     and the notes column something to transmit instead of a flat bright wash. */
+  /* Soft high-luminance-contrast scene so saturate/brightness + rim lens have
+     structure to reveal. Cool paper base + deeper cool / blue-gray / neutral
+     forms. No muddy cream, no dirty teal/sage. Mid-page forms give the composer
+     band and the notes column something to transmit instead of a flat bright
+     wash. */
   background:
     radial-gradient(
       ellipse 76% 58% at 10% 16%,
@@ -2827,8 +2828,8 @@ body.modal-open {
 
   /* Light glass, dark ink (default) */
   --lg-tint-rgb: 255 255 255;
-  --lg-alpha-base: .06;
-  --lg-alpha-range: .16;
+  --lg-alpha-base: .03;
+  --lg-alpha-range: .10;
   --lg-brightness-base: 1;
   --lg-brightness-range: .06;
   --lg-sat-base: 1.8;
@@ -2838,7 +2839,6 @@ body.modal-open {
   --lg-surface: rgb(255 255 255 / .13);
   --lg-sat: 1.8;
   --lg-backdrop:
-    blur(2px)
     saturate(var(--lg-sat))
     brightness(calc(1 + .06 * var(--lg-tint-scale)));
 
@@ -2894,13 +2894,13 @@ body.modal-open {
 @property --lg-alpha-base {
   syntax: "<number>";
   inherits: true;
-  initial-value: .06;
+  initial-value: .03;
 }
 
 @property --lg-alpha-range {
   syntax: "<number>";
   inherits: true;
-  initial-value: .16;
+  initial-value: .10;
 }
 
 @property --lg-brightness-base {
@@ -2963,11 +2963,11 @@ body.modal-open {
   initial-value: rgba(255, 255, 255, .76);
 }
 
-/* Light theme over a dark area: light ink on a near-black frost. */
+/* Light theme over a dark area: light ink on near-black clear glass. */
 [data-glass][data-glass-ink="light"] {
   --lg-tint-rgb: 16 18 22;
-  --lg-alpha-base: .10;
-  --lg-alpha-range: .20;
+  --lg-alpha-base: .06;
+  --lg-alpha-range: .14;
   --lg-brightness-base: 1;
   --lg-brightness-range: -.15;
   --lg-sat-base: 1.7;
@@ -2991,8 +2991,8 @@ body.modal-open {
 /* Dark theme always uses the dark material. */
 [data-theme="dark"] {
   --lg-tint-rgb: 20 20 24;
-  --lg-alpha-base: .16;
-  --lg-alpha-range: .22;
+  --lg-alpha-base: .08;
+  --lg-alpha-range: .14;
   --lg-brightness-base: 1;
   --lg-brightness-range: -.20;
   --lg-sat-base: 1.6;
@@ -3017,8 +3017,8 @@ body.modal-open {
    near-black tint into the dark palette. */
 [data-theme="dark"] [data-glass][data-glass-ink="light"] {
   --lg-tint-rgb: 20 20 24;
-  --lg-alpha-base: .16;
-  --lg-alpha-range: .22;
+  --lg-alpha-base: .08;
+  --lg-alpha-range: .14;
   --lg-brightness-base: 1;
   --lg-brightness-range: -.20;
   --lg-sat-base: 1.6;
@@ -3051,7 +3051,6 @@ body.modal-open {
       )
     );
   --lg-backdrop:
-    blur(2px)
     saturate(var(--lg-sat))
     brightness(
       calc(
@@ -3119,7 +3118,7 @@ body.modal-open {
 
   pointer-events: none;
 
-  opacity: calc(.18 * var(--lg-tint-scale));
+  opacity: calc(.10 * var(--lg-tint-scale));
 
   background:
     radial-gradient(
@@ -3143,12 +3142,12 @@ body.modal-open {
   background:
     radial-gradient(
       ellipse at 10% 0%,
-      rgba(255, 255, 255, .11),
+      rgba(255, 255, 255, .06),
       transparent 55%
     ),
     radial-gradient(
       ellipse at 0% 100%,
-      rgba(255, 255, 255, .04),
+      rgba(255, 255, 255, .02),
       transparent 60%
     );
 
@@ -3163,7 +3162,7 @@ body.modal-open {
   background-image:
     radial-gradient(
       ellipse at 10% 0%,
-      rgb(255 255 255 / calc(.30 * var(--lg-tint-scale))),
+      rgb(255 255 255 / calc(.17 * var(--lg-tint-scale))),
       transparent 55%
     );
 }
@@ -3173,7 +3172,7 @@ body.modal-open {
   background-image:
     radial-gradient(
       ellipse at 10% 0%,
-      rgb(255 255 255 / calc(.11 * var(--lg-tint-scale))),
+      rgb(255 255 255 / calc(.06 * var(--lg-tint-scale))),
       transparent 55%
     );
 }
@@ -3583,7 +3582,7 @@ textarea:focus {
   }
 }
 
-@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
 
   :root [data-glass] {
     background-color: rgb(var(--lg-tint-rgb));

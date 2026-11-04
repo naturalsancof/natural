@@ -1230,7 +1230,7 @@ function updateLens(element, state, rect) {
   }
 
   const shortSide = Math.min(rect.width, rect.height);
-  const rim = Math.max(4, Math.min(44, shortSide / 3.5));
+  const rim = Math.max(4, Math.min(44, shortSide / 3.0));
   const style = getComputedStyle(element);
   const radius = Number.parseFloat(style.borderTopLeftRadius) || 0;
 
@@ -1264,7 +1264,7 @@ function buildLens(element, state, key, width, height, radius, rim) {
   }
 
   const dpr = window.devicePixelRatio || 1;
-  let split = dpr > 1.05 ? 0 : Math.min(0.15, 0.04 + rim / 400);
+  let split = dpr > 1.05 ? 0 : Math.min(0.15, 0.08 + rim / 280);
 
   // Busy backgrounds haze when the channels split hard.
   if (state.texture > 0.45) {
@@ -1297,7 +1297,7 @@ function buildLens(element, state, key, width, height, radius, rim) {
   map.setAttribute('preserveAspectRatio', 'none');
   map.setAttribute('result', 'lg-map');
 
-  const scale = 2 * 1.1 * rim;
+  const scale = 2.6 * 1.1 * rim;
 
   filter.appendChild(map);
 
