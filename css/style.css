@@ -2828,8 +2828,8 @@ body.modal-open {
 
   /* Light glass, dark ink (default) */
   --lg-tint-rgb: 255 255 255;
-  --lg-alpha-base: .015;
-  --lg-alpha-range: .06;
+  --lg-alpha-base: .01;
+  --lg-alpha-range: .05;
   --lg-brightness-base: 1;
   --lg-brightness-range: .02;
   --lg-sat-base: 1.20;
@@ -2894,13 +2894,13 @@ body.modal-open {
 @property --lg-alpha-base {
   syntax: "<number>";
   inherits: true;
-  initial-value: .015;
+  initial-value: .01;
 }
 
 @property --lg-alpha-range {
   syntax: "<number>";
   inherits: true;
-  initial-value: .06;
+  initial-value: .05;
 }
 
 @property --lg-brightness-base {
@@ -2966,8 +2966,8 @@ body.modal-open {
 /* Light theme over a dark area: light ink on near-black clear glass. */
 [data-glass][data-glass-ink="light"] {
   --lg-tint-rgb: 16 18 22;
-  --lg-alpha-base: .03;
-  --lg-alpha-range: .08;
+  --lg-alpha-base: .025;
+  --lg-alpha-range: .06;
   --lg-brightness-base: 1;
   --lg-brightness-range: -.04;
   --lg-sat-base: 1.15;
@@ -2991,8 +2991,8 @@ body.modal-open {
 /* Dark theme always uses the dark material. */
 [data-theme="dark"] {
   --lg-tint-rgb: 20 20 24;
-  --lg-alpha-base: .04;
-  --lg-alpha-range: .08;
+  --lg-alpha-base: .03;
+  --lg-alpha-range: .06;
   --lg-brightness-base: 1;
   --lg-brightness-range: -.05;
   --lg-sat-base: 1.12;
@@ -3017,8 +3017,8 @@ body.modal-open {
    near-black tint into the dark palette. */
 [data-theme="dark"] [data-glass][data-glass-ink="light"] {
   --lg-tint-rgb: 20 20 24;
-  --lg-alpha-base: .04;
-  --lg-alpha-range: .08;
+  --lg-alpha-base: .03;
+  --lg-alpha-range: .06;
   --lg-brightness-base: 1;
   --lg-brightness-range: -.05;
   --lg-sat-base: 1.12;

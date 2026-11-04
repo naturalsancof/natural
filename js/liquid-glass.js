@@ -1230,7 +1230,7 @@ function updateLens(element, state, rect) {
   }
 
   const shortSide = Math.min(rect.width, rect.height);
-  const rim = Math.max(4, Math.min(44, shortSide / 3.0));
+  const rim = Math.max(4, Math.min(44, shortSide / 2.7));
   const style = getComputedStyle(element);
   const radius = Number.parseFloat(style.borderTopLeftRadius) || 0;
 
@@ -1263,12 +1263,15 @@ function buildLens(element, state, key, width, height, radius, rim) {
     return Promise.reject(new Error('glass displacement map unavailable'));
   }
 
-  const dpr = window.devicePixelRatio || 1;
-  let split = dpr > 1.05 ? 0 : Math.min(0.15, 0.08 + rim / 280);
+  // Spectral dispersion on every display, HiDPI included: aim at the SPEC
+  // ceiling so the RGB split stays visible instead of collapsing to a single
+  // opaque pass.
+  let split = Math.min(0.15, 0.10 + rim / 240);
 
-  // Busy backgrounds haze when the channels split hard.
-  if (state.texture > 0.45) {
-    split *= 0.35;
+  // Very busy backgrounds get a mild damp, never a near-zero crush: the
+  // split must remain readable (>= ~0.08) or dispersion disappears again.
+  if (state.texture > 0.55) {
+    split *= 0.7;
   }
 
   const svg = document.createElementNS(SVG_NS, 'svg');
@@ -1297,7 +1300,7 @@ function buildLens(element, state, key, width, height, radius, rim) {
   map.setAttribute('preserveAspectRatio', 'none');
   map.setAttribute('result', 'lg-map');
 
-  const scale = 2.6 * 1.1 * rim;
+  const scale = 3.2 * 1.1 * rim;
 
   filter.appendChild(map);
 
@@ -1313,9 +1316,6 @@ function buildLens(element, state, key, width, height, radius, rim) {
 
     filter.appendChild(blend('lg-red', 'lg-green', 'screen', 'lg-red-green'));
     filter.appendChild(blend('lg-red-green', 'lg-blue', 'screen'));
-  } else {
-    // HiDPI fallback: one opaque displacement pass, no channel bleed.
-    filter.appendChild(displace(scale, ''));
   }
 
   svg.appendChild(filter);
