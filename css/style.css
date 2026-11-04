@@ -42,39 +42,50 @@ body {
   margin: 0;
 
   /* Soft high-luminance-contrast scene so blur(2px) + rim lens have structure
-     to reveal. Cool paper base + deeper cool / blue-gray / warm-gray forms.
-     No muddy cream, no dirty teal/sage. */
+     to reveal. Cool paper base + deeper cool / blue-gray / neutral forms.
+     No muddy cream, no dirty teal/sage. Mid-page forms give the composer band
+     and the notes column something to transmit instead of a flat bright wash. */
   background:
     radial-gradient(
-      ellipse 78% 58% at 10% 16%,
-      rgba(132, 156, 188, .48),
+      ellipse 76% 58% at 10% 16%,
+      rgba(96, 124, 166, .64),
       transparent 62%
     ),
     radial-gradient(
-      ellipse 70% 52% at 92% 6%,
-      rgba(168, 184, 208, .42),
+      ellipse 68% 52% at 94% 8%,
+      rgba(134, 158, 192, .56),
       transparent 58%
     ),
     radial-gradient(
-      ellipse 88% 62% at 78% 92%,
-      rgba(148, 158, 176, .36),
+      ellipse 50% 40% at 32% 48%,
+      rgba(104, 128, 162, .46),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 54% 44% at 84% 46%,
+      rgba(94, 118, 152, .50),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 82% 60% at 72% 92%,
+      rgba(102, 124, 156, .56),
       transparent 64%
     ),
     radial-gradient(
-      ellipse 58% 48% at 24% 78%,
-      rgba(198, 186, 172, .30),
-      transparent 56%
+      ellipse 54% 44% at 22% 80%,
+      rgba(142, 156, 182, .42),
+      transparent 58%
     ),
     radial-gradient(
-      ellipse 42% 36% at 52% 42%,
-      rgba(255, 255, 255, .55),
-      transparent 70%
+      ellipse 38% 32% at 62% 28%,
+      rgba(220, 229, 242, .52),
+      transparent 72%
     ),
     linear-gradient(
       150deg,
-      #dfe5ee 0%,
-      #eef1f5 46%,
-      #e4e8ef 100%
+      #c9d4e4 0%,
+      #e9eef5 46%,
+      #ced9e8 100%
     );
 
   background-attachment: fixed;
@@ -2158,38 +2169,50 @@ body.modal-open {
 }
 
 [data-theme="dark"] body {
-  /* Charcoal base + visible lighter/darker soft forms (no teal green wash). */
+  /* Charcoal base + visible lighter/darker soft forms (no teal green wash).
+     Lighter neutral/blue-gray forms sit above deeper pools under the composer
+     band and notes column so the dark glass keeps clear transmitted structure. */
   background:
     radial-gradient(
-      ellipse 76% 56% at 12% 10%,
-      rgba(255, 255, 255, .12),
+      ellipse 72% 54% at 10% 12%,
+      rgba(255, 255, 255, .22),
       transparent 58%
     ),
     radial-gradient(
-      ellipse 68% 50% at 94% 14%,
-      rgba(170, 184, 204, .14),
+      ellipse 64% 48% at 92% 10%,
+      rgba(176, 192, 216, .28),
       transparent 56%
     ),
     radial-gradient(
-      ellipse 86% 60% at 72% 92%,
-      rgba(255, 255, 255, .08),
+      ellipse 54% 42% at 84% 46%,
+      rgba(158, 176, 204, .26),
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 80% 58% at 70% 94%,
+      rgba(215, 225, 240, .16),
       transparent 62%
     ),
     radial-gradient(
-      ellipse 52% 42% at 28% 72%,
-      rgba(0, 0, 0, .42),
-      transparent 56%
+      ellipse 44% 36% at 38% 58%,
+      rgba(0, 0, 0, .60),
+      transparent 58%
     ),
     radial-gradient(
-      ellipse 40% 34% at 48% 40%,
-      rgba(70, 78, 90, .28),
-      transparent 68%
+      ellipse 48% 42% at 84% 74%,
+      rgba(0, 0, 0, .50),
+      transparent 62%
+    ),
+    radial-gradient(
+      ellipse 38% 34% at 50% 38%,
+      rgba(86, 98, 118, .42),
+      transparent 66%
     ),
     linear-gradient(
       155deg,
-      #07090c 0%,
-      #12161a 48%,
-      #1a1f26 100%
+      #030507 0%,
+      #0b0f14 46%,
+      #1a212a 100%
     );
 
   color: var(--ink);
@@ -2325,7 +2348,6 @@ body.modal-open {
   background: none;
 }
 
-[data-theme="dark"] .composer-toggle,
 [data-theme="dark"] .admin-toggle,
 [data-theme="dark"] .map-reset,
 [data-theme="dark"] .location-button,
@@ -2336,7 +2358,19 @@ body.modal-open {
   color: #9fe0d2;
 }
 
-[data-theme="dark"] .composer-toggle:hover,
+/* The composer toggle is transparent chrome inside the outer composer
+   glass. It must not paint its own wash in either theme. */
+[data-theme="dark"] .composer-toggle {
+  border-color: rgba(90, 190, 172, .30);
+  background: transparent;
+
+  color: #9fe0d2;
+}
+
+[data-theme="dark"] .composer-toggle:hover {
+  background: rgba(90, 190, 172, .10);
+}
+
 [data-theme="dark"] .admin-toggle:hover,
 [data-theme="dark"] .map-reset:hover,
 [data-theme="dark"] .location-button:hover {
@@ -3085,23 +3119,23 @@ body.modal-open {
 
   pointer-events: none;
 
-  opacity: calc(.55 * var(--lg-tint-scale));
+  opacity: calc(.18 * var(--lg-tint-scale));
 
   background:
     radial-gradient(
       ellipse at 10% 0%,
-      rgba(255, 255, 255, .30),
+      rgba(255, 255, 255, .12),
       transparent 55%
     ),
     radial-gradient(
       ellipse at 0% 100%,
-      rgba(255, 255, 255, .08),
+      rgba(255, 255, 255, .03),
       transparent 60%
     );
 
   box-shadow:
-    inset 1px 1px 1px rgba(255, 255, 255, .28),
-    inset -1px -1px 1px rgba(255, 255, 255, .08);
+    inset 1px 1px 1px rgba(255, 255, 255, .12),
+    inset -1px -1px 1px rgba(255, 255, 255, .03);
 }
 
 [data-theme="dark"] [data-glass]:not(.admin-toggle)::before,
