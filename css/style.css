@@ -75,6 +75,9 @@
   --lg-ink-strong: rgba(0, 0, 0, .86);
   --lg-ink-muted: rgba(60, 60, 67, .70);
 
+  /* SPEC: dark ink multiplies into light glass; dark glass adds light ink. */
+  --lg-ink-blend: multiply;
+
   --lg-row-hover: rgba(255, 255, 255, .42);
   --lg-row-selected: rgba(255, 255, 255, .76);
 }
@@ -462,8 +465,8 @@ input[type=file] {
   border: 1px solid rgba(42, 120, 113, .35);
   border-radius: 14px;
 
-  /* 背景保持半透明蓝绿色 */
-  background: var(--teal-soft);
+  /* 主按钮是实色，不做玻璃 */
+  background: #2a9d8f;
 
   /*
    * 这里改的是“发布”文字颜色
@@ -486,9 +489,6 @@ input[type=file] {
   box-shadow:
     0 6px 16px rgba(42, 120, 113, .16);
 
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-
   transition:
     background .2s ease,
     border-color .2s ease,
@@ -498,7 +498,7 @@ input[type=file] {
 }
 
 .primary-button:hover:not(:disabled) {
-  background: var(--teal-hover);
+  background: #31a99b;
 
   border-color: rgba(42, 120, 113, .48);
 
@@ -513,7 +513,7 @@ input[type=file] {
 }
 
 .primary-button:active:not(:disabled) {
-  background: var(--teal-active);
+  background: #24867a;
 
 
   transform: translateY(0);
@@ -595,8 +595,6 @@ button:disabled {
 
 .admin-toggle:hover {
   color: var(--ink);
-
-  background: rgba(255, 253, 248, .95);
 
   border-color: rgba(24, 52, 62, .22);
 }
@@ -847,7 +845,7 @@ button:disabled {
 }
 
 .lightbox-close:hover {
-  background: rgba(255, 255, 255, .22);
+  background-color: var(--lg-surface);
 
   transform: scale(1.04);
 }
@@ -1132,7 +1130,7 @@ textarea:focus-visible {
   padding: 9px 16px;
   border: 1px solid rgba(42, 120, 113, .32);
   border-radius: 11px;
-  background: var(--teal-soft);
+  background: #2a9d8f;
   color: #124f4a;
   cursor: pointer;
   font: inherit;
@@ -1141,7 +1139,7 @@ textarea:focus-visible {
 }
 
 .comment-submit:hover:not(:disabled) {
-  background: var(--teal-hover);
+  background: #31a99b;
 }
 
 .comment-submit:disabled {
@@ -1167,8 +1165,6 @@ textarea:focus-visible {
   border: 1px dashed rgba(42, 120, 113, .45);
   border-radius: 999px;
 
-  background: rgba(255, 255, 255, .55);
-
   color: #14776e;
 
   cursor: pointer;
@@ -1184,8 +1180,6 @@ textarea:focus-visible {
 }
 
 .composer-toggle:hover {
-  background: rgba(42, 157, 143, .10);
-
   border-color: rgba(42, 120, 113, .62);
 }
 
@@ -1457,7 +1451,7 @@ textarea:focus-visible {
 }
 
 .map-reset:hover {
-  background: #fff;
+  background-color: var(--lg-surface);
 }
 
 .map-canvas {
@@ -1617,7 +1611,7 @@ textarea:focus-visible {
   border-right: 1px solid rgba(105, 145, 150, .25);
   border-bottom: 1px solid rgba(105, 145, 150, .25);
 
-  background: rgba(255, 253, 248, .97);
+  background: var(--lg-surface);
 }
 
 .map-popup-title {
@@ -2284,7 +2278,7 @@ body.modal-open {
 }
 
 .theme-toggle:hover {
-  background: #fff;
+  background-color: var(--lg-surface);
 }
 
 [data-theme="dark"] {
@@ -2292,7 +2286,7 @@ body.modal-open {
 
   --ink: #e6efea;
   --muted: #8ea5a2;
-  --paper: #0f1b20;
+  --paper: #12161a;
   --line: rgba(170, 205, 200, .16);
 
   --shadow:
@@ -2326,6 +2320,7 @@ body.modal-open {
     0 6px 24px rgba(0, 0, 0, .35);
   --lg-ink-strong: rgba(255, 255, 255, .94);
   --lg-ink-muted: rgba(235, 235, 245, .64);
+  --lg-ink-blend: plus-lighter;
   --lg-row-hover: rgba(255, 255, 255, .12);
   --lg-row-selected: rgba(255, 255, 255, .22);
 }
@@ -2351,6 +2346,7 @@ body.modal-open {
     0 6px 24px rgba(0, 0, 0, .25);
   --lg-ink-strong: rgba(255, 255, 255, .94);
   --lg-ink-muted: rgba(235, 235, 245, .64);
+  --lg-ink-blend: plus-lighter;
   --lg-row-hover: rgba(255, 255, 255, .14);
   --lg-row-selected: rgba(255, 255, 255, .24);
 }
@@ -2379,23 +2375,19 @@ body.modal-open {
 }
 
 [data-theme="dark"] body {
+  /* Neutral ink/charcoal paper: no teal or green chroma bleeding into glass. */
   background:
-    radial-gradient(circle at 16% 0%, rgba(44, 98, 92, .40), transparent 44%),
-    radial-gradient(circle at 100% 10%, rgba(118, 72, 54, .26), transparent 42%),
-    linear-gradient(155deg, #0a1317 0%, #101d22 55%, #141a1d 100%);
+    radial-gradient(circle at 16% 0%, rgba(255, 255, 255, .05), transparent 44%),
+    radial-gradient(circle at 100% 10%, rgba(205, 212, 220, .04), transparent 42%),
+    linear-gradient(155deg, #0a0e10 0%, #12161a 55%, #161a1e 100%);
 
   color: var(--ink);
 }
 
 [data-theme="dark"] .theme-toggle {
   border-color: rgba(170, 205, 200, .22);
-  background: rgba(255, 255, 255, .08);
 
   color: #9fe0d2;
-}
-
-[data-theme="dark"] .theme-toggle:hover {
-  background: rgba(255, 255, 255, .14);
 }
 
 [data-theme="dark"] .note-card,
@@ -2403,13 +2395,7 @@ body.modal-open {
 [data-theme="dark"] .admin-panel,
 [data-theme="dark"] .composer,
 [data-theme="dark"] .composer-toggle {
-  background: rgba(255, 255, 255, .045);
   border-color: rgba(170, 205, 200, .14);
-}
-
-[data-theme="dark"] .note-card:hover,
-[data-theme="dark"] .note-card:focus-within {
-  background: rgba(255, 255, 255, .065);
 }
 
 [data-theme="dark"] .note-content,
@@ -2432,7 +2418,6 @@ body.modal-open {
 
 [data-theme="dark"] .comment-item {
   border-color: rgba(170, 205, 200, .12);
-  background: rgba(255, 255, 255, .035);
 }
 
 [data-theme="dark"] .comment-toggle,
@@ -2474,24 +2459,22 @@ body.modal-open {
 }
 
 [data-theme="dark"] .world-land {
-  fill: rgba(140, 210, 196, .24);
-  stroke: rgba(140, 210, 196, .26);
+  fill: rgba(196, 206, 216, .18);
+  stroke: rgba(206, 216, 226, .22);
 }
 
 [data-theme="dark"] .map-pin-dot {
-  stroke: #101d22;
+  stroke: #12161a;
 }
 
 [data-theme="dark"] .map-popup {
   border-color: rgba(170, 205, 200, .18);
-  background: #16262b;
 
   color: var(--ink);
 }
 
 [data-theme="dark"] .modal-panel {
   border-color: rgba(170, 205, 200, .16);
-  background: #14232a;
 
   color: var(--ink);
 }
@@ -2506,7 +2489,6 @@ body.modal-open {
 }
 
 [data-theme="dark"] .toast {
-  background: rgba(24, 40, 46, .95);
   color: var(--ink);
 }
 
@@ -2523,16 +2505,8 @@ body.modal-open {
 [data-theme="dark"] .location-button,
 [data-theme="dark"] .location-chip {
   border-color: rgba(90, 190, 172, .30);
-  background: rgba(255, 255, 255, .06);
 
   color: #9fe0d2;
-}
-
-[data-theme="dark"] .composer-toggle:hover,
-[data-theme="dark"] .admin-toggle:hover,
-[data-theme="dark"] .map-reset:hover,
-[data-theme="dark"] .location-button:hover {
-  background: rgba(90, 190, 172, .16);
 }
 
 [data-theme="dark"] .primary-button,
@@ -2577,7 +2551,7 @@ body.modal-open {
 
 [data-theme="dark"] .map-popup::after,
 [data-theme="dark"] .map-popup.is-below::after {
-  background: #16262b;
+  background: var(--lg-surface);
   border-color: rgba(170, 205, 200, .18);
 }
 /* =========================
@@ -2716,7 +2690,6 @@ body.modal-open {
 
   [data-theme="dark"] .map-close {
     border-color: rgba(170, 205, 200, .24);
-    background: rgba(255, 255, 255, .12);
 
     color: #9fe0d2;
   }
@@ -2752,7 +2725,7 @@ body.modal-open {
   }
 
   [data-theme="dark"] .map-section .map-canvas {
-    background: rgba(10, 22, 26, .72);
+    background: rgba(12, 16, 20, .72);
   }
 
   /* 全览按钮挪到关闭按钮下方，避免叠在一起 */
@@ -2828,7 +2801,6 @@ body.modal-open {
 
   [data-theme="dark"] .map-toggle {
     border-color: rgba(170, 205, 200, .20);
-    background: rgba(255, 255, 255, .08);
 
     color: #9fe0d2;
   }
@@ -3124,6 +3096,33 @@ body.modal-open {
   box-shadow: var(--lg-edge);
 }
 
+/* Re-assert the material on known legacy hover/fill targets so no earlier
+   cream or solid rule can cover the glass. background-color keeps the
+   admin chip's tint-scaled inner-light gradient intact. */
+:root .theme-toggle[data-glass]:hover,
+:root .admin-toggle[data-glass]:hover,
+:root .map-reset[data-glass]:hover,
+:root .composer-toggle[data-glass],
+:root .composer-toggle[data-glass]:hover,
+:root .location-button[data-glass],
+:root .location-button[data-glass]:hover,
+:root .location-chip[data-glass],
+:root .lightbox-close[data-glass]:hover {
+  background-color: var(--lg-surface);
+}
+
+/* Dark theme: the dark material always wins over legacy component fills. */
+[data-theme="dark"] [data-glass],
+[data-theme="dark"] [data-glass]:hover,
+[data-theme="dark"] [data-glass]:focus-within {
+  background-color: var(--lg-surface);
+}
+
+[data-theme="dark"] .map-popup[data-glass]::after,
+[data-theme="dark"] .map-popup[data-glass].is-below::after {
+  background: var(--lg-surface);
+}
+
 /* Keep the note-card's existing motion, but not the old shadow lift. */
 :root .note-card[data-glass] {
   transition:
@@ -3220,6 +3219,31 @@ body.modal-open {
 
 [data-glass][data-glass-ink="light"] .comments {
   border-top-color: rgba(255, 255, 255, .16);
+}
+
+/* SPEC ink blend: dark ink multiplies into light glass, light ink adds into
+   dark glass. Only content descendants blend; inputs, accent/danger buttons,
+   images and scrims keep normal compositing. Bare-text glass hosts (status
+   card, toast, chip labels without an inner span) are skipped so the host's
+   frosted tint is never blended. */
+:root [data-glass] .note-meta,
+:root [data-glass] .note-content,
+:root [data-glass] .note-location,
+:root [data-glass] .comment-meta,
+:root [data-glass] .comment-text,
+:root [data-glass] .section-heading h2,
+:root [data-glass] .notes-heading h2,
+:root [data-glass] .modal-head h2,
+:root [data-glass] .location-label,
+:root [data-glass] .location-hint,
+:root [data-glass] .location-result strong,
+:root [data-glass] .location-result span,
+:root [data-glass] .map-popup-title,
+:root [data-glass] .map-popup-item-head,
+:root [data-glass] .map-popup-item-text,
+:root [data-glass] .composer-toggle-label,
+:root [data-glass] .theme-toggle > span {
+  mix-blend-mode: var(--lg-ink-blend);
 }
 
 /* The popup arrow is part of the same material. */
