@@ -41,22 +41,40 @@ body {
   min-width: 320px;
   margin: 0;
 
+  /* Soft high-luminance-contrast scene so blur(2px) + rim lens have structure
+     to reveal. Cool paper base + deeper cool / blue-gray / warm-gray forms.
+     No muddy cream, no dirty teal/sage. */
   background:
     radial-gradient(
-      circle at 20% 0%,
-      rgba(255, 255, 255, .70),
-      transparent 34%
+      ellipse 78% 58% at 10% 16%,
+      rgba(132, 156, 188, .48),
+      transparent 62%
     ),
     radial-gradient(
-      circle at 100% 20%,
-      rgba(220, 228, 236, .28),
-      transparent 32%
+      ellipse 70% 52% at 92% 6%,
+      rgba(168, 184, 208, .42),
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 88% 62% at 78% 92%,
+      rgba(148, 158, 176, .36),
+      transparent 64%
+    ),
+    radial-gradient(
+      ellipse 58% 48% at 24% 78%,
+      rgba(198, 186, 172, .30),
+      transparent 56%
+    ),
+    radial-gradient(
+      ellipse 42% 36% at 52% 42%,
+      rgba(255, 255, 255, .55),
+      transparent 70%
     ),
     linear-gradient(
       150deg,
-      #f4f6f8 0%,
-      #f7f8fa 58%,
-      #f5f6f8 100%
+      #dfe5ee 0%,
+      #eef1f5 46%,
+      #e4e8ef 100%
     );
 
   background-attachment: fixed;
@@ -135,7 +153,8 @@ button {
 .card,
 .status-card,
 .admin-panel {
-  background: rgba(255, 253, 248, .78);
+  /* Legacy cream fill stripped; [data-glass] supplies --lg-surface. */
+  background: transparent;
 
   border: 1px solid rgba(105, 145, 150, .20);
 
@@ -143,8 +162,8 @@ button {
 
   box-shadow: var(--shadow);
 
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 
@@ -158,7 +177,8 @@ button {
   margin-top: 12px;
   padding: 10px;
 
-  background: rgba(255, 255, 255, .78);
+  /* Legacy white fill stripped; [data-glass] supplies --lg-surface. */
+  background: transparent;
 
   border: 1px solid rgba(105, 145, 150, .28);
 
@@ -168,8 +188,8 @@ button {
     0 10px 30px rgba(35, 75, 82, .09),
     0 2px 8px rgba(35, 75, 82, .05);
 
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .composer.is-open {
@@ -452,7 +472,7 @@ button:disabled {
   border: 1px solid rgba(24, 52, 62, .15);
   border-radius: 999px;
 
-  background: rgba(255, 253, 248, .72);
+  background: transparent; /* glass owns fill */
 
   color: var(--muted);
 
@@ -470,7 +490,7 @@ button:disabled {
 .admin-toggle:hover {
   color: var(--ink);
 
-  background: rgba(255, 253, 248, .95);
+  background: transparent; /* glass owns fill; hover boosts tint */
 
   border-color: rgba(24, 52, 62, .22);
 }
@@ -537,7 +557,8 @@ button:disabled {
 .note-card {
   padding: 20px;
 
-  background: rgba(255, 255, 255, .74);
+  /* Legacy white fill stripped; [data-glass] supplies --lg-surface. */
+  background: transparent;
 
   border: 1px solid rgba(105, 145, 150, .22);
 
@@ -545,8 +566,8 @@ button:disabled {
 
   box-shadow: var(--shadow);
 
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 
   transition:
     transform .2s ease,
@@ -884,7 +905,7 @@ textarea:focus-visible {
   padding: 10px 12px;
   border: 1px solid rgba(105, 145, 150, .18);
   border-radius: 12px;
-  background: rgba(255, 255, 255, .62);
+  background: transparent; /* glass owns fill */
 }
 
 .comment-meta {
@@ -1028,7 +1049,7 @@ textarea:focus-visible {
   border: 1px dashed rgba(42, 120, 113, .45);
   border-radius: 999px;
 
-  background: rgba(255, 255, 255, .55);
+  background: transparent; /* glass owns fill */
 
   color: #14776e;
 
@@ -1218,7 +1239,7 @@ textarea:focus-visible {
 
   border-radius: 999px;
 
-  background: rgba(24, 52, 62, .92);
+  background: transparent; /* glass owns fill */
 
   color: #fff;
 
@@ -1430,7 +1451,7 @@ textarea:focus-visible {
   border: 1px solid rgba(105, 145, 150, .25);
   border-radius: 14px;
 
-  background: rgba(255, 253, 248, .97);
+  background: transparent; /* glass owns fill */
 
   box-shadow: 0 14px 30px rgba(35, 75, 82, .16);
 }
@@ -1467,7 +1488,7 @@ textarea:focus-visible {
   border-right: 1px solid rgba(105, 145, 150, .25);
   border-bottom: 1px solid rgba(105, 145, 150, .25);
 
-  background: rgba(255, 253, 248, .97);
+  background: transparent; /* glass owns fill via --lg-surface */
 }
 
 .map-popup-title {
@@ -1608,7 +1629,7 @@ textarea:focus-visible {
   border: 1px dashed rgba(42, 120, 113, .45);
   border-radius: 999px;
 
-  background: rgba(255, 255, 255, .55);
+  background: transparent; /* glass owns fill */
 
   color: #14776e;
 
@@ -1683,7 +1704,7 @@ body.modal-open {
 
   border-radius: 22px;
 
-  background: var(--paper);
+  background: transparent; /* glass owns fill */
 
   box-shadow: 0 24px 60px rgba(12, 25, 29, .30);
 }
@@ -2097,7 +2118,7 @@ body.modal-open {
   border: 1px solid rgba(105, 145, 150, .28);
   border-radius: 50%;
 
-  background: rgba(255, 253, 248, .82);
+  background: transparent; /* glass owns fill */
 
   color: #14776e;
 
@@ -2108,12 +2129,12 @@ body.modal-open {
 
   box-shadow: 0 6px 18px rgba(35, 75, 82, .12);
 
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .theme-toggle:hover {
-  background: #fff;
+  background: transparent; /* glass hover tint */
 }
 
 [data-theme="dark"] {
@@ -2137,23 +2158,52 @@ body.modal-open {
 }
 
 [data-theme="dark"] body {
+  /* Charcoal base + visible lighter/darker soft forms (no teal green wash). */
   background:
-    radial-gradient(circle at 16% 0%, rgba(255, 255, 255, .05), transparent 44%),
-    radial-gradient(circle at 100% 10%, rgba(205, 212, 220, .04), transparent 42%),
-    linear-gradient(155deg, #0a0e10 0%, #12161a 55%, #161a1e 100%);
+    radial-gradient(
+      ellipse 76% 56% at 12% 10%,
+      rgba(255, 255, 255, .12),
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 68% 50% at 94% 14%,
+      rgba(170, 184, 204, .14),
+      transparent 56%
+    ),
+    radial-gradient(
+      ellipse 86% 60% at 72% 92%,
+      rgba(255, 255, 255, .08),
+      transparent 62%
+    ),
+    radial-gradient(
+      ellipse 52% 42% at 28% 72%,
+      rgba(0, 0, 0, .42),
+      transparent 56%
+    ),
+    radial-gradient(
+      ellipse 40% 34% at 48% 40%,
+      rgba(70, 78, 90, .28),
+      transparent 68%
+    ),
+    linear-gradient(
+      155deg,
+      #07090c 0%,
+      #12161a 48%,
+      #1a1f26 100%
+    );
 
   color: var(--ink);
 }
 
 [data-theme="dark"] .theme-toggle {
   border-color: rgba(170, 205, 200, .22);
-  background: rgba(255, 255, 255, .08);
+  background: transparent; /* glass owns fill */
 
   color: #9fe0d2;
 }
 
 [data-theme="dark"] .theme-toggle:hover {
-  background: rgba(255, 255, 255, .14);
+  background: transparent; /* glass hover tint */
 }
 
 [data-theme="dark"] .note-card,
@@ -2161,13 +2211,13 @@ body.modal-open {
 [data-theme="dark"] .admin-panel,
 [data-theme="dark"] .composer,
 [data-theme="dark"] .composer-toggle {
-  background: rgba(255, 255, 255, .045);
+  background: transparent;
   border-color: rgba(170, 205, 200, .14);
 }
 
 [data-theme="dark"] .note-card:hover,
 [data-theme="dark"] .note-card:focus-within {
-  background: rgba(255, 255, 255, .065);
+  background: transparent;
 }
 
 [data-theme="dark"] .note-content,
@@ -2190,7 +2240,7 @@ body.modal-open {
 
 [data-theme="dark"] .comment-item {
   border-color: rgba(170, 205, 200, .12);
-  background: rgba(255, 255, 255, .035);
+  background: transparent; /* glass owns fill */
 }
 
 [data-theme="dark"] .comment-toggle,
@@ -2242,14 +2292,14 @@ body.modal-open {
 
 [data-theme="dark"] .map-popup {
   border-color: rgba(170, 205, 200, .18);
-  background: #16262b;
+  background: transparent; /* glass owns fill */
 
   color: var(--ink);
 }
 
 [data-theme="dark"] .modal-panel {
   border-color: rgba(170, 205, 200, .16);
-  background: #14232a;
+  background: transparent; /* glass owns fill */
 
   color: var(--ink);
 }
@@ -2264,7 +2314,7 @@ body.modal-open {
 }
 
 [data-theme="dark"] .toast {
-  background: rgba(24, 40, 46, .95);
+  background: transparent; /* glass owns fill */
   color: var(--ink);
 }
 
@@ -2374,7 +2424,7 @@ body.modal-open {
     border-left: 0;
     border-radius: 0 14px 14px 0;
 
-    background: rgba(255, 253, 248, .92);
+    background: transparent; /* glass owns fill */
     color: #14776e;
 
     writing-mode: vertical-rl;
@@ -2388,8 +2438,8 @@ body.modal-open {
 
     box-shadow: 4px 0 18px rgba(35, 75, 82, .12);
 
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .map-scrim {
@@ -2458,7 +2508,7 @@ body.modal-open {
     border: 1px solid rgba(105, 145, 150, .28);
     border-radius: 50%;
 
-    background: rgba(255, 253, 248, .72);
+    background: transparent; /* glass owns fill */
     color: #14776e;
 
     font-size: 1.4rem;
@@ -2468,8 +2518,8 @@ body.modal-open {
 
     box-shadow: 0 4px 16px rgba(35, 75, 82, .16);
 
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   [data-theme="dark"] .map-close {
@@ -2989,10 +3039,11 @@ body.modal-open {
   backdrop-filter: var(--lg-backdrop) var(--lg-rim);
   -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 
-  isolation: isolate;
+  /* No isolation:isolate — keeps backdrop sampling the page scene and
+     avoids empty stacking behind a z-index:-1 specular layer. */
 
   transition:
-    background-color .35s ease,
+    background-color .12s ease,
     box-shadow .35s ease,
     color .35s ease,
     border-color .2s ease,
@@ -3019,7 +3070,10 @@ body.modal-open {
   position: relative;
 }
 
-/* Inner light: top-left specular sheet, faded by the user tint. */
+/* Inner light: soft top-left specular (SPEC). z-index:-1 is safe because
+   backdrop-filter already creates a stacking context, so the wash stays
+   under the tint without isolation:isolate. Opacity capped so light theme
+   does not read as a second opaque card. */
 :root [data-glass]:not(.admin-toggle)::before {
   content: '';
 
@@ -3031,7 +3085,7 @@ body.modal-open {
 
   pointer-events: none;
 
-  opacity: var(--lg-tint-scale);
+  opacity: calc(.55 * var(--lg-tint-scale));
 
   background:
     radial-gradient(
@@ -3046,8 +3100,8 @@ body.modal-open {
     );
 
   box-shadow:
-    inset 1px 1px 1px rgba(255, 255, 255, .35),
-    inset -1px -1px 1px rgba(255, 255, 255, .10);
+    inset 1px 1px 1px rgba(255, 255, 255, .28),
+    inset -1px -1px 1px rgba(255, 255, 255, .08);
 }
 
 [data-theme="dark"] [data-glass]:not(.admin-toggle)::before,
@@ -3109,7 +3163,7 @@ body.modal-open {
 :root .note-card[data-glass] {
   transition:
     transform .2s ease,
-    background-color .35s ease,
+    background-color .12s ease,
     box-shadow .35s ease,
     color .35s ease,
     border-color .2s ease,

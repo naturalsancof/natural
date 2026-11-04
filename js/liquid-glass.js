@@ -1063,25 +1063,31 @@ function getGradientCanvas(theme) {
   }
 
   if (theme === 'dark') {
-    // Mirrors [data-theme="dark"] body in style.css.
+    // Mirrors [data-theme="dark"] body in style.css (visible soft forms).
     paintLinear(context, width, height, 155, [
-      [0, [10, 14, 16]],
-      [0.55, [18, 22, 26]],
-      [1, [22, 26, 30]]
+      [0, [7, 9, 12]],
+      [0.48, [18, 22, 26]],
+      [1, [26, 31, 38]]
     ]);
 
-    paintRadial(context, width, height, 1, 0.10, 0.42, [205, 212, 220, 0.04]);
-    paintRadial(context, width, height, 0.16, 0, 0.44, [255, 255, 255, 0.05]);
+    paintRadial(context, width, height, 0.12, 0.10, 0.58, [255, 255, 255, 0.12]);
+    paintRadial(context, width, height, 0.94, 0.14, 0.56, [170, 184, 204, 0.14]);
+    paintRadial(context, width, height, 0.72, 0.92, 0.62, [255, 255, 255, 0.08]);
+    paintRadial(context, width, height, 0.28, 0.72, 0.56, [0, 0, 0, 0.42]);
+    paintRadial(context, width, height, 0.48, 0.40, 0.68, [70, 78, 90, 0.28]);
   } else {
-    // Mirrors body in style.css.
+    // Mirrors body in style.css (cool paper + luminance-step blobs).
     paintLinear(context, width, height, 150, [
-      [0, [244, 246, 248]],
-      [0.58, [247, 248, 250]],
-      [1, [245, 246, 248]]
+      [0, [223, 229, 238]],
+      [0.46, [238, 241, 245]],
+      [1, [228, 232, 239]]
     ]);
 
-    paintRadial(context, width, height, 1, 0.20, 0.32, [220, 228, 236, 0.28]);
-    paintRadial(context, width, height, 0.20, 0, 0.34, [255, 255, 255, 0.70]);
+    paintRadial(context, width, height, 0.10, 0.16, 0.62, [132, 156, 188, 0.48]);
+    paintRadial(context, width, height, 0.92, 0.06, 0.58, [168, 184, 208, 0.42]);
+    paintRadial(context, width, height, 0.78, 0.92, 0.64, [148, 158, 176, 0.36]);
+    paintRadial(context, width, height, 0.24, 0.78, 0.56, [198, 186, 172, 0.30]);
+    paintRadial(context, width, height, 0.52, 0.42, 0.70, [255, 255, 255, 0.55]);
   }
 
   const entry = {
