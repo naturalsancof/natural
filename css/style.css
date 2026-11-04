@@ -22,6 +22,122 @@
   --shadow-hover:
     0 16px 38px rgba(35, 75, 82, .12),
     0 3px 10px rgba(35, 75, 82, .06);
+
+
+  /* =========================
+     Liquid glass material tokens
+     =========================
+
+     One material, four declarations per surface:
+       background      -> --lg-surface
+       backdrop-filter -> --lg-backdrop + --lg-rim
+       box-shadow      -> --lg-edge
+       color           -> --lg-ink-strong / --lg-ink-muted
+
+     Numeric/color tokens are registered with @property so theme and tint
+     changes glide instead of snapping. JS sets --lg-density / --lg-chroma
+     per surface after sampling what sits behind it. */
+
+  --lg-density: .45;
+  --lg-chroma: .03;
+  --lg-tint-scale: 1;
+  --lg-tint-boost: 0;
+
+  --lg-tint-rgb: 255 255 255;
+  --lg-alpha-base: .06;
+  --lg-alpha-range: .16;
+  --lg-brightness-base: 1;
+  --lg-brightness-range: .06;
+  --lg-tint-alpha: calc(.06 + var(--lg-density) * .16);
+  --lg-surface: rgb(
+    var(--lg-tint-rgb) /
+    calc(var(--lg-tint-alpha) * var(--lg-tint-scale) * (1 + var(--lg-tint-boost)))
+  );
+
+  --lg-sat-base: 1.8;
+  --lg-sat: calc(var(--lg-sat-base) * max(.45, 1 - .75 * var(--lg-chroma)));
+
+  --lg-backdrop:
+    blur(2px)
+    saturate(var(--lg-sat))
+    brightness(calc(1 + .06 * var(--lg-tint-scale)));
+
+  --lg-edge:
+    inset 1.5px 1.5px 1px -1px rgba(255, 255, 255, .95),
+    inset -1.5px -1.5px 1px -1px rgba(255, 255, 255, .55),
+    inset 0 0 0 .5px rgba(255, 255, 255, .30),
+    0 0 0 .5px rgba(0, 0, 0, .06),
+    0 6px 24px rgba(0, 0, 0, .08);
+
+  /* Appended by js/liquid-glass.js only when the rim lens is safe. */
+  --lg-rim: ;
+
+  --lg-ink-strong: rgba(0, 0, 0, .86);
+  --lg-ink-muted: rgba(60, 60, 67, .70);
+
+  --lg-row-hover: rgba(255, 255, 255, .42);
+  --lg-row-selected: rgba(255, 255, 255, .76);
+}
+
+
+@property --lg-density {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: .45;
+}
+
+@property --lg-chroma {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: .03;
+}
+
+@property --lg-tint-scale {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --lg-tint-boost {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --lg-tint-alpha {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: .13;
+}
+
+@property --lg-sat {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1.8;
+}
+
+@property --lg-ink-strong {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(0, 0, 0, .86);
+}
+
+@property --lg-ink-muted {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(60, 60, 67, .70);
+}
+
+@property --lg-row-hover {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(255, 255, 255, .42);
+}
+
+@property --lg-row-selected {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(255, 255, 255, .76);
 }
 
 
@@ -135,16 +251,18 @@ button {
 .card,
 .status-card,
 .admin-panel {
-  background: rgba(255, 253, 248, .78);
+  background: var(--lg-surface);
 
   border: 1px solid rgba(105, 145, 150, .20);
 
   border-radius: 22px;
 
-  box-shadow: var(--shadow);
+  box-shadow: var(--lg-edge);
 
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  color: var(--lg-ink-strong);
+
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 }
 
 
@@ -158,18 +276,18 @@ button {
   margin-top: 12px;
   padding: 10px;
 
-  background: rgba(255, 255, 255, .78);
+  background: var(--lg-surface);
 
   border: 1px solid rgba(105, 145, 150, .28);
 
   border-radius: 24px;
 
-  box-shadow:
-    0 10px 30px rgba(35, 75, 82, .09),
-    0 2px 8px rgba(35, 75, 82, .05);
+  box-shadow: var(--lg-edge);
 
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  color: var(--lg-ink-strong);
+
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 }
 
 .composer.is-open {
@@ -455,14 +573,19 @@ button:disabled {
   border: 1px solid rgba(24, 52, 62, .15);
   border-radius: 999px;
 
-  background: rgba(255, 253, 248, .72);
+  background: var(--lg-surface);
 
-  color: var(--muted);
+  color: var(--lg-ink-muted);
 
   cursor: pointer;
 
   font: inherit;
   font-size: .82rem;
+
+  box-shadow: var(--lg-edge);
+
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 
   transition:
     background .2s ease,
@@ -540,21 +663,26 @@ button:disabled {
 .note-card {
   padding: 20px;
 
-  background: rgba(255, 255, 255, .74);
+  background: var(--lg-surface);
 
   border: 1px solid rgba(105, 145, 150, .22);
 
   border-radius: 20px;
 
-  box-shadow: var(--shadow);
+  box-shadow: var(--lg-edge);
 
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  color: var(--lg-ink-strong);
+
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 
   transition:
     transform .2s ease,
-    box-shadow .2s ease,
-    border-color .2s ease;
+    background-color .35s ease,
+    box-shadow .35s ease,
+    color .35s ease,
+    border-color .2s ease,
+    backdrop-filter .35s ease;
 }
 
 .note-card:hover {
@@ -699,7 +827,7 @@ button:disabled {
   border: 0;
   border-radius: 50%;
 
-  background: rgba(255, 255, 255, .14);
+  background: var(--lg-surface);
 
   color: #fff;
 
@@ -707,6 +835,11 @@ button:disabled {
 
   font-size: 30px;
   line-height: 1;
+
+  box-shadow: var(--lg-edge);
+
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 
   transition:
     background .2s ease,
@@ -887,7 +1020,10 @@ textarea:focus-visible {
   padding: 10px 12px;
   border: 1px solid rgba(105, 145, 150, .18);
   border-radius: 12px;
-  background: rgba(255, 255, 255, .62);
+  background: var(--lg-surface);
+  color: var(--lg-ink-strong);
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 }
 
 .comment-meta {
@@ -1221,14 +1357,17 @@ textarea:focus-visible {
 
   border-radius: 999px;
 
-  background: rgba(24, 52, 62, .92);
+  background: var(--lg-surface);
 
-  color: #fff;
+  color: var(--lg-ink-strong);
 
   font-size: .86rem;
   font-weight: 700;
 
-  box-shadow: 0 10px 30px rgba(12, 25, 29, .28);
+  box-shadow: var(--lg-edge);
+
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 }
 
 .toast[hidden] {
@@ -1297,7 +1436,7 @@ textarea:focus-visible {
   border: 1px solid rgba(42, 120, 113, .30);
   border-radius: 999px;
 
-  background: rgba(255, 253, 248, .88);
+  background: var(--lg-surface);
 
   color: #14776e;
 
@@ -1307,7 +1446,10 @@ textarea:focus-visible {
   font-size: .76rem;
   font-weight: 700;
 
-  box-shadow: 0 4px 12px rgba(35, 75, 82, .10);
+  box-shadow: var(--lg-edge);
+
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 }
 
 .map-reset[hidden] {
@@ -1433,9 +1575,14 @@ textarea:focus-visible {
   border: 1px solid rgba(105, 145, 150, .25);
   border-radius: 14px;
 
-  background: rgba(255, 253, 248, .97);
+  background: var(--lg-surface);
 
-  box-shadow: 0 14px 30px rgba(35, 75, 82, .16);
+  color: var(--lg-ink-strong);
+
+  box-shadow: var(--lg-edge);
+
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 }
 
 .map-popup[hidden] {
@@ -1611,7 +1758,7 @@ textarea:focus-visible {
   border: 1px dashed rgba(42, 120, 113, .45);
   border-radius: 999px;
 
-  background: rgba(255, 255, 255, .55);
+  background: var(--lg-surface);
 
   color: #14776e;
 
@@ -1620,6 +1767,11 @@ textarea:focus-visible {
   font: inherit;
   font-size: .86rem;
   font-weight: 700;
+
+  box-shadow: var(--lg-edge);
+
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 }
 
 .location-button:hover {
@@ -1633,12 +1785,17 @@ textarea:focus-visible {
 
   border-radius: 999px;
 
-  background: rgba(42, 157, 143, .12);
+  background: var(--lg-surface);
 
   color: #14776e;
 
   font-size: .8rem;
   font-weight: 700;
+
+  box-shadow: var(--lg-edge);
+
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 }
 
 .location-chip[hidden] {
@@ -1686,9 +1843,14 @@ body.modal-open {
 
   border-radius: 22px;
 
-  background: var(--paper);
+  background: var(--lg-surface);
 
-  box-shadow: 0 24px 60px rgba(12, 25, 29, .30);
+  color: var(--lg-ink-strong);
+
+  box-shadow: var(--lg-edge);
+
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 }
 
 .modal-head {
@@ -2100,7 +2262,7 @@ body.modal-open {
   border: 1px solid rgba(105, 145, 150, .28);
   border-radius: 50%;
 
-  background: rgba(255, 253, 248, .82);
+  background: var(--lg-surface);
 
   color: #14776e;
 
@@ -2109,10 +2271,16 @@ body.modal-open {
   font-size: 1rem;
   line-height: 1;
 
-  box-shadow: 0 6px 18px rgba(35, 75, 82, .12);
+  box-shadow: var(--lg-edge);
 
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+
+  transition:
+    background-color .35s ease,
+    color .35s ease,
+    box-shadow .35s ease,
+    backdrop-filter .35s ease;
 }
 
 .theme-toggle:hover {
@@ -2137,6 +2305,77 @@ body.modal-open {
 
   --teal-soft: rgba(58, 156, 143, .22);
   --teal-hover: rgba(70, 180, 165, .30);
+
+  /* Liquid glass: dark material (edge/inner at ~1/3 strength) */
+  --lg-tint-rgb: 20 20 24;
+  --lg-alpha-base: .16;
+  --lg-alpha-range: .22;
+  --lg-brightness-base: 1;
+  --lg-brightness-range: -.2;
+  --lg-tint-alpha: calc(.16 + var(--lg-density) * .22);
+  --lg-sat-base: 1.6;
+  --lg-backdrop:
+    blur(2px)
+    saturate(var(--lg-sat))
+    brightness(calc(1 - .2 * var(--lg-tint-scale)));
+  --lg-edge:
+    inset 1px 1px 1px -1px rgba(255, 255, 255, .32),
+    inset -1px -1px 1px -1px rgba(255, 255, 255, .18),
+    inset 0 0 0 .5px rgba(255, 255, 255, .10),
+    0 0 0 .5px rgba(0, 0, 0, .38),
+    0 6px 24px rgba(0, 0, 0, .35);
+  --lg-ink-strong: rgba(255, 255, 255, .94);
+  --lg-ink-muted: rgba(235, 235, 245, .64);
+  --lg-row-hover: rgba(255, 255, 255, .12);
+  --lg-row-selected: rgba(255, 255, 255, .22);
+}
+
+/* Light theme over a dark area (sampled / forced): light-text glass */
+[data-glass][data-glass-ink="light"] {
+  --lg-tint-rgb: 16 18 22;
+  --lg-alpha-base: .10;
+  --lg-alpha-range: .20;
+  --lg-brightness-base: 1;
+  --lg-brightness-range: -.15;
+  --lg-tint-alpha: calc(.10 + var(--lg-density) * .20);
+  --lg-sat-base: 1.7;
+  --lg-backdrop:
+    blur(2px)
+    saturate(var(--lg-sat))
+    brightness(calc(1 - .15 * var(--lg-tint-scale)));
+  --lg-edge:
+    inset 1.5px 1.5px 1px -1px rgba(255, 255, 255, .30),
+    inset -1.5px -1.5px 1px -1px rgba(255, 255, 255, .10),
+    inset 0 0 0 .5px rgba(255, 255, 255, .14),
+    0 0 0 .5px rgba(0, 0, 0, .28),
+    0 6px 24px rgba(0, 0, 0, .25);
+  --lg-ink-strong: rgba(255, 255, 255, .94);
+  --lg-ink-muted: rgba(235, 235, 245, .64);
+  --lg-row-hover: rgba(255, 255, 255, .14);
+  --lg-row-selected: rgba(255, 255, 255, .24);
+}
+
+/* Dark theme always uses the dark material, even on "light ink" surfaces. */
+[data-theme="dark"] [data-glass][data-glass-ink="light"] {
+  --lg-tint-rgb: 20 20 24;
+  --lg-alpha-base: .16;
+  --lg-alpha-range: .22;
+  --lg-brightness-base: 1;
+  --lg-brightness-range: -.2;
+  --lg-tint-alpha: calc(.16 + var(--lg-density) * .22);
+  --lg-sat-base: 1.6;
+  --lg-backdrop:
+    blur(2px)
+    saturate(var(--lg-sat))
+    brightness(calc(1 - .2 * var(--lg-tint-scale)));
+  --lg-edge:
+    inset 1px 1px 1px -1px rgba(255, 255, 255, .32),
+    inset -1px -1px 1px -1px rgba(255, 255, 255, .18),
+    inset 0 0 0 .5px rgba(255, 255, 255, .10),
+    0 0 0 .5px rgba(0, 0, 0, .38),
+    0 6px 24px rgba(0, 0, 0, .35);
+  --lg-row-hover: rgba(255, 255, 255, .12);
+  --lg-row-selected: rgba(255, 255, 255, .22);
 }
 
 [data-theme="dark"] body {
@@ -2377,7 +2616,7 @@ body.modal-open {
     border-left: 0;
     border-radius: 0 14px 14px 0;
 
-    background: rgba(255, 253, 248, .92);
+    background: var(--lg-surface);
     color: #14776e;
 
     writing-mode: vertical-rl;
@@ -2389,10 +2628,10 @@ body.modal-open {
 
     cursor: pointer;
 
-    box-shadow: 4px 0 18px rgba(35, 75, 82, .12);
+    box-shadow: var(--lg-edge);
 
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+    -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
   }
 
   .map-scrim {
@@ -2461,7 +2700,7 @@ body.modal-open {
     border: 1px solid rgba(105, 145, 150, .28);
     border-radius: 50%;
 
-    background: rgba(255, 253, 248, .72);
+    background: var(--lg-surface);
     color: #14776e;
 
     font-size: 1.4rem;
@@ -2469,10 +2708,10 @@ body.modal-open {
 
     cursor: pointer;
 
-    box-shadow: 0 4px 16px rgba(35, 75, 82, .16);
+    box-shadow: var(--lg-edge);
 
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+    -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
   }
 
   [data-theme="dark"] .map-close {
@@ -2723,4 +2962,439 @@ body.modal-open {
 
 .map-pin-count {
   font-size: 5px;
+}
+
+
+/* =========================
+   Liquid glass material
+   =========================
+
+   Every eligible surface opts in with [data-glass]. These declarations are
+   intentionally last so they win over the legacy per-component fills while
+   leaving border widths, radii, spacing and typography untouched.
+
+   The four material declarations:
+     background      -> --lg-surface (tint)
+     backdrop-filter -> --lg-backdrop (material) then --lg-rim (lens, last)
+     box-shadow      -> --lg-edge
+     color           -> --lg-ink-strong / --lg-ink-muted on text surfaces
+*/
+
+:root .liquid-glass,
+:root [data-glass] {
+  /* Resolve the material on the surface itself: --lg-density / --lg-chroma
+     are set per element by the sampler, so these must not be pre-computed
+     on :root (custom-property substitution would freeze :root's values). */
+  --lg-tint-alpha:
+    calc(var(--lg-alpha-base) + var(--lg-density) * var(--lg-alpha-range));
+  --lg-sat:
+    calc(var(--lg-sat-base) * max(.45, 1 - .75 * var(--lg-chroma)));
+  --lg-surface:
+    rgb(
+      var(--lg-tint-rgb) /
+      calc(
+        var(--lg-tint-alpha) *
+        var(--lg-tint-scale) *
+        (1 + var(--lg-tint-boost))
+      )
+    );
+  --lg-backdrop:
+    blur(2px)
+    saturate(var(--lg-sat))
+    brightness(
+      calc(
+        var(--lg-brightness-base) +
+        var(--lg-brightness-range) * var(--lg-tint-scale)
+      )
+    );
+
+  background: var(--lg-surface);
+
+  box-shadow: var(--lg-edge);
+
+  /* Expose the ink scale locally so children using --ink / --muted follow
+     the sampled surface, without hard-coding every descendant colour. */
+  --ink: var(--lg-ink-strong);
+  --muted: var(--lg-ink-muted);
+
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+
+  isolation: isolate;
+
+  transition:
+    background-color .35s ease,
+    box-shadow .35s ease,
+    color .35s ease,
+    backdrop-filter .35s ease;
+}
+
+/* --lg-rim is set inline per surface. Custom properties inherit by default,
+   so a nested glass surface would otherwise reuse its parent's filter id.
+   The inline lens declaration still wins over this reset. */
+:root [data-glass] * {
+  --lg-rim: ;
+}
+
+/* Static hosts that need a containing block for the inner-light layer.
+   Positioned (fixed/absolute) surfaces already provide one. */
+.card,
+.status-card,
+.admin-panel,
+.note-card,
+.comment-item,
+.composer-toggle,
+.modal-panel,
+.location-button,
+.location-chip {
+  position: relative;
+}
+
+/* Inner light: a soft top-left specular sheet that fades with the user tint.
+   z-index:-1 inside the isolated surface paints above the tint but below
+   text and controls, so contrast hierarchy is preserved. */
+:root [data-glass]:not(.admin-toggle)::before {
+  content: '';
+
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+
+  border-radius: inherit;
+
+  pointer-events: none;
+
+  opacity: var(--lg-tint-scale);
+
+  background:
+    radial-gradient(
+      ellipse at 10% 0%,
+      rgba(255, 255, 255, .30),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 0% 100%,
+      rgba(255, 255, 255, .08),
+      transparent 60%
+    );
+
+  box-shadow:
+    inset 1px 1px 1px rgba(255, 255, 255, .35),
+    inset -1px -1px 1px rgba(255, 255, 255, .10);
+}
+
+[data-theme="dark"] [data-glass]:not(.admin-toggle)::before,
+[data-glass][data-glass-ink="light"]:not(.admin-toggle)::before {
+  background:
+    radial-gradient(
+      ellipse at 10% 0%,
+      rgba(255, 255, 255, .11),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 0% 100%,
+      rgba(255, 255, 255, .04),
+      transparent 60%
+    );
+
+  box-shadow:
+    inset 1px 1px 1px rgba(255, 255, 255, .12),
+    inset -1px -1px 1px rgba(255, 255, 255, .04);
+}
+
+/* The admin chip already owns ::before for its login dot; get the same inner
+   light from a background layer that also follows the tint scale. */
+:root .admin-toggle[data-glass],
+:root .admin-toggle[data-glass]:hover {
+  background-image:
+    radial-gradient(
+      ellipse at 10% 0%,
+      rgb(255 255 255 / calc(.30 * var(--lg-tint-scale))),
+      transparent 55%
+    );
+}
+
+/* Hover: brighten (density up ~14%), never lift the edge shadow. */
+:root .liquid-glass:hover,
+:root [data-glass]:hover {
+  --lg-tint-boost: .14;
+
+  background-color: var(--lg-surface);
+
+  box-shadow: var(--lg-edge);
+}
+
+/* Keep the note-card's existing motion, but not the old shadow lift. */
+:root .note-card[data-glass] {
+  transition:
+    transform .2s ease,
+    background-color .35s ease,
+    box-shadow .35s ease,
+    color .35s ease,
+    border-color .2s ease,
+    backdrop-filter .35s ease;
+}
+
+/* Preserve the existing "new note" flash ring on top of the glass edge. */
+:root .note-card[data-glass].is-flash {
+  box-shadow:
+    0 0 0 3px rgba(42, 157, 143, .45),
+    var(--lg-edge);
+
+  transition: box-shadow .3s ease;
+}
+
+:root .status-card[data-glass] {
+  color: var(--lg-ink-muted);
+}
+
+/* Error surfaces keep their original reds. */
+:root .status-card[data-kind="error"][data-glass] {
+  color: #b42318;
+}
+
+[data-theme="dark"] .status-card[data-kind="error"][data-glass] {
+  color: #f3a39b;
+}
+
+/* Selected / hovered rows on glass are white light, never a grey wash. */
+:root [data-glass] .location-result:hover,
+:root [data-glass] .map-popup-item:hover {
+  background: var(--lg-row-hover);
+
+  box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .42);
+}
+
+:root [data-glass] .location-result[aria-selected="true"],
+:root [data-glass] .location-result[data-selected="true"],
+:root [data-glass] .map-popup-item[aria-selected="true"],
+:root [data-glass] .map-popup-item[data-selected="true"] {
+  background: var(--lg-row-selected);
+
+  box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .65);
+}
+
+/* Text that used to be hard-coded dark needs light ink when the sampler
+   puts a surface over a dark area. Teal accents brighten; error reds do not
+   change. Inputs stay solid, so they keep dark typing contrast. */
+[data-glass][data-glass-ink="light"] .note-content,
+[data-glass][data-glass-ink="light"] .note-card.is-text-only .note-content,
+[data-glass][data-glass-ink="light"] .comment-text {
+  color: rgba(255, 255, 255, .90);
+}
+
+[data-glass][data-glass-ink="light"] .note-card.is-text-only .note-content {
+  border-left-color: rgba(255, 255, 255, .30);
+}
+
+[data-glass][data-glass-ink="light"] .note-time,
+[data-glass][data-glass-ink="light"] .note-location,
+[data-glass][data-glass-ink="light"] .comment-time,
+[data-glass][data-glass-ink="light"] .comment-toggle,
+[data-glass][data-glass-ink="light"] .edit-location-button,
+[data-glass][data-glass-ink="light"] .location-hint,
+[data-glass][data-glass-ink="light"] .map-popup-title,
+[data-glass][data-glass-ink="light"] .map-popup-item-time,
+[data-glass][data-glass-ink="light"] .map-popup-item-text {
+  color: var(--lg-ink-muted);
+}
+
+[data-glass][data-glass-ink="light"] .section-heading h2,
+[data-glass][data-glass-ink="light"] .modal-head h2,
+[data-glass][data-glass-ink="light"] .notes-heading h2,
+[data-glass][data-glass-ink="light"] .location-label {
+  color: #9fe0d2;
+}
+
+[data-glass][data-glass-ink="light"] input,
+[data-glass][data-glass-ink="light"] textarea {
+  color: #18343e;
+}
+
+/* In dark mode the inputs inside a light-ink surface are dark translucent
+   controls, so they keep the theme ink instead of the light-theme dark ink. */
+[data-theme="dark"] [data-glass][data-glass-ink="light"] input,
+[data-theme="dark"] [data-glass][data-glass-ink="light"] textarea {
+  color: var(--ink);
+}
+
+[data-glass][data-glass-ink="light"] .comments {
+  border-top-color: rgba(255, 255, 255, .16);
+}
+
+/* The popup arrow is part of the same material. */
+:root .map-popup[data-glass]::after,
+:root .map-popup[data-glass].is-below::after {
+  background: var(--lg-surface);
+}
+
+/* Intentional map exception: no frosted fill, because it blotches the map.
+   Floating map controls above still opt into glass. */
+:root .map-card,
+[data-theme="dark"] .map-card {
+  background: transparent;
+
+  box-shadow: none;
+
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+:root .map-card::before {
+  display: none;
+}
+
+/* =========================
+   Glass tint control
+   ========================= */
+
+.glass-tint-control {
+  position: fixed;
+  top: 66px;
+  right: 18px;
+
+  z-index: 899;
+
+  /* Vertical keeps the control beside the theme toggle without covering the
+     centred hero title on narrow screens. */
+  width: 30px;
+  height: 86px;
+
+  display: grid;
+  place-items: center;
+  place-content: center;
+
+  padding: 9px 0;
+
+  border: 1px solid rgba(105, 145, 150, .28);
+  border-radius: 999px;
+
+  background: var(--lg-surface);
+
+  box-shadow: var(--lg-edge);
+
+  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+
+  isolation: isolate;
+}
+
+[data-theme="dark"] .glass-tint-control {
+  border-color: rgba(170, 205, 200, .22);
+}
+
+.glass-tint {
+  width: 68px;
+  height: 18px;
+
+  margin: 0;
+  padding: 0;
+
+  transform: rotate(-90deg);
+  transform-origin: center;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.glass-tint:focus {
+  background: transparent;
+  box-shadow: none;
+}
+
+.glass-tint::-webkit-slider-runnable-track {
+  height: 4px;
+
+  border-radius: 999px;
+
+  background: rgba(105, 145, 150, .28);
+}
+
+.glass-tint::-moz-range-track {
+  height: 4px;
+
+  border-radius: 999px;
+
+  background: rgba(105, 145, 150, .28);
+}
+
+.glass-tint::-webkit-slider-thumb {
+  width: 12px;
+  height: 12px;
+
+  margin-top: -4px;
+
+  appearance: none;
+  -webkit-appearance: none;
+
+  border: 1px solid rgba(42, 120, 113, .40);
+  border-radius: 50%;
+
+  background: #2a9d8f;
+}
+
+.glass-tint::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+
+  border: 1px solid rgba(42, 120, 113, .40);
+  border-radius: 50%;
+
+  background: #2a9d8f;
+}
+
+.glass-tint:focus-visible {
+  outline: 3px solid rgba(42, 157, 143, .20);
+  outline-offset: 2px;
+}
+
+[data-theme="dark"] .glass-tint::-webkit-slider-runnable-track,
+[data-theme="dark"] .glass-tint::-moz-range-track {
+  background: rgba(170, 205, 200, .26);
+}
+
+[data-theme="dark"] .glass-tint::-webkit-slider-thumb,
+[data-theme="dark"] .glass-tint::-moz-range-thumb {
+  border-color: rgba(140, 220, 205, .40);
+
+  background: #7fc0b4;
+}
+
+/* =========================
+   Accessibility: solid glass
+   ========================= */
+
+@media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+
+  :root .liquid-glass,
+  :root [data-glass],
+  :root [data-glass]:hover {
+    /* Opaque version of the same tint: no blur, no lens, no inner sheen. */
+    background-color: rgb(var(--lg-tint-rgb));
+
+    background-image: none;
+
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+
+    --lg-tint-boost: 0;
+    --lg-rim: ;
+  }
+
+  :root [data-glass]::before {
+    display: none;
+  }
+
+  :root .glass-tint-control {
+    background: rgb(var(--lg-tint-rgb));
+
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }

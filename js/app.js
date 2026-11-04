@@ -16,6 +16,7 @@ import {
 import { validateImage, uploadImage, compressImage } from './storage.js';
 import { createMap, clusterNotes } from './map.js';
 import { openLocationPicker } from './location-picker.js';
+import { initLiquidGlass } from './liquid-glass.js';
 
 const PAGE_SIZE = 10;
 
@@ -49,6 +50,11 @@ if (themeToggle) {
     }
   });
 }
+
+// Surface material only: attach glass, sample backgrounds, and restore the
+// per-theme tint. The helper observes the DOM so note/comment cards and map
+// popups created later opt in automatically.
+initLiquidGlass();
 
 const mapPanel = document.getElementById('map-panel');
 const mapToggle = document.getElementById('map-toggle');

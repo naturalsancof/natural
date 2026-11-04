@@ -104,12 +104,14 @@ export function createMap(host, options = {}) {
 
   const popup = document.createElement('div');
   popup.className = 'map-popup';
+  popup.dataset.glass = '';
   popup.hidden = true;
   host.appendChild(popup);
 
   const resetButton = document.createElement('button');
   resetButton.type = 'button';
   resetButton.className = 'map-reset';
+  resetButton.dataset.glass = '';
   resetButton.textContent = '全览';
   resetButton.hidden = true;
   resetButton.addEventListener('click', event => {
