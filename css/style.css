@@ -22,125 +22,6 @@
   --shadow-hover:
     0 16px 38px rgba(35, 75, 82, .12),
     0 3px 10px rgba(35, 75, 82, .06);
-
-
-  /* =========================
-     Liquid glass material tokens
-     =========================
-
-     One material, four declarations per surface:
-       background      -> --lg-surface
-       backdrop-filter -> --lg-backdrop + --lg-rim
-       box-shadow      -> --lg-edge
-       color           -> --lg-ink-strong / --lg-ink-muted
-
-     Numeric/color tokens are registered with @property so theme and tint
-     changes glide instead of snapping. JS sets --lg-density / --lg-chroma
-     per surface after sampling what sits behind it. */
-
-  --lg-density: .45;
-  --lg-chroma: .03;
-  --lg-tint-scale: 1;
-  --lg-tint-boost: 0;
-
-  --lg-tint-rgb: 255 255 255;
-  --lg-alpha-base: .06;
-  --lg-alpha-range: .16;
-  --lg-brightness-base: 1;
-  --lg-brightness-range: .06;
-  --lg-tint-alpha: calc(.06 + var(--lg-density) * .16);
-  --lg-surface: rgb(
-    var(--lg-tint-rgb) /
-    calc(var(--lg-tint-alpha) * var(--lg-tint-scale) * (1 + var(--lg-tint-boost)))
-  );
-
-  --lg-sat-base: 1.8;
-  --lg-sat: calc(var(--lg-sat-base) * max(.45, 1 - .75 * var(--lg-chroma)));
-
-  --lg-backdrop:
-    blur(2px)
-    saturate(var(--lg-sat))
-    brightness(calc(1 + .06 * var(--lg-tint-scale)));
-
-  --lg-edge:
-    inset 1.5px 1.5px 1px -1px rgba(255, 255, 255, .95),
-    inset -1.5px -1.5px 1px -1px rgba(255, 255, 255, .55),
-    inset 0 0 0 .5px rgba(255, 255, 255, .30),
-    0 0 0 .5px rgba(0, 0, 0, .06),
-    0 6px 24px rgba(0, 0, 0, .08);
-
-  /* Appended by js/liquid-glass.js only when the rim lens is safe. */
-  --lg-rim: ;
-
-  --lg-ink-strong: rgba(0, 0, 0, .86);
-  --lg-ink-muted: rgba(60, 60, 67, .70);
-
-  /* SPEC: dark ink multiplies into light glass; dark glass adds light ink. */
-  --lg-ink-blend: multiply;
-
-  --lg-row-hover: rgba(255, 255, 255, .42);
-  --lg-row-selected: rgba(255, 255, 255, .76);
-}
-
-
-@property --lg-density {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: .45;
-}
-
-@property --lg-chroma {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: .03;
-}
-
-@property --lg-tint-scale {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 1;
-}
-
-@property --lg-tint-boost {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 0;
-}
-
-@property --lg-tint-alpha {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: .13;
-}
-
-@property --lg-sat {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 1.8;
-}
-
-@property --lg-ink-strong {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: rgba(0, 0, 0, .86);
-}
-
-@property --lg-ink-muted {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: rgba(60, 60, 67, .70);
-}
-
-@property --lg-row-hover {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: rgba(255, 255, 255, .42);
-}
-
-@property --lg-row-selected {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: rgba(255, 255, 255, .76);
 }
 
 
@@ -163,19 +44,19 @@ body {
   background:
     radial-gradient(
       circle at 20% 0%,
-      rgba(255, 255, 255, .75),
+      rgba(255, 255, 255, .70),
       transparent 34%
     ),
     radial-gradient(
       circle at 100% 20%,
-      rgba(220, 242, 239, .55),
+      rgba(220, 228, 236, .28),
       transparent 32%
     ),
     linear-gradient(
       150deg,
-      #e8f5f3 0%,
-      #fdf4e6 58%,
-      #fae7df 100%
+      #f4f6f8 0%,
+      #f7f8fa 58%,
+      #f5f6f8 100%
     );
 
   background-attachment: fixed;
@@ -254,18 +135,16 @@ button {
 .card,
 .status-card,
 .admin-panel {
-  background: var(--lg-surface);
+  background: rgba(255, 253, 248, .78);
 
   border: 1px solid rgba(105, 145, 150, .20);
 
   border-radius: 22px;
 
-  box-shadow: var(--lg-edge);
+  box-shadow: var(--shadow);
 
-  color: var(--lg-ink-strong);
-
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 
@@ -279,18 +158,18 @@ button {
   margin-top: 12px;
   padding: 10px;
 
-  background: var(--lg-surface);
+  background: rgba(255, 255, 255, .78);
 
   border: 1px solid rgba(105, 145, 150, .28);
 
   border-radius: 24px;
 
-  box-shadow: var(--lg-edge);
+  box-shadow:
+    0 10px 30px rgba(35, 75, 82, .09),
+    0 2px 8px rgba(35, 75, 82, .05);
 
-  color: var(--lg-ink-strong);
-
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .composer.is-open {
@@ -465,8 +344,8 @@ input[type=file] {
   border: 1px solid rgba(42, 120, 113, .35);
   border-radius: 14px;
 
-  /* 主按钮是实色，不做玻璃 */
-  background: #2a9d8f;
+  /* 背景保持半透明蓝绿色 */
+  background: var(--teal-soft);
 
   /*
    * 这里改的是“发布”文字颜色
@@ -498,7 +377,7 @@ input[type=file] {
 }
 
 .primary-button:hover:not(:disabled) {
-  background: #31a99b;
+  background: var(--teal-hover);
 
   border-color: rgba(42, 120, 113, .48);
 
@@ -513,7 +392,7 @@ input[type=file] {
 }
 
 .primary-button:active:not(:disabled) {
-  background: #24867a;
+  background: var(--teal-active);
 
 
   transform: translateY(0);
@@ -573,19 +452,14 @@ button:disabled {
   border: 1px solid rgba(24, 52, 62, .15);
   border-radius: 999px;
 
-  background: var(--lg-surface);
+  background: rgba(255, 253, 248, .72);
 
-  color: var(--lg-ink-muted);
+  color: var(--muted);
 
   cursor: pointer;
 
   font: inherit;
   font-size: .82rem;
-
-  box-shadow: var(--lg-edge);
-
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 
   transition:
     background .2s ease,
@@ -595,6 +469,8 @@ button:disabled {
 
 .admin-toggle:hover {
   color: var(--ink);
+
+  background: rgba(255, 253, 248, .95);
 
   border-color: rgba(24, 52, 62, .22);
 }
@@ -661,26 +537,21 @@ button:disabled {
 .note-card {
   padding: 20px;
 
-  background: var(--lg-surface);
+  background: rgba(255, 255, 255, .74);
 
   border: 1px solid rgba(105, 145, 150, .22);
 
   border-radius: 20px;
 
-  box-shadow: var(--lg-edge);
+  box-shadow: var(--shadow);
 
-  color: var(--lg-ink-strong);
-
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 
   transition:
     transform .2s ease,
-    background-color .35s ease,
-    box-shadow .35s ease,
-    color .35s ease,
-    border-color .2s ease,
-    backdrop-filter .35s ease;
+    box-shadow .2s ease,
+    border-color .2s ease;
 }
 
 .note-card:hover {
@@ -825,7 +696,7 @@ button:disabled {
   border: 0;
   border-radius: 50%;
 
-  background: var(--lg-surface);
+  background: rgba(255, 255, 255, .14);
 
   color: #fff;
 
@@ -834,18 +705,13 @@ button:disabled {
   font-size: 30px;
   line-height: 1;
 
-  box-shadow: var(--lg-edge);
-
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-
   transition:
     background .2s ease,
     transform .2s ease;
 }
 
 .lightbox-close:hover {
-  background-color: var(--lg-surface);
+  background: rgba(255, 255, 255, .22);
 
   transform: scale(1.04);
 }
@@ -1018,10 +884,7 @@ textarea:focus-visible {
   padding: 10px 12px;
   border: 1px solid rgba(105, 145, 150, .18);
   border-radius: 12px;
-  background: var(--lg-surface);
-  color: var(--lg-ink-strong);
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  background: rgba(255, 255, 255, .62);
 }
 
 .comment-meta {
@@ -1130,7 +993,7 @@ textarea:focus-visible {
   padding: 9px 16px;
   border: 1px solid rgba(42, 120, 113, .32);
   border-radius: 11px;
-  background: #2a9d8f;
+  background: var(--teal-soft);
   color: #124f4a;
   cursor: pointer;
   font: inherit;
@@ -1139,7 +1002,7 @@ textarea:focus-visible {
 }
 
 .comment-submit:hover:not(:disabled) {
-  background: #31a99b;
+  background: var(--teal-hover);
 }
 
 .comment-submit:disabled {
@@ -1165,6 +1028,8 @@ textarea:focus-visible {
   border: 1px dashed rgba(42, 120, 113, .45);
   border-radius: 999px;
 
+  background: rgba(255, 255, 255, .55);
+
   color: #14776e;
 
   cursor: pointer;
@@ -1180,6 +1045,8 @@ textarea:focus-visible {
 }
 
 .composer-toggle:hover {
+  background: rgba(42, 157, 143, .10);
+
   border-color: rgba(42, 120, 113, .62);
 }
 
@@ -1351,17 +1218,14 @@ textarea:focus-visible {
 
   border-radius: 999px;
 
-  background: var(--lg-surface);
+  background: rgba(24, 52, 62, .92);
 
-  color: var(--lg-ink-strong);
+  color: #fff;
 
   font-size: .86rem;
   font-weight: 700;
 
-  box-shadow: var(--lg-edge);
-
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  box-shadow: 0 10px 30px rgba(12, 25, 29, .28);
 }
 
 .toast[hidden] {
@@ -1430,7 +1294,7 @@ textarea:focus-visible {
   border: 1px solid rgba(42, 120, 113, .30);
   border-radius: 999px;
 
-  background: var(--lg-surface);
+  background: rgba(255, 253, 248, .88);
 
   color: #14776e;
 
@@ -1440,10 +1304,7 @@ textarea:focus-visible {
   font-size: .76rem;
   font-weight: 700;
 
-  box-shadow: var(--lg-edge);
-
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  box-shadow: 0 4px 12px rgba(35, 75, 82, .10);
 }
 
 .map-reset[hidden] {
@@ -1451,7 +1312,7 @@ textarea:focus-visible {
 }
 
 .map-reset:hover {
-  background-color: var(--lg-surface);
+  background: #fff;
 }
 
 .map-canvas {
@@ -1477,8 +1338,8 @@ textarea:focus-visible {
 }
 
 .world-land {
-  fill: rgba(42, 120, 113, .26);
-  stroke: rgba(42, 120, 113, .38);
+  fill: rgba(90, 100, 112, .22);
+  stroke: rgba(90, 100, 112, .32);
   stroke-width: .5;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -1569,14 +1430,9 @@ textarea:focus-visible {
   border: 1px solid rgba(105, 145, 150, .25);
   border-radius: 14px;
 
-  background: var(--lg-surface);
+  background: rgba(255, 253, 248, .97);
 
-  color: var(--lg-ink-strong);
-
-  box-shadow: var(--lg-edge);
-
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  box-shadow: 0 14px 30px rgba(35, 75, 82, .16);
 }
 
 .map-popup[hidden] {
@@ -1611,7 +1467,7 @@ textarea:focus-visible {
   border-right: 1px solid rgba(105, 145, 150, .25);
   border-bottom: 1px solid rgba(105, 145, 150, .25);
 
-  background: var(--lg-surface);
+  background: rgba(255, 253, 248, .97);
 }
 
 .map-popup-title {
@@ -1752,7 +1608,7 @@ textarea:focus-visible {
   border: 1px dashed rgba(42, 120, 113, .45);
   border-radius: 999px;
 
-  background: var(--lg-surface);
+  background: rgba(255, 255, 255, .55);
 
   color: #14776e;
 
@@ -1761,11 +1617,6 @@ textarea:focus-visible {
   font: inherit;
   font-size: .86rem;
   font-weight: 700;
-
-  box-shadow: var(--lg-edge);
-
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 }
 
 .location-button:hover {
@@ -1779,17 +1630,12 @@ textarea:focus-visible {
 
   border-radius: 999px;
 
-  background: var(--lg-surface);
+  background: rgba(42, 157, 143, .12);
 
   color: #14776e;
 
   font-size: .8rem;
   font-weight: 700;
-
-  box-shadow: var(--lg-edge);
-
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
 }
 
 .location-chip[hidden] {
@@ -1837,14 +1683,9 @@ body.modal-open {
 
   border-radius: 22px;
 
-  background: var(--lg-surface);
+  background: var(--paper);
 
-  color: var(--lg-ink-strong);
-
-  box-shadow: var(--lg-edge);
-
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+  box-shadow: 0 24px 60px rgba(12, 25, 29, .30);
 }
 
 .modal-head {
@@ -2256,7 +2097,7 @@ body.modal-open {
   border: 1px solid rgba(105, 145, 150, .28);
   border-radius: 50%;
 
-  background: var(--lg-surface);
+  background: rgba(255, 253, 248, .82);
 
   color: #14776e;
 
@@ -2265,29 +2106,23 @@ body.modal-open {
   font-size: 1rem;
   line-height: 1;
 
-  box-shadow: var(--lg-edge);
+  box-shadow: 0 6px 18px rgba(35, 75, 82, .12);
 
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-
-  transition:
-    background-color .35s ease,
-    color .35s ease,
-    box-shadow .35s ease,
-    backdrop-filter .35s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .theme-toggle:hover {
-  background-color: var(--lg-surface);
+  background: #fff;
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --ink: #e6efea;
-  --muted: #8ea5a2;
+  --ink: #e7eaee;
+  --muted: #9aa3ab;
   --paper: #12161a;
-  --line: rgba(170, 205, 200, .16);
+  --line: rgba(190, 198, 206, .16);
 
   --shadow:
     0 14px 34px rgba(0, 0, 0, .45),
@@ -2299,83 +2134,9 @@ body.modal-open {
 
   --teal-soft: rgba(58, 156, 143, .22);
   --teal-hover: rgba(70, 180, 165, .30);
-
-  /* Liquid glass: dark material (edge/inner at ~1/3 strength) */
-  --lg-tint-rgb: 20 20 24;
-  --lg-alpha-base: .16;
-  --lg-alpha-range: .22;
-  --lg-brightness-base: 1;
-  --lg-brightness-range: -.2;
-  --lg-tint-alpha: calc(.16 + var(--lg-density) * .22);
-  --lg-sat-base: 1.6;
-  --lg-backdrop:
-    blur(2px)
-    saturate(var(--lg-sat))
-    brightness(calc(1 - .2 * var(--lg-tint-scale)));
-  --lg-edge:
-    inset 1px 1px 1px -1px rgba(255, 255, 255, .32),
-    inset -1px -1px 1px -1px rgba(255, 255, 255, .18),
-    inset 0 0 0 .5px rgba(255, 255, 255, .10),
-    0 0 0 .5px rgba(0, 0, 0, .38),
-    0 6px 24px rgba(0, 0, 0, .35);
-  --lg-ink-strong: rgba(255, 255, 255, .94);
-  --lg-ink-muted: rgba(235, 235, 245, .64);
-  --lg-ink-blend: plus-lighter;
-  --lg-row-hover: rgba(255, 255, 255, .12);
-  --lg-row-selected: rgba(255, 255, 255, .22);
-}
-
-/* Light theme over a dark area (sampled / forced): light-text glass */
-[data-glass][data-glass-ink="light"] {
-  --lg-tint-rgb: 16 18 22;
-  --lg-alpha-base: .10;
-  --lg-alpha-range: .20;
-  --lg-brightness-base: 1;
-  --lg-brightness-range: -.15;
-  --lg-tint-alpha: calc(.10 + var(--lg-density) * .20);
-  --lg-sat-base: 1.7;
-  --lg-backdrop:
-    blur(2px)
-    saturate(var(--lg-sat))
-    brightness(calc(1 - .15 * var(--lg-tint-scale)));
-  --lg-edge:
-    inset 1.5px 1.5px 1px -1px rgba(255, 255, 255, .30),
-    inset -1.5px -1.5px 1px -1px rgba(255, 255, 255, .10),
-    inset 0 0 0 .5px rgba(255, 255, 255, .14),
-    0 0 0 .5px rgba(0, 0, 0, .28),
-    0 6px 24px rgba(0, 0, 0, .25);
-  --lg-ink-strong: rgba(255, 255, 255, .94);
-  --lg-ink-muted: rgba(235, 235, 245, .64);
-  --lg-ink-blend: plus-lighter;
-  --lg-row-hover: rgba(255, 255, 255, .14);
-  --lg-row-selected: rgba(255, 255, 255, .24);
-}
-
-/* Dark theme always uses the dark material, even on "light ink" surfaces. */
-[data-theme="dark"] [data-glass][data-glass-ink="light"] {
-  --lg-tint-rgb: 20 20 24;
-  --lg-alpha-base: .16;
-  --lg-alpha-range: .22;
-  --lg-brightness-base: 1;
-  --lg-brightness-range: -.2;
-  --lg-tint-alpha: calc(.16 + var(--lg-density) * .22);
-  --lg-sat-base: 1.6;
-  --lg-backdrop:
-    blur(2px)
-    saturate(var(--lg-sat))
-    brightness(calc(1 - .2 * var(--lg-tint-scale)));
-  --lg-edge:
-    inset 1px 1px 1px -1px rgba(255, 255, 255, .32),
-    inset -1px -1px 1px -1px rgba(255, 255, 255, .18),
-    inset 0 0 0 .5px rgba(255, 255, 255, .10),
-    0 0 0 .5px rgba(0, 0, 0, .38),
-    0 6px 24px rgba(0, 0, 0, .35);
-  --lg-row-hover: rgba(255, 255, 255, .12);
-  --lg-row-selected: rgba(255, 255, 255, .22);
 }
 
 [data-theme="dark"] body {
-  /* Neutral ink/charcoal paper: no teal or green chroma bleeding into glass. */
   background:
     radial-gradient(circle at 16% 0%, rgba(255, 255, 255, .05), transparent 44%),
     radial-gradient(circle at 100% 10%, rgba(205, 212, 220, .04), transparent 42%),
@@ -2386,8 +2147,13 @@ body.modal-open {
 
 [data-theme="dark"] .theme-toggle {
   border-color: rgba(170, 205, 200, .22);
+  background: rgba(255, 255, 255, .08);
 
   color: #9fe0d2;
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+  background: rgba(255, 255, 255, .14);
 }
 
 [data-theme="dark"] .note-card,
@@ -2395,7 +2161,13 @@ body.modal-open {
 [data-theme="dark"] .admin-panel,
 [data-theme="dark"] .composer,
 [data-theme="dark"] .composer-toggle {
+  background: rgba(255, 255, 255, .045);
   border-color: rgba(170, 205, 200, .14);
+}
+
+[data-theme="dark"] .note-card:hover,
+[data-theme="dark"] .note-card:focus-within {
+  background: rgba(255, 255, 255, .065);
 }
 
 [data-theme="dark"] .note-content,
@@ -2418,6 +2190,7 @@ body.modal-open {
 
 [data-theme="dark"] .comment-item {
   border-color: rgba(170, 205, 200, .12);
+  background: rgba(255, 255, 255, .035);
 }
 
 [data-theme="dark"] .comment-toggle,
@@ -2460,21 +2233,23 @@ body.modal-open {
 
 [data-theme="dark"] .world-land {
   fill: rgba(196, 206, 216, .18);
-  stroke: rgba(206, 216, 226, .22);
+  stroke: rgba(196, 206, 216, .22);
 }
 
 [data-theme="dark"] .map-pin-dot {
-  stroke: #12161a;
+  stroke: #101d22;
 }
 
 [data-theme="dark"] .map-popup {
   border-color: rgba(170, 205, 200, .18);
+  background: #16262b;
 
   color: var(--ink);
 }
 
 [data-theme="dark"] .modal-panel {
   border-color: rgba(170, 205, 200, .16);
+  background: #14232a;
 
   color: var(--ink);
 }
@@ -2489,6 +2264,7 @@ body.modal-open {
 }
 
 [data-theme="dark"] .toast {
+  background: rgba(24, 40, 46, .95);
   color: var(--ink);
 }
 
@@ -2505,8 +2281,16 @@ body.modal-open {
 [data-theme="dark"] .location-button,
 [data-theme="dark"] .location-chip {
   border-color: rgba(90, 190, 172, .30);
+  background: rgba(255, 255, 255, .06);
 
   color: #9fe0d2;
+}
+
+[data-theme="dark"] .composer-toggle:hover,
+[data-theme="dark"] .admin-toggle:hover,
+[data-theme="dark"] .map-reset:hover,
+[data-theme="dark"] .location-button:hover {
+  background: rgba(90, 190, 172, .16);
 }
 
 [data-theme="dark"] .primary-button,
@@ -2551,7 +2335,7 @@ body.modal-open {
 
 [data-theme="dark"] .map-popup::after,
 [data-theme="dark"] .map-popup.is-below::after {
-  background: var(--lg-surface);
+  background: #16262b;
   border-color: rgba(170, 205, 200, .18);
 }
 /* =========================
@@ -2590,7 +2374,7 @@ body.modal-open {
     border-left: 0;
     border-radius: 0 14px 14px 0;
 
-    background: var(--lg-surface);
+    background: rgba(255, 253, 248, .92);
     color: #14776e;
 
     writing-mode: vertical-rl;
@@ -2602,10 +2386,10 @@ body.modal-open {
 
     cursor: pointer;
 
-    box-shadow: var(--lg-edge);
+    box-shadow: 4px 0 18px rgba(35, 75, 82, .12);
 
-    backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-    -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
 
   .map-scrim {
@@ -2674,7 +2458,7 @@ body.modal-open {
     border: 1px solid rgba(105, 145, 150, .28);
     border-radius: 50%;
 
-    background: var(--lg-surface);
+    background: rgba(255, 253, 248, .72);
     color: #14776e;
 
     font-size: 1.4rem;
@@ -2682,14 +2466,15 @@ body.modal-open {
 
     cursor: pointer;
 
-    box-shadow: var(--lg-edge);
+    box-shadow: 0 4px 16px rgba(35, 75, 82, .16);
 
-    backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-    -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
   [data-theme="dark"] .map-close {
     border-color: rgba(170, 205, 200, .24);
+    background: rgba(255, 255, 255, .12);
 
     color: #9fe0d2;
   }
@@ -2717,8 +2502,8 @@ body.modal-open {
 
     border-radius: 0;
 
-    /* 压一层底，别透明到看不清陆地 */
-    background: rgba(250, 250, 244, .70);
+    /* 压一层中性底，别透明到看不清陆地 */
+    background: rgba(244, 246, 248, .70);
 
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -2801,6 +2586,7 @@ body.modal-open {
 
   [data-theme="dark"] .map-toggle {
     border-color: rgba(170, 205, 200, .20);
+    background: rgba(255, 255, 255, .08);
 
     color: #9fe0d2;
   }
@@ -2941,22 +2727,232 @@ body.modal-open {
    Liquid glass material
    =========================
 
-   Every eligible surface opts in with [data-glass]. These declarations are
-   intentionally last so they win over the legacy per-component fills while
-   leaving border widths, radii, spacing and typography untouched.
+   One token-driven material. Host surfaces opt in with [data-glass] and use
+   exactly four material declarations: tint (background-color), backdrop
+   filter (material first, rim lens last), edge shadow, and ink colour.
 
-   The four material declarations:
-     background      -> --lg-surface (tint)
-     backdrop-filter -> --lg-backdrop (material) then --lg-rim (lens, last)
-     box-shadow      -> --lg-edge
-     color           -> --lg-ink-strong / --lg-ink-muted on text surfaces
-*/
+   These rules live at the end of the file on purpose: they must beat the
+   legacy component fills without changing any layout, radius, font, icon or
+   copy rule above. */
 
-:root .liquid-glass,
+:root {
+  --lg-density: .45;
+  --lg-chroma: .03;
+  --lg-tint-scale: 1;
+  --lg-tint-boost: 0;
+
+  /* Light glass, dark ink (default) */
+  --lg-tint-rgb: 255 255 255;
+  --lg-alpha-base: .06;
+  --lg-alpha-range: .16;
+  --lg-brightness-base: 1;
+  --lg-brightness-range: .06;
+  --lg-sat-base: 1.8;
+
+  /* Filled in on each [data-glass] host. */
+  --lg-tint-alpha: .13;
+  --lg-surface: rgb(255 255 255 / .13);
+  --lg-sat: 1.8;
+  --lg-backdrop:
+    blur(2px)
+    saturate(var(--lg-sat))
+    brightness(calc(1 + .06 * var(--lg-tint-scale)));
+
+  --lg-edge:
+    inset 1.5px 1.5px 1px -1px rgba(255, 255, 255, .95),
+    inset -1.5px -1.5px 1px -1px rgba(255, 255, 255, .55),
+    inset 0 0 0 .5px rgba(255, 255, 255, .30),
+    0 0 0 .5px rgba(0, 0, 0, .06),
+    0 6px 24px rgba(0, 0, 0, .08);
+
+  --lg-ink-strong: rgba(0, 0, 0, .86);
+  --lg-ink-muted: rgba(60, 60, 67, .70);
+  --lg-ink-blend: multiply;
+  --lg-accent-ink: #14776e;
+
+  --lg-row-hover: rgba(255, 255, 255, .42);
+  --lg-row-selected: rgba(255, 255, 255, .76);
+
+  /* Appended inline by js/liquid-glass.js only where the rim lens is safe. */
+  --lg-rim: ;
+}
+
+@property --lg-density {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: .45;
+}
+
+@property --lg-chroma {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: .03;
+}
+
+@property --lg-tint-scale {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --lg-tint-boost {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@property --lg-tint-alpha {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: .13;
+}
+
+@property --lg-alpha-base {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: .06;
+}
+
+@property --lg-alpha-range {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: .16;
+}
+
+@property --lg-brightness-base {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --lg-brightness-range {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: .06;
+}
+
+@property --lg-sat-base {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1.8;
+}
+
+@property --lg-sat {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1.8;
+}
+
+@property --lg-surface {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgb(255 255 255 / .13);
+}
+
+@property --lg-ink-strong {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(0, 0, 0, .86);
+}
+
+@property --lg-ink-muted {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(60, 60, 67, .70);
+}
+
+@property --lg-accent-ink {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #14776e;
+}
+
+@property --lg-row-hover {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(255, 255, 255, .42);
+}
+
+@property --lg-row-selected {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: rgba(255, 255, 255, .76);
+}
+
+/* Light theme over a dark area: light ink on a near-black frost. */
+[data-glass][data-glass-ink="light"] {
+  --lg-tint-rgb: 16 18 22;
+  --lg-alpha-base: .10;
+  --lg-alpha-range: .20;
+  --lg-brightness-base: 1;
+  --lg-brightness-range: -.15;
+  --lg-sat-base: 1.7;
+
+  --lg-edge:
+    inset 1.5px 1.5px 1px -1px rgba(255, 255, 255, .30),
+    inset -1.5px -1.5px 1px -1px rgba(255, 255, 255, .10),
+    inset 0 0 0 .5px rgba(255, 255, 255, .14),
+    0 0 0 .5px rgba(0, 0, 0, .28),
+    0 6px 24px rgba(0, 0, 0, .25);
+
+  --lg-ink-strong: rgba(255, 255, 255, .94);
+  --lg-ink-muted: rgba(235, 235, 245, .64);
+  --lg-ink-blend: plus-lighter;
+  --lg-accent-ink: #9fe0d2;
+
+  --lg-row-hover: rgba(255, 255, 255, .14);
+  --lg-row-selected: rgba(255, 255, 255, .24);
+}
+
+/* Dark theme always uses the dark material. */
+[data-theme="dark"] {
+  --lg-tint-rgb: 20 20 24;
+  --lg-alpha-base: .16;
+  --lg-alpha-range: .22;
+  --lg-brightness-base: 1;
+  --lg-brightness-range: -.20;
+  --lg-sat-base: 1.6;
+
+  --lg-edge:
+    inset 1px 1px 1px -1px rgba(255, 255, 255, .32),
+    inset -1px -1px 1px -1px rgba(255, 255, 255, .18),
+    inset 0 0 0 .5px rgba(255, 255, 255, .10),
+    0 0 0 .5px rgba(0, 0, 0, .38),
+    0 6px 24px rgba(0, 0, 0, .35);
+
+  --lg-ink-strong: rgba(255, 255, 255, .94);
+  --lg-ink-muted: rgba(235, 235, 245, .64);
+  --lg-ink-blend: plus-lighter;
+  --lg-accent-ink: #9fe0d2;
+
+  --lg-row-hover: rgba(255, 255, 255, .12);
+  --lg-row-selected: rgba(255, 255, 255, .22);
+}
+
+/* A light-ink attribute left over from light mode must not leak the
+   near-black tint into the dark palette. */
+[data-theme="dark"] [data-glass][data-glass-ink="light"] {
+  --lg-tint-rgb: 20 20 24;
+  --lg-alpha-base: .16;
+  --lg-alpha-range: .22;
+  --lg-brightness-base: 1;
+  --lg-brightness-range: -.20;
+  --lg-sat-base: 1.6;
+
+  --lg-edge:
+    inset 1px 1px 1px -1px rgba(255, 255, 255, .32),
+    inset -1px -1px 1px -1px rgba(255, 255, 255, .18),
+    inset 0 0 0 .5px rgba(255, 255, 255, .10),
+    0 0 0 .5px rgba(0, 0, 0, .38),
+    0 6px 24px rgba(0, 0, 0, .35);
+
+  --lg-row-hover: rgba(255, 255, 255, .12);
+  --lg-row-selected: rgba(255, 255, 255, .22);
+}
+
+/* Resolve the material on each host: sampler-owned --lg-density/--lg-chroma
+   are local to the element, so these substitutions cannot be frozen on :root. */
 :root [data-glass] {
-  /* Resolve the material on the surface itself: --lg-density / --lg-chroma
-     are set per element by the sampler, so these must not be pre-computed
-     on :root (custom-property substitution would freeze :root's values). */
   --lg-tint-alpha:
     calc(var(--lg-alpha-base) + var(--lg-density) * var(--lg-alpha-range));
   --lg-sat:
@@ -2980,14 +2976,15 @@ body.modal-open {
       )
     );
 
-  background: var(--lg-surface);
+  background-color: var(--lg-surface);
 
   box-shadow: var(--lg-edge);
 
-  /* Expose the ink scale locally so children using --ink / --muted follow
-     the sampled surface, without hard-coding every descendant colour. */
+  /* Let children that use --ink/--muted follow the sampled surface. */
   --ink: var(--lg-ink-strong);
   --muted: var(--lg-ink-muted);
+
+  color: var(--lg-ink-strong);
 
   backdrop-filter: var(--lg-backdrop) var(--lg-rim);
   -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
@@ -2998,18 +2995,17 @@ body.modal-open {
     background-color .35s ease,
     box-shadow .35s ease,
     color .35s ease,
+    border-color .2s ease,
     backdrop-filter .35s ease;
 }
 
-/* --lg-rim is set inline per surface. Custom properties inherit by default,
-   so a nested glass surface would otherwise reuse its parent's filter id.
-   The inline lens declaration still wins over this reset. */
+/* Inline rim ids must not inherit into nested glass. */
 :root [data-glass] * {
   --lg-rim: ;
 }
 
-/* Static hosts that need a containing block for the inner-light layer.
-   Positioned (fixed/absolute) surfaces already provide one. */
+/* Static hosts need a containing block for the inner-light layer. Fixed and
+   absolute surfaces already provide one and must keep their positioning. */
 .card,
 .status-card,
 .admin-panel,
@@ -3018,13 +3014,12 @@ body.modal-open {
 .composer-toggle,
 .modal-panel,
 .location-button,
-.location-chip {
+.location-chip,
+.admin-toggle {
   position: relative;
 }
 
-/* Inner light: a soft top-left specular sheet that fades with the user tint.
-   z-index:-1 inside the isolated surface paints above the tint but below
-   text and controls, so contrast hierarchy is preserved. */
+/* Inner light: top-left specular sheet, faded by the user tint. */
 :root [data-glass]:not(.admin-toggle)::before {
   content: '';
 
@@ -3074,10 +3069,9 @@ body.modal-open {
     inset -1px -1px 1px rgba(255, 255, 255, .04);
 }
 
-/* The admin chip already owns ::before for its login dot; get the same inner
-   light from a background layer that also follows the tint scale. */
-:root .admin-toggle[data-glass],
-:root .admin-toggle[data-glass]:hover {
+/* The admin chip already owns ::before for its login dot, so it gets the
+   same inner light from a background layer instead. */
+:root .admin-toggle[data-glass] {
   background-image:
     radial-gradient(
       ellipse at 10% 0%,
@@ -3086,8 +3080,17 @@ body.modal-open {
     );
 }
 
-/* Hover: brighten (density up ~14%), never lift the edge shadow. */
-:root .liquid-glass:hover,
+[data-theme="dark"] .admin-toggle[data-glass],
+[data-theme="dark"] [data-glass][data-glass-ink="light"] .admin-toggle[data-glass] {
+  background-image:
+    radial-gradient(
+      ellipse at 10% 0%,
+      rgb(255 255 255 / calc(.11 * var(--lg-tint-scale))),
+      transparent 55%
+    );
+}
+
+/* Hover brightens the tint about 14%, never lifts the edge shadow. */
 :root [data-glass]:hover {
   --lg-tint-boost: .14;
 
@@ -3096,34 +3099,13 @@ body.modal-open {
   box-shadow: var(--lg-edge);
 }
 
-/* Re-assert the material on known legacy hover/fill targets so no earlier
-   cream or solid rule can cover the glass. background-color keeps the
-   admin chip's tint-scaled inner-light gradient intact. */
-:root .theme-toggle[data-glass]:hover,
-:root .admin-toggle[data-glass]:hover,
-:root .map-reset[data-glass]:hover,
-:root .composer-toggle[data-glass],
-:root .composer-toggle[data-glass]:hover,
-:root .location-button[data-glass],
-:root .location-button[data-glass]:hover,
-:root .location-chip[data-glass],
-:root .lightbox-close[data-glass]:hover {
-  background-color: var(--lg-surface);
-}
-
-/* Dark theme: the dark material always wins over legacy component fills. */
 [data-theme="dark"] [data-glass],
 [data-theme="dark"] [data-glass]:hover,
 [data-theme="dark"] [data-glass]:focus-within {
   background-color: var(--lg-surface);
 }
 
-[data-theme="dark"] .map-popup[data-glass]::after,
-[data-theme="dark"] .map-popup[data-glass].is-below::after {
-  background: var(--lg-surface);
-}
-
-/* Keep the note-card's existing motion, but not the old shadow lift. */
+/* Keep note-card motion, but replace the legacy shadow lift with the edge. */
 :root .note-card[data-glass] {
   transition:
     transform .2s ease,
@@ -3134,7 +3116,6 @@ body.modal-open {
     backdrop-filter .35s ease;
 }
 
-/* Preserve the existing "new note" flash ring on top of the glass edge. */
 :root .note-card[data-glass].is-flash {
   box-shadow:
     0 0 0 3px rgba(42, 157, 143, .45),
@@ -3143,11 +3124,11 @@ body.modal-open {
   transition: box-shadow .3s ease;
 }
 
+/* Status and error ink. */
 :root .status-card[data-glass] {
   color: var(--lg-ink-muted);
 }
 
-/* Error surfaces keep their original reds. */
 :root .status-card[data-kind="error"][data-glass] {
   color: #b42318;
 }
@@ -3156,7 +3137,7 @@ body.modal-open {
   color: #f3a39b;
 }
 
-/* Selected / hovered rows on glass are white light, never a grey wash. */
+/* Hovered/selected rows on glass are white light, never a gray wash. */
 :root [data-glass] .location-result:hover,
 :root [data-glass] .map-popup-item:hover {
   background: var(--lg-row-hover);
@@ -3173,59 +3154,75 @@ body.modal-open {
   box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .65);
 }
 
-/* Text that used to be hard-coded dark needs light ink when the sampler
-   puts a surface over a dark area. Teal accents brighten; error reds do not
-   change. Inputs stay solid, so they keep dark typing contrast. */
+/* Ink colour on text wrappers. Teal accents keep their existing hue; error
+   reds are excluded above. */
+:root [data-glass] .note-content,
+:root [data-glass] .note-author,
+:root [data-glass] .comment-author-name,
+:root [data-glass] .comment-text,
+:root [data-glass] .map-popup-item-head {
+  color: var(--lg-ink-strong);
+}
+
+:root [data-glass] .note-time,
+:root [data-glass] .note-location,
+:root [data-glass] .comment-time,
+:root [data-glass] .comment-toggle,
+:root [data-glass] .edit-location-button,
+:root [data-glass] .field-hint,
+:root [data-glass] .section-heading p,
+:root [data-glass] .location-hint,
+:root [data-glass] .map-popup-title,
+:root [data-glass] .map-popup-item-time,
+:root [data-glass] .map-popup-item-text {
+  color: var(--lg-ink-muted);
+}
+
+/* A note card can sit over a photo; its control text follows light ink. */
 [data-glass][data-glass-ink="light"] .note-content,
 [data-glass][data-glass-ink="light"] .note-card.is-text-only .note-content,
 [data-glass][data-glass-ink="light"] .comment-text {
-  color: rgba(255, 255, 255, .90);
+  color: var(--lg-ink-strong);
 }
 
 [data-glass][data-glass-ink="light"] .note-card.is-text-only .note-content {
   border-left-color: rgba(255, 255, 255, .30);
 }
 
-[data-glass][data-glass-ink="light"] .note-time,
-[data-glass][data-glass-ink="light"] .note-location,
-[data-glass][data-glass-ink="light"] .comment-time,
+[data-glass][data-glass-ink="light"] .section-heading h2,
+[data-glass][data-glass-ink="light"] .notes-heading h2,
+[data-glass][data-glass-ink="light"] .modal-head h2,
+[data-glass][data-glass-ink="light"] .location-label,
+[data-glass][data-glass-ink="light"] .composer-toggle,
 [data-glass][data-glass-ink="light"] .comment-toggle,
 [data-glass][data-glass-ink="light"] .edit-location-button,
-[data-glass][data-glass-ink="light"] .location-hint,
-[data-glass][data-glass-ink="light"] .map-popup-title,
-[data-glass][data-glass-ink="light"] .map-popup-item-time,
-[data-glass][data-glass-ink="light"] .map-popup-item-text {
-  color: var(--lg-ink-muted);
-}
-
-[data-glass][data-glass-ink="light"] .section-heading h2,
-[data-glass][data-glass-ink="light"] .modal-head h2,
-[data-glass][data-glass-ink="light"] .notes-heading h2,
-[data-glass][data-glass-ink="light"] .location-label {
+[data-glass][data-glass-ink="light"] .text-button {
   color: #9fe0d2;
-}
-
-[data-glass][data-glass-ink="light"] input,
-[data-glass][data-glass-ink="light"] textarea {
-  color: #18343e;
-}
-
-/* In dark mode the inputs inside a light-ink surface are dark translucent
-   controls, so they keep the theme ink instead of the light-theme dark ink. */
-[data-theme="dark"] [data-glass][data-glass-ink="light"] input,
-[data-theme="dark"] [data-glass][data-glass-ink="light"] textarea {
-  color: var(--ink);
 }
 
 [data-glass][data-glass-ink="light"] .comments {
   border-top-color: rgba(255, 255, 255, .16);
 }
 
+/* Keep the original teal accents on glass controls themselves; the accent
+   token switches to a light mint over dark glass. */
+:root .theme-toggle[data-glass],
+:root .composer-toggle[data-glass],
+:root .map-toggle[data-glass],
+:root .map-close[data-glass],
+:root .map-reset[data-glass],
+:root .location-button[data-glass],
+:root .location-chip[data-glass] {
+  color: var(--lg-accent-ink);
+}
+
+:root .admin-toggle[data-glass] {
+  color: var(--lg-ink-muted);
+}
+
 /* SPEC ink blend: dark ink multiplies into light glass, light ink adds into
-   dark glass. Only content descendants blend; inputs, accent/danger buttons,
-   images and scrims keep normal compositing. Bare-text glass hosts (status
-   card, toast, chip labels without an inner span) are skipped so the host's
-   frosted tint is never blended. */
+   dark glass. Only drawn content blends; inputs, accent/danger buttons,
+   images and scrims keep normal compositing. */
 :root [data-glass] .note-meta,
 :root [data-glass] .note-content,
 :root [data-glass] .note-location,
@@ -3246,17 +3243,95 @@ body.modal-open {
   mix-blend-mode: var(--lg-ink-blend);
 }
 
-/* The popup arrow is part of the same material. */
-:root .map-popup[data-glass]::after,
-:root .map-popup[data-glass].is-below::after {
-  background: var(--lg-surface);
+/* Forms stay near-solid, never glass. Inputs keep their own text ink so a
+   light-ink glass host cannot put white type on a white field. */
+input,
+textarea {
+  background: rgba(255, 255, 255, .94);
+
+  color: #18343e;
 }
 
-/* Intentional map exception: no frosted fill, because it blotches the map.
-   Floating map controls above still opt into glass. */
+input:focus,
+textarea:focus {
+  background: rgba(255, 255, 255, .98);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea {
+  background: rgba(22, 26, 30, .94);
+  border-color: rgba(190, 198, 206, .20);
+
+  color: var(--ink);
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus {
+  background: rgba(26, 30, 34, .98);
+  border-color: rgba(42, 157, 143, .65);
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: rgba(190, 198, 206, .62);
+}
+
+/* Accent / primary actions are solid, not glass. */
+.primary-button,
+.comment-submit,
+.modal-confirm {
+  background: #2a9d8f;
+
+  border-color: rgba(16, 88, 80, .55);
+
+  color: #06231f;
+
+  text-shadow: none;
+
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+
+  box-shadow: 0 6px 16px rgba(18, 92, 83, .20);
+}
+
+.primary-button:hover:not(:disabled),
+.comment-submit:hover:not(:disabled) {
+  background: #248a7e;
+
+  border-color: rgba(16, 88, 80, .68);
+
+  box-shadow: 0 8px 20px rgba(18, 92, 83, .24);
+}
+
+.primary-button:active:not(:disabled) {
+  background: #1f7a70;
+}
+
+[data-theme="dark"] .primary-button,
+[data-theme="dark"] .comment-submit,
+[data-theme="dark"] .modal-confirm {
+  background: #2a9d8f;
+
+  border-color: rgba(140, 220, 205, .35);
+
+  color: #06201d;
+
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+[data-theme="dark"] .primary-button:hover:not(:disabled),
+[data-theme="dark"] .comment-submit:hover:not(:disabled) {
+  background: #33aa9b;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .30);
+}
+
+/* The map card is the documented exception: transparent, no backdrop. */
 :root .map-card,
 [data-theme="dark"] .map-card {
   background: transparent;
+  background-color: transparent;
 
   box-shadow: none;
 
@@ -3266,6 +3341,12 @@ body.modal-open {
 
 :root .map-card::before {
   display: none;
+}
+
+/* The popup arrow belongs to the same material as the popup. */
+:root .map-popup[data-glass]::after,
+:root .map-popup[data-glass].is-below::after {
+  background: var(--lg-surface);
 }
 
 /* =========================
@@ -3279,8 +3360,6 @@ body.modal-open {
 
   z-index: 899;
 
-  /* Vertical keeps the control beside the theme toggle without covering the
-     centred hero title on narrow screens. */
   width: 30px;
   height: 86px;
 
@@ -3292,19 +3371,10 @@ body.modal-open {
 
   border: 1px solid rgba(105, 145, 150, .28);
   border-radius: 999px;
-
-  background: var(--lg-surface);
-
-  box-shadow: var(--lg-edge);
-
-  backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-  -webkit-backdrop-filter: var(--lg-backdrop) var(--lg-rim);
-
-  isolation: isolate;
 }
 
 [data-theme="dark"] .glass-tint-control {
-  border-color: rgba(170, 205, 200, .22);
+  border-color: rgba(190, 198, 206, .22);
 }
 
 .glass-tint {
@@ -3322,14 +3392,24 @@ body.modal-open {
 
   border: 0;
   border-radius: 0;
+
   background: transparent;
 
   cursor: pointer;
 }
 
-.glass-tint:focus {
+.glass-tint:focus,
+.glass-tint:focus-visible {
   background: transparent;
+
+  border-color: transparent;
+
   box-shadow: none;
+}
+
+.glass-tint:focus-visible {
+  outline: 3px solid rgba(42, 157, 143, .20);
+  outline-offset: 2px;
 }
 
 .glass-tint::-webkit-slider-runnable-track {
@@ -3373,14 +3453,9 @@ body.modal-open {
   background: #2a9d8f;
 }
 
-.glass-tint:focus-visible {
-  outline: 3px solid rgba(42, 157, 143, .20);
-  outline-offset: 2px;
-}
-
 [data-theme="dark"] .glass-tint::-webkit-slider-runnable-track,
 [data-theme="dark"] .glass-tint::-moz-range-track {
-  background: rgba(170, 205, 200, .26);
+  background: rgba(190, 198, 206, .26);
 }
 
 [data-theme="dark"] .glass-tint::-webkit-slider-thumb,
@@ -3396,12 +3471,9 @@ body.modal-open {
 
 @media (prefers-reduced-transparency: reduce), (forced-colors: active) {
 
-  :root .liquid-glass,
   :root [data-glass],
   :root [data-glass]:hover {
-    /* Opaque version of the same tint: no blur, no lens, no inner sheen. */
     background-color: rgb(var(--lg-tint-rgb));
-
     background-image: none;
 
     backdrop-filter: none;
@@ -3416,9 +3488,18 @@ body.modal-open {
   }
 
   :root .glass-tint-control {
-    background: rgb(var(--lg-tint-rgb));
+    background-color: rgb(var(--lg-tint-rgb));
 
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
+  }
+}
+
+@supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+
+  :root [data-glass] {
+    background-color: rgb(var(--lg-tint-rgb));
+
+    --lg-rim: ;
   }
 }
