@@ -694,8 +694,8 @@ button:disabled {
 
   background: rgba(12, 25, 29, .86);
 
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .lightbox-image {
@@ -1694,8 +1694,8 @@ textarea:focus-visible {
 
   background: rgba(12, 25, 29, .55);
 
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .modal[hidden] {
@@ -2486,8 +2486,8 @@ body.modal-open {
 
     background: rgba(6, 14, 16, .46);
 
-    backdrop-filter: blur(2px);
-    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   .map-scrim[hidden] {
@@ -2590,8 +2590,8 @@ body.modal-open {
     /* 压一层中性底，别透明到看不清陆地 */
     background: rgba(244, 246, 248, .70);
 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   [data-theme="dark"] .map-section .map-canvas {
@@ -2828,19 +2828,19 @@ body.modal-open {
 
   /* Light glass, dark ink (default) */
   --lg-tint-rgb: 255 255 255;
-  --lg-alpha-base: .03;
-  --lg-alpha-range: .10;
+  --lg-alpha-base: .015;
+  --lg-alpha-range: .06;
   --lg-brightness-base: 1;
-  --lg-brightness-range: .06;
-  --lg-sat-base: 1.8;
+  --lg-brightness-range: .02;
+  --lg-sat-base: 1.20;
 
   /* Filled in on each [data-glass] host. */
-  --lg-tint-alpha: .13;
-  --lg-surface: rgb(255 255 255 / .13);
-  --lg-sat: 1.8;
+  --lg-tint-alpha: .05;
+  --lg-surface: rgb(255 255 255 / .05);
+  --lg-sat: 1.20;
   --lg-backdrop:
     saturate(var(--lg-sat))
-    brightness(calc(1 + .06 * var(--lg-tint-scale)));
+    brightness(calc(1 + .02 * var(--lg-tint-scale)));
 
   --lg-edge:
     inset 1.5px 1.5px 1px -1px rgba(255, 255, 255, .95),
@@ -2888,19 +2888,19 @@ body.modal-open {
 @property --lg-tint-alpha {
   syntax: "<number>";
   inherits: true;
-  initial-value: .13;
+  initial-value: .05;
 }
 
 @property --lg-alpha-base {
   syntax: "<number>";
   inherits: true;
-  initial-value: .03;
+  initial-value: .015;
 }
 
 @property --lg-alpha-range {
   syntax: "<number>";
   inherits: true;
-  initial-value: .10;
+  initial-value: .06;
 }
 
 @property --lg-brightness-base {
@@ -2912,25 +2912,25 @@ body.modal-open {
 @property --lg-brightness-range {
   syntax: "<number>";
   inherits: true;
-  initial-value: .06;
+  initial-value: .02;
 }
 
 @property --lg-sat-base {
   syntax: "<number>";
   inherits: true;
-  initial-value: 1.8;
+  initial-value: 1.20;
 }
 
 @property --lg-sat {
   syntax: "<number>";
   inherits: true;
-  initial-value: 1.8;
+  initial-value: 1.20;
 }
 
 @property --lg-surface {
   syntax: "<color>";
   inherits: true;
-  initial-value: rgb(255 255 255 / .13);
+  initial-value: rgb(255 255 255 / .05);
 }
 
 @property --lg-ink-strong {
@@ -2966,11 +2966,11 @@ body.modal-open {
 /* Light theme over a dark area: light ink on near-black clear glass. */
 [data-glass][data-glass-ink="light"] {
   --lg-tint-rgb: 16 18 22;
-  --lg-alpha-base: .06;
-  --lg-alpha-range: .14;
+  --lg-alpha-base: .03;
+  --lg-alpha-range: .08;
   --lg-brightness-base: 1;
-  --lg-brightness-range: -.15;
-  --lg-sat-base: 1.7;
+  --lg-brightness-range: -.04;
+  --lg-sat-base: 1.15;
 
   --lg-edge:
     inset 1.5px 1.5px 1px -1px rgba(255, 255, 255, .30),
@@ -2991,11 +2991,11 @@ body.modal-open {
 /* Dark theme always uses the dark material. */
 [data-theme="dark"] {
   --lg-tint-rgb: 20 20 24;
-  --lg-alpha-base: .08;
-  --lg-alpha-range: .14;
+  --lg-alpha-base: .04;
+  --lg-alpha-range: .08;
   --lg-brightness-base: 1;
-  --lg-brightness-range: -.20;
-  --lg-sat-base: 1.6;
+  --lg-brightness-range: -.05;
+  --lg-sat-base: 1.12;
 
   --lg-edge:
     inset 1px 1px 1px -1px rgba(255, 255, 255, .32),
@@ -3017,11 +3017,11 @@ body.modal-open {
    near-black tint into the dark palette. */
 [data-theme="dark"] [data-glass][data-glass-ink="light"] {
   --lg-tint-rgb: 20 20 24;
-  --lg-alpha-base: .08;
-  --lg-alpha-range: .14;
+  --lg-alpha-base: .04;
+  --lg-alpha-range: .08;
   --lg-brightness-base: 1;
-  --lg-brightness-range: -.20;
-  --lg-sat-base: 1.6;
+  --lg-brightness-range: -.05;
+  --lg-sat-base: 1.12;
 
   --lg-edge:
     inset 1px 1px 1px -1px rgba(255, 255, 255, .32),
@@ -3088,6 +3088,13 @@ body.modal-open {
   --lg-rim: ;
 }
 
+/* Nested glass: no second backdrop sample — parent already clears the scene. */
+:root [data-glass] [data-glass] {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  --lg-rim: ;
+}
+
 /* Static hosts need a containing block for the inner-light layer. Fixed and
    absolute surfaces already provide one and must keep their positioning. */
 .card,
@@ -3118,23 +3125,23 @@ body.modal-open {
 
   pointer-events: none;
 
-  opacity: calc(.10 * var(--lg-tint-scale));
+  opacity: calc(.02 * var(--lg-tint-scale));
 
   background:
     radial-gradient(
       ellipse at 10% 0%,
-      rgba(255, 255, 255, .12),
+      rgba(255, 255, 255, .04),
       transparent 55%
     ),
     radial-gradient(
       ellipse at 0% 100%,
-      rgba(255, 255, 255, .03),
+      rgba(255, 255, 255, .01),
       transparent 60%
     );
 
   box-shadow:
-    inset 1px 1px 1px rgba(255, 255, 255, .12),
-    inset -1px -1px 1px rgba(255, 255, 255, .03);
+    inset 1px 1px 1px rgba(255, 255, 255, .04),
+    inset -1px -1px 1px rgba(255, 255, 255, .01);
 }
 
 [data-theme="dark"] [data-glass]:not(.admin-toggle)::before,
@@ -3142,18 +3149,18 @@ body.modal-open {
   background:
     radial-gradient(
       ellipse at 10% 0%,
-      rgba(255, 255, 255, .06),
+      rgba(255, 255, 255, .02),
       transparent 55%
     ),
     radial-gradient(
       ellipse at 0% 100%,
-      rgba(255, 255, 255, .02),
+      rgba(255, 255, 255, .008),
       transparent 60%
     );
 
   box-shadow:
-    inset 1px 1px 1px rgba(255, 255, 255, .12),
-    inset -1px -1px 1px rgba(255, 255, 255, .04);
+    inset 1px 1px 1px rgba(255, 255, 255, .04),
+    inset -1px -1px 1px rgba(255, 255, 255, .01);
 }
 
 /* The admin chip already owns ::before for its login dot, so it gets the
@@ -3162,7 +3169,7 @@ body.modal-open {
   background-image:
     radial-gradient(
       ellipse at 10% 0%,
-      rgb(255 255 255 / calc(.17 * var(--lg-tint-scale))),
+      rgb(255 255 255 / calc(.04 * var(--lg-tint-scale))),
       transparent 55%
     );
 }
@@ -3172,7 +3179,7 @@ body.modal-open {
   background-image:
     radial-gradient(
       ellipse at 10% 0%,
-      rgb(255 255 255 / calc(.06 * var(--lg-tint-scale))),
+      rgb(255 255 255 / calc(.02 * var(--lg-tint-scale))),
       transparent 55%
     );
 }
