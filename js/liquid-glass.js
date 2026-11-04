@@ -1230,7 +1230,7 @@ function updateLens(element, state, rect) {
   }
 
   const shortSide = Math.min(rect.width, rect.height);
-  const rim = Math.max(4, Math.min(44, shortSide / 2.7));
+  const rim = Math.max(4, Math.min(44, shortSide / 3.5));
   const style = getComputedStyle(element);
   const radius = Number.parseFloat(style.borderTopLeftRadius) || 0;
 
@@ -1263,15 +1263,13 @@ function buildLens(element, state, key, width, height, radius, rim) {
     return Promise.reject(new Error('glass displacement map unavailable'));
   }
 
-  // Spectral dispersion on every display, HiDPI included: aim at the SPEC
-  // ceiling so the RGB split stays visible instead of collapsing to a single
-  // opaque pass.
-  let split = Math.min(0.15, 0.10 + rim / 240);
+  // Gentle spectral dispersion on every display, HiDPI included. A delicate
+  // 0.05–0.08 split reads as a fringe; the old 0.15 ceiling split into slabs.
+  let split = Math.min(0.08, 0.05 + rim / 400);
 
-  // Very busy backgrounds get a mild damp, never a near-zero crush: the
-  // split must remain readable (>= ~0.08) or dispersion disappears again.
-  if (state.texture > 0.55) {
-    split *= 0.7;
+  // Busy backgrounds get a damp, never a zero crush: keep a faint fringe.
+  if (state.texture > 0.45) {
+    split *= 0.55;
   }
 
   const svg = document.createElementNS(SVG_NS, 'svg');
@@ -1285,10 +1283,11 @@ function buildLens(element, state, key, width, height, radius, rim) {
 
   const filter = document.createElementNS(SVG_NS, 'filter');
   filter.setAttribute('id', id);
-  filter.setAttribute('x', '0');
-  filter.setAttribute('y', '0');
-  filter.setAttribute('width', '100%');
-  filter.setAttribute('height', '100%');
+  // A little bleed past the border keeps edge samples from clamping to black.
+  filter.setAttribute('x', '-8%');
+  filter.setAttribute('y', '-8%');
+  filter.setAttribute('width', '116%');
+  filter.setAttribute('height', '116%');
   filter.setAttribute('color-interpolation-filters', 'sRGB');
 
   const map = document.createElementNS(SVG_NS, 'feImage');
@@ -1300,7 +1299,8 @@ function buildLens(element, state, key, width, height, radius, rim) {
   map.setAttribute('preserveAspectRatio', 'none');
   map.setAttribute('result', 'lg-map');
 
-  const scale = 3.2 * 1.1 * rim;
+  // SPEC: scale is twice the largest map offset (1.1 × rim).
+  const scale = 2.2 * rim;
 
   filter.appendChild(map);
 
@@ -1309,13 +1309,29 @@ function buildLens(element, state, key, width, height, radius, rim) {
     filter.appendChild(displace(scale, 'lg-green-disp'));
     filter.appendChild(displace(scale * (1 - split), 'lg-blue-disp'));
 
-    // Keep the recombined channels opaque; the host tint supplies alpha.
-    filter.appendChild(isolateChannel('lg-red-disp', '1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0 1', 'lg-red'));
-    filter.appendChild(isolateChannel('lg-green-disp', '0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 0 1', 'lg-green'));
-    filter.appendChild(isolateChannel('lg-blue-disp', '0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 0 1', 'lg-blue'));
+    // Preserve the displaced sample's alpha (the trailing 1 in the alpha
+    // column). Forcing alpha to 1 turned every out-of-surface sample into an
+    // opaque black slab; transparent samples simply drop out of the screen.
+    filter.appendChild(isolateChannel('lg-red-disp', '1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0', 'lg-red'));
+    filter.appendChild(isolateChannel('lg-green-disp', '0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0', 'lg-green'));
+    filter.appendChild(isolateChannel('lg-blue-disp', '0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0', 'lg-blue'));
 
+    // Isolated channels screened together sum per-channel, so this is the
+    // SPEC recombine without any cross-channel tint.
     filter.appendChild(blend('lg-red', 'lg-green', 'screen', 'lg-red-green'));
-    filter.appendChild(blend('lg-red-green', 'lg-blue', 'screen'));
+    filter.appendChild(blend('lg-red-green', 'lg-blue', 'screen', 'lg-rgb'));
+
+    // Only keep colour where all three passes found a sample. At the surface
+    // edge one channel can fall outside while the others still land inside;
+    // screening that partial coverage would paint a solid cyan/blue border
+    // line. Intersecting with the shared coverage leaves the edge transparent
+    // instead, so the unfiltered backdrop shows through cleanly.
+    filter.appendChild(compositeIn('lg-red', 'lg-green', 'lg-cov-rg'));
+    filter.appendChild(compositeIn('lg-cov-rg', 'lg-blue', 'lg-cov'));
+    filter.appendChild(compositeIn('lg-rgb', 'lg-cov'));
+  } else {
+    // Fallback: one opaque displacement pass, no channel bleed.
+    filter.appendChild(displace(scale, ''));
   }
 
   svg.appendChild(filter);
@@ -1374,6 +1390,20 @@ function blend(input, input2, mode, result) {
   node.setAttribute('in', input);
   node.setAttribute('in2', input2);
   node.setAttribute('mode', mode);
+
+  if (result) {
+    node.setAttribute('result', result);
+  }
+
+  return node;
+}
+
+function compositeIn(input, input2, result) {
+  const node = document.createElementNS(SVG_NS, 'feComposite');
+
+  node.setAttribute('in', input);
+  node.setAttribute('in2', input2);
+  node.setAttribute('operator', 'in');
 
   if (result) {
     node.setAttribute('result', result);
