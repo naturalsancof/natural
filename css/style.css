@@ -196,7 +196,7 @@ button {
 }
 
 .hero h1 {
-  font-family: var(--font-sans);
+  font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(2.5rem, 10vw, 4.5rem);
   line-height: 1;
   margin: 8px 0;
