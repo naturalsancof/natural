@@ -1,5 +1,31 @@
+@font-face {
+  font-family: "ChillDIN";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/chilldin/ChillDIN-Regular.woff") format("woff");
+}
+
+@font-face {
+  font-family: "ChillDIN";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/chilldin/ChillDIN-Medium.woff") format("woff");
+}
+
+@font-face {
+  font-family: "ChillDIN Gothic";
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url("../fonts/chilldin/ChillDINGothic-Std.woff2") format("woff2");
+}
+
 :root {
   color-scheme: light;
+
+  --font-sans: "ChillDIN", "ChillDIN Gothic", "PingFang SC", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans CJK SC", "Noto Sans CJK JP", "Microsoft YaHei", "DengXian", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --ink: #18343e;
   --muted: #71858a;
@@ -93,13 +119,22 @@ body {
 
   color: var(--ink);
 
-  font:
-    16px/1.55
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  font-synthesis-weight: none;
+}
+
+b,
+strong,
+th,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 500;
 }
 
 body.lightbox-open {
@@ -140,13 +175,13 @@ button {
 .eyebrow {
   color: var(--teal);
   font-size: .75rem;
-  font-weight: 800;
+  font-weight: 500;
   letter-spacing: .16em;
   margin: 0;
 }
 
 .hero h1 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: var(--font-sans);
   font-size: clamp(2.5rem, 10vw, 4.5rem);
   line-height: 1;
   margin: 8px 0;
@@ -225,7 +260,7 @@ h2 {
 
 .section-heading h2 {
   color: #14776e;
-  font-weight: 800;
+  font-weight: 500;
 }
 
 .section-heading p,
@@ -244,7 +279,7 @@ label {
   display: block;
 
   font-size: .92rem;
-  font-weight: 700;
+  font-weight: 500;
 
   margin: 16px 0 6px;
 }
@@ -355,7 +390,7 @@ input[type=file] {
   cursor: pointer;
 
   font: inherit;
-  font-weight: 700;
+  font-weight: 500;
 
   padding: 6px 0;
 }
@@ -388,7 +423,7 @@ input[type=file] {
   cursor: pointer;
 
   font: inherit;
-  font-weight: 900;
+  font-weight: 500;
   letter-spacing: .02em;
 
   margin-top: 18px;
@@ -655,7 +690,7 @@ button:disabled {
 
   font: inherit;
   font-size: .85rem;
-  font-weight: 700;
+  font-weight: 500;
 
   transition:
     background .2s ease,
@@ -796,7 +831,7 @@ textarea:focus-visible {
 
     color: #14776e;
 
-    font-weight: 800;
+    font-weight: 500;
   }
 
   .note-card {
@@ -954,7 +989,7 @@ textarea:focus-visible {
   cursor: pointer;
   font: inherit;
   font-size: .78rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .delete-comment-button:hover {
@@ -989,7 +1024,7 @@ textarea:focus-visible {
 
   font: inherit;
   font-size: .8rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .comment-toggle:hover {
@@ -1031,7 +1066,7 @@ textarea:focus-visible {
   cursor: pointer;
   font: inherit;
   font-size: .88rem;
-  font-weight: 800;
+  font-weight: 500;
 }
 
 .comment-submit:hover:not(:disabled) {
@@ -1069,7 +1104,7 @@ textarea:focus-visible {
 
   font: inherit;
   font-size: .95rem;
-  font-weight: 800;
+  font-weight: 500;
   letter-spacing: .02em;
 
   transition:
@@ -1094,7 +1129,7 @@ textarea:focus-visible {
   background: rgba(42, 157, 143, .16);
 
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 20px;
   text-align: center;
 }
@@ -1221,7 +1256,7 @@ textarea:focus-visible {
 
   font: inherit;
   font-size: .86rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .load-more-button:hover:not(:disabled) {
@@ -1256,7 +1291,7 @@ textarea:focus-visible {
   color: #fff;
 
   font-size: .86rem;
-  font-weight: 700;
+  font-weight: 500;
 
   box-shadow: 0 10px 30px rgba(12, 25, 29, .28);
 }
@@ -1335,7 +1370,7 @@ textarea:focus-visible {
 
   font: inherit;
   font-size: .76rem;
-  font-weight: 700;
+  font-weight: 500;
 
   box-shadow: 0 4px 12px rgba(35, 75, 82, .10);
 }
@@ -1417,8 +1452,9 @@ textarea:focus-visible {
 .map-pin-count {
   fill: #fff;
 
+  font-family: var(--font-sans);
   font-size: 6px;
-  font-weight: 800;
+  font-weight: 500;
   text-anchor: middle;
 
   pointer-events: none;
@@ -1583,7 +1619,7 @@ textarea:focus-visible {
   color: #14776e;
 
   font-size: .78rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .note-location[hidden] {
@@ -1605,7 +1641,7 @@ textarea:focus-visible {
 
   font: inherit;
   font-size: .8rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .edit-location-button:hover {
@@ -1649,7 +1685,7 @@ textarea:focus-visible {
 
   font: inherit;
   font-size: .86rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .location-button:hover {
@@ -1668,7 +1704,7 @@ textarea:focus-visible {
   color: #14776e;
 
   font-size: .8rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .location-chip[hidden] {
@@ -1853,7 +1889,7 @@ body.modal-open {
 .location-label {
   color: #14776e;
   font-size: .88rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 
@@ -1909,7 +1945,7 @@ body.modal-open {
   color: #69878a;
 
   font-size: .8rem;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: .02em;
 }
 
@@ -1978,7 +2014,7 @@ body.modal-open {
 
   color: #6d8c8f;
 
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: .01em;
 }
 
@@ -2467,7 +2503,7 @@ body.modal-open {
 
     font: inherit;
     font-size: .76rem;
-    font-weight: 700;
+    font-weight: 500;
 
     cursor: pointer;
 
@@ -2648,7 +2684,7 @@ body.modal-open {
 
     font: inherit;
     font-size: .78rem;
-    font-weight: 700;
+    font-weight: 500;
 
     cursor: pointer;
   }
@@ -2778,7 +2814,7 @@ body.modal-open {
 
   font: inherit;
   font-size: .84rem;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 .notes-gap-button:hover {
