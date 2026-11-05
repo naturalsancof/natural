@@ -63,6 +63,7 @@ let scrollFrame = 0;
 
 let domObserver = null;
 let themeObserver = null;
+let lensResizeObserver = null;
 
 /* =========================
    Boot
@@ -371,13 +372,13 @@ function refresh(force) {
   // Remove lens SVGs that belonged to removed / detached surfaces.
   for (const [element, state] of states) {
     if (!element.isConnected) {
-      releaseLens(state);
+      releaseLens(element, state);
       states.delete(element);
       continue;
     }
 
     if (!element.matches(GLASS_SELECTOR)) {
-      releaseLens(state);
+      releaseLens(element, state);
       states.delete(element);
     }
   }
@@ -452,6 +453,7 @@ function ensureState(element) {
     texture: 0,
     lensKey: '',
     lensPending: '',
+    lensImage: null,
     lensSvg: null,
     lensReady: false
   };
@@ -1239,6 +1241,7 @@ function updateLens(element, state, rect) {
   const key = `${Math.round(radius * 2) / 2}:${Math.round(rim * 2) / 2}`;
 
   if (state.lensKey === key || state.lensPending === key) {
+    syncLensImage(state, rect.width, rect.height);
     return;
   }
 
@@ -1294,8 +1297,8 @@ function buildLens(element, state, key, width, height, radius, rim) {
   map.setAttribute('href', mapUrl);
   map.setAttribute('x', '0');
   map.setAttribute('y', '0');
-  map.setAttribute('width', '100%');
-  map.setAttribute('height', '100%');
+  map.setAttribute('width', String(Math.round(width * 100) / 100));
+  map.setAttribute('height', String(Math.round(height * 100) / 100));
   map.setAttribute('preserveAspectRatio', 'none');
   map.setAttribute('result', 'lg-map');
 
@@ -1342,6 +1345,7 @@ function buildLens(element, state, key, width, height, radius, rim) {
     }
 
     const previous = state.lensSvg;
+    const rect = element.getBoundingClientRect();
 
     document.documentElement.appendChild(svg);
 
@@ -1350,6 +1354,9 @@ function buildLens(element, state, key, width, height, radius, rim) {
     state.lensSvg = svg;
     state.lensReady = true;
     state.lensKey = key;
+    state.lensImage = map;
+    syncLensImage(state, rect.width, rect.height);
+    watchLensSize(element);
 
     if (previous && previous !== svg) {
       previous.remove();
@@ -1427,20 +1434,65 @@ function decodeMap(url) {
 }
 
 function clearLens(element, state) {
-  releaseLens(state);
+  releaseLens(element, state);
   element.style.removeProperty('--lg-rim');
 
   state.lensKey = '';
   state.lensPending = '';
 }
 
-function releaseLens(state) {
+function releaseLens(element, state) {
+  if (lensResizeObserver) {
+    lensResizeObserver.unobserve(element);
+  }
+
   if (state.lensSvg) {
     state.lensSvg.remove();
   }
 
   state.lensSvg = null;
+  state.lensImage = null;
   state.lensReady = false;
+}
+
+function watchLensSize(element) {
+  if (typeof ResizeObserver === 'undefined') {
+    return;
+  }
+
+  if (!lensResizeObserver) {
+    lensResizeObserver = new ResizeObserver(entries => {
+      entries.forEach(entry => {
+        const state = states.get(entry.target);
+
+        if (!state) {
+          return;
+        }
+
+        const rect = entry.target.getBoundingClientRect();
+
+        syncLensImage(state, rect.width, rect.height);
+      });
+    });
+  }
+
+  lensResizeObserver.observe(element);
+}
+
+function syncLensImage(state, width, height) {
+  const map = state.lensImage;
+
+  if (!map) {
+    return;
+  }
+
+  if (Math.abs(Number(map.getAttribute('width')) - width) > 0.5) {
+    map.setAttribute('width', String(Math.round(width * 100) / 100));
+  }
+
+  if (Math.abs(Number(map.getAttribute('height')) - height) > 0.5) {
+    map.setAttribute('height', String(Math.round(height * 100) / 100));
+  }
 }
 
 function getDisplacementMap(width, height, radius, rim) {
