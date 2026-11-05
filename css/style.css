@@ -137,6 +137,21 @@ h6 {
   font-weight: 500;
 }
 
+input,
+button,
+select,
+textarea {
+  font: inherit;
+}
+
+::file-selector-button {
+  font: inherit;
+}
+
+::-webkit-file-upload-button {
+  font: inherit;
+}
+
 body.lightbox-open {
   overflow: hidden;
 }
