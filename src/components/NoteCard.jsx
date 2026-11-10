@@ -5,12 +5,14 @@ import {Button} from '@astryxdesign/core/Button';
 import {Card} from '@astryxdesign/core/Card';
 import {Collapsible} from '@astryxdesign/core/Collapsible';
 import {HStack} from '@astryxdesign/core/HStack';
+import {Icon} from '@astryxdesign/core/Icon';
 import {Text} from '@astryxdesign/core/Text';
 import {TextArea} from '@astryxdesign/core/TextArea';
 import {TextInput} from '@astryxdesign/core/TextInput';
 import {Timestamp} from '@astryxdesign/core/Timestamp';
 import {VStack} from '@astryxdesign/core/VStack';
 import {useLightbox} from '@astryxdesign/core/Lightbox';
+import {MapPinIcon} from '@heroicons/react/24/outline';
 import {colorVars} from '@astryxdesign/core/theme/tokens.stylex';
 
 const styles = stylex.create({
@@ -96,12 +98,26 @@ export function NoteCard({
           <Timestamp value={note.created_at} format="auto" type="supporting" isLive />
         </HStack>
         {note.content ? <Text type="body">{note.content}</Text> : null}
-        <HStack>
-          <Button
-            label={note.location && hasPoint ? note.location : '添加地点'}
-            variant="ghost"
-            onClick={onEditPlace}
-          />
+        <HStack gap={2} vAlign="center">
+          <Icon icon={MapPinIcon} size="sm" color="secondary" />
+          {note.location && hasPoint ? (
+            <Button
+              label={note.location}
+              variant="secondary"
+              size="sm"
+              onClick={onEditPlace}
+            />
+          ) : (
+            <>
+              <Text type="supporting">未标地点</Text>
+              <Button
+                label="添加地点"
+                variant="secondary"
+                size="sm"
+                onClick={onEditPlace}
+              />
+            </>
+          )}
         </HStack>
         {note.img_url ? (
           <img

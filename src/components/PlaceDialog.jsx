@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import * as stylex from '@stylexjs/stylex';
 import {Button} from '@astryxdesign/core/Button';
 import {Dialog, DialogHeader} from '@astryxdesign/core/Dialog';
 import {HStack} from '@astryxdesign/core/HStack';
@@ -7,6 +8,18 @@ import {TextInput} from '@astryxdesign/core/TextInput';
 import {VStack} from '@astryxdesign/core/VStack';
 import {locateMe, reverseGeocode, searchPlaces} from '../lib/geo.js';
 import {WorldMap} from './WorldMap.jsx';
+
+const styles = stylex.create({
+  confirmIdle: {
+    opacity: 1,
+    backgroundColor: 'transparent',
+    color: 'var(--color-text-secondary)',
+    borderWidth: '1px',
+    borderStyle: 'dashed',
+    borderColor: 'var(--color-border-emphasized)',
+    cursor: 'not-allowed',
+  },
+});
 
 export function PlaceDialog({isOpen, initial, onOpenChange, onConfirm}) {
   const [query, setQuery] = useState('');
@@ -172,8 +185,9 @@ export function PlaceDialog({isOpen, initial, onOpenChange, onConfirm}) {
           <Button label="取消" variant="ghost" onClick={() => onOpenChange(false)} />
           <Button
             label="确定"
-            variant="primary"
+            variant={draft || cleared ? 'primary' : 'secondary'}
             isDisabled={!draft && !cleared}
+            xstyle={draft || cleared ? undefined : styles.confirmIdle}
             onClick={() => {
               if (draft) {
                 onConfirm({

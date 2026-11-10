@@ -1,0 +1,17 @@
+/*
+ * Text fields paint an inset stroke. The shared Astryx ring is a 2px accent
+ * outline, 3px outside the control — the same ring buttons already use.
+ * This lives in the theme layer so it does not emit unlayered resets that
+ * would hide those button rings.
+ */
+@layer astryx-theme {
+  [data-astryx-theme="voyage"] :is(
+    .astryx-text-input,
+    .astryx-text-area,
+    .astryx-file-input
+  ):focus-within {
+    box-shadow: none;
+    outline: var(--focus-outline-width) var(--focus-outline-style) var(--focus-outline-color);
+    outline-offset: var(--focus-outline-offset);
+  }
+}

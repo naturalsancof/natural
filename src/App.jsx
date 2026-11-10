@@ -8,7 +8,6 @@ import {EmptyState} from '@astryxdesign/core/EmptyState';
 import {Heading} from '@astryxdesign/core/Heading';
 import {HStack} from '@astryxdesign/core/HStack';
 import {Icon} from '@astryxdesign/core/Icon';
-import {Layout, LayoutPanel} from '@astryxdesign/core/Layout';
 import {NavIcon} from '@astryxdesign/core/NavIcon';
 import {
   SegmentedControl,
@@ -39,12 +38,29 @@ const styles = stylex.create({
   },
   heroImage: {
     width: '100%',
-    height: 'auto',
+    height: '100%',
+    objectFit: 'contain',
     display: 'block',
   },
-  stickyMap: {
+  board: {
+    width: '100%',
+    alignItems: 'flex-start',
+  },
+  notesColumn: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: '0%',
+    minWidth: 0,
+  },
+  mapColumn: {
     position: 'sticky',
     top: 'var(--spacing-4)',
+    width: '360px',
+    flexGrow: 0,
+    flexShrink: 0,
+  },
+  brand: {
+    flexShrink: 0,
   },
 });
 
@@ -147,7 +163,6 @@ export default function App({onModeChange}) {
   const [composerOpen, setComposerOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [placeNote, setPlaceNote] = useState(null);
-  const [zoomed, setZoomed] = useState(false);
   const [activeNoteId, setActiveNoteId] = useState(null);
   const mapRef = useRef(null);
   const dark = mode === 'dark';
@@ -245,13 +260,12 @@ export default function App({onModeChange}) {
   );
 
   const mapPane = (
-    <VStack gap={2} xstyle={styles.stickyMap}>
+    <VStack gap={2}>
       <HStack justify="between" vAlign="center">
         <Heading id="map" level={2}>足迹地图</Heading>
         <Button
           label="全览"
-          variant="ghost"
-          isDisabled={!zoomed}
+          variant="secondary"
           onClick={() => mapRef.current?.resetView()}
         />
       </HStack>
@@ -260,7 +274,6 @@ export default function App({onModeChange}) {
         label="足迹地图"
         pins={clusterNotes(board.places)}
         activeNoteId={activeNoteId}
-        onZoomedChange={setZoomed}
         onSelectNote={id => {
           setPane('notes');
           board.focusNote(id);
@@ -276,7 +289,7 @@ export default function App({onModeChange}) {
 
   return (
     <AppShell
-      variant="surface"
+      variant="wash"
       contentPadding={6}
       topNav={
         <TopNav
@@ -285,6 +298,7 @@ export default function App({onModeChange}) {
             <TopNavHeading
               heading="Bon voyage"
               headingHref="#top"
+              xstyle={styles.brand}
               logo={<NavIcon icon={<Icon icon={GlobeAltIcon} size="sm" />} />}
             />
           }
@@ -292,28 +306,50 @@ export default function App({onModeChange}) {
             <>
               <TopNavItem label="旅行足迹" href="#notes" />
               <TopNavItem label="足迹地图" href="#map" />
+              {wide ? null : (
+                <VStack gap={3}>
+                  <Switch
+                    label="深色"
+                    value={dark}
+                    onChange={checked => onModeChange(checked ? 'dark' : 'light')}
+                  />
+                  <Button
+                    label={board.user ? '管理员' : '管理员登录'}
+                    variant="secondary"
+                    onClick={() => setAdminOpen(true)}
+                  />
+                </VStack>
+              )}
             </>
           }
           endContent={
-            <>
-              <Switch
-                label="深色"
-                value={dark}
-                onChange={checked => onModeChange(checked ? 'dark' : 'light')}
-                labelPosition="start"
-              />
-              <Button
-                label={board.user ? '管理员' : '管理员登录'}
-                variant="ghost"
-                onClick={() => setAdminOpen(true)}
-              />
+            wide ? (
+              <>
+                <Switch
+                  label="深色"
+                  value={dark}
+                  onChange={checked => onModeChange(checked ? 'dark' : 'light')}
+                  labelPosition="start"
+                />
+                <Button
+                  label={board.user ? '管理员' : '管理员登录'}
+                  variant="secondary"
+                  onClick={() => setAdminOpen(true)}
+                />
+                <Button
+                  label="写留言"
+                  variant="primary"
+                  icon={<Icon icon={PencilSquareIcon} size="sm" />}
+                  onClick={() => setComposerOpen(true)}
+                />
+              </>
+            ) : (
               <Button
                 label="写留言"
                 variant="primary"
-                icon={<Icon icon={PencilSquareIcon} size="sm" />}
                 onClick={() => setComposerOpen(true)}
               />
-            </>
+            )
           }
         />
       }
@@ -322,7 +358,7 @@ export default function App({onModeChange}) {
         <VStack gap={4}>
           <Heading level={1} type="display-2">Bon voyage</Heading>
           <Text type="large">留下此刻，带走回忆。</Text>
-          <Card padding={0} variant="muted">
+          <Card padding={0} variant="muted" height={260}>
             <img
               {...stylex.props(styles.heroImage)}
               src={print.src}
@@ -331,6 +367,7 @@ export default function App({onModeChange}) {
               height={print.height}
             />
           </Card>
+          <Text type="supporting">题图 川瀬巴水《鳴沢の富士》《牛堀の夕》</Text>
           <HStack gap={2}>
             <Button
               label="写一则旅途留言"
@@ -341,15 +378,10 @@ export default function App({onModeChange}) {
         </VStack>
 
         {wide ? (
-          <Layout
-            height="auto"
-            content={notesList}
-            end={
-              <LayoutPanel label="足迹地图" width={360}>
-                {mapPane}
-              </LayoutPanel>
-            }
-          />
+          <HStack gap={4} vAlign="start" xstyle={styles.board}>
+            <VStack gap={3} xstyle={styles.notesColumn}>{notesList}</VStack>
+            <VStack gap={2} xstyle={styles.mapColumn}>{mapPane}</VStack>
+          </HStack>
         ) : (
           <VStack gap={4}>
             <SegmentedControl label="浏览" value={pane} onChange={setPane} layout="fill">
@@ -360,7 +392,7 @@ export default function App({onModeChange}) {
           </VStack>
         )}
 
-        <Text type="supporting">背景 川瀬巴水《鳴沢の富士》《牛堀の夕》</Text>
+        <Text type="supporting">题图 川瀬巴水《鳴沢の富士》《牛堀の夕》</Text>
       </VStack>
 
       <ComposerDialog

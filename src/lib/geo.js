@@ -130,13 +130,15 @@ function dedupe(list) {
   const result = [];
 
   list.forEach(item => {
-    const key = `${item.lat.toFixed(2)},${item.lng.toFixed(2)},${normalize(item.name)}`;
+    const coord = `${item.lat.toFixed(2)},${item.lng.toFixed(2)},${normalize(item.name)}`;
+    const label = normalize(item.label);
 
-    if (seen.has(key)) {
+    if (seen.has(coord) || seen.has(label)) {
       return;
     }
 
-    seen.add(key);
+    seen.add(coord);
+    seen.add(label);
     result.push(item);
   });
 

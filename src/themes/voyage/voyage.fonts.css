@@ -1,6 +1,11 @@
 /* Figtree is the Latin face named by the Neutral theme this one extends. */
 @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap');
 
-/* Source Han Serif SC (思源宋体), self-hosted. Regular is 400.
-   Medium covers 500–700 so buttons and emphasis stay Medium. */
+/* Source Han Serif SC (思源宋体). Regular is 400. Medium is a separate
+   outline set at weight 500. Heavier weights are not faked. */
 @import '../../../fonts/source-han-serif/source-han-serif.css';
+@import '../../../fonts/source-han-serif/source-han-serif-medium.css';
+
+[data-astryx-theme="voyage"] {
+  font-synthesis-weight: none;
+}

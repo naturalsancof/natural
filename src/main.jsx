@@ -5,6 +5,7 @@ import {InternationalizationProvider} from '@astryxdesign/core/i18n';
 import zhCN from '@astryxdesign/core/locales/zh-CN.generated.js';
 import '@astryxdesign/core/reset.css';
 import '@astryxdesign/core/astryx.css';
+import './focus-ring.css';
 import {defaultThemeSlug, themes} from '../astryx-themes.js';
 import App from './App.jsx';
 
