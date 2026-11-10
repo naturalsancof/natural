@@ -7,7 +7,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#264653" />
+    <meta name="theme-color" content="#d2c4a8" />
 
     <title>Bon voyage · 旅行留言板</title>
 
@@ -23,6 +23,14 @@
       if (dark) {
         document.documentElement.dataset.theme = 'dark';
       }
+
+      var ua = navigator.userAgent;
+      var iOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      var safari = /Safari\//.test(ua) && !/Chrome|Chromium|CriOS|FxiOS|EdgiOS|Android/.test(ua);
+      if (iOS || safari) document.documentElement.dataset.engine = 'webkit';
+
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', dark ? '#3d5164' : '#d2c4a8');
     } catch (error) {
       /* 忽略：隐私模式下 localStorage 可能不可用 */
     }
@@ -31,32 +39,29 @@
 </head>
 
   <body>
+    <div class="stage" id="stage">
+    <img class="wallpaper wallpaper-light" src="./assets/wallpaper-light.jpg" alt="" width="3200" height="2114">
+    <img class="wallpaper wallpaper-dark" src="./assets/wallpaper-dark.jpg" alt="" width="2233" height="1256">
+    <canvas id="glass-refraction" class="refraction" hidden></canvas>
+    <div class="sheet">
 
     <button
       id="theme-toggle"
-      class="theme-toggle"
+      class="theme-toggle glass"
       data-glass
+      data-pill
       type="button"
       aria-label="切换夜间纸感"
       title="切换夜间纸感"
     >
-      <span aria-hidden="true">◐</span>
+      <svg class="icon icon-moon" viewBox="0 0 16 16" aria-hidden="true">
+        <path d="M9.2 2.2a4.6 4.6 0 1 0 4.6 6.4A4 4 0 0 1 9.2 2.2z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      <svg class="icon icon-sun" viewBox="0 0 16 16" aria-hidden="true">
+        <circle cx="8" cy="8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M8 1.6v1.6M8 12.8v1.6M1.6 8h1.6M12.8 8h1.6M3.3 3.3l1.1 1.1M11.6 11.6l1.1 1.1M3.3 12.7l1.1-1.1M11.6 4.4l1.1-1.1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
     </button>
-
-    <div class="glass-tint-control" data-glass>
-      <input
-        id="glass-tint"
-        class="glass-tint"
-        type="range"
-        min="0"
-        max="1.5"
-        step="0.05"
-        value="1"
-        aria-label="玻璃色调浓度"
-        aria-orientation="vertical"
-        title="玻璃色调浓度"
-      />
-    </div>
 
     <main class="container">
 
@@ -82,7 +87,6 @@
         <button
           id="admin-toggle"
           class="admin-toggle"
-          data-glass
           type="button"
           aria-expanded="false"
           aria-controls="admin-panel"
@@ -94,7 +98,7 @@
         <!-- 点击管理员后才显示 -->
         <div
           id="admin-panel"
-          class="admin-panel"
+          class="admin-panel glass"
           data-glass
           hidden
         >
@@ -185,7 +189,7 @@
       ========================== -->
 
       <section
-        class="composer card"
+        class="composer card glass"
         data-glass
         aria-label="写一则旅途留言"
       >
@@ -246,12 +250,24 @@
             照片（可选）
           </label>
 
-          <input
-            id="img-file"
-            name="image"
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
-          />
+          <div class="file-field">
+            <input
+              id="img-file"
+              class="file-input"
+              name="image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+            />
+            <label for="img-file" class="file-button">
+              <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
+                <rect x="2.25" y="3.25" width="11.5" height="9.5" rx="1.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="5.6" cy="6.3" r="0.9" fill="currentColor"/>
+                <path d="M2.8 10.6l2.6-2.2 2.1 1.7 1.7-1.3 3.1 2.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+              添加照片
+            </label>
+            <span id="file-name" class="file-name" hidden></span>
+          </div>
 
           <p class="field-hint">
             支持 JPEG、PNG、WebP、GIF，最大 10 MB。
@@ -269,16 +285,18 @@
             <button
               id="composer-location"
               class="location-button"
-              data-glass
               type="button"
             >
-              📍 添加地点
+              <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M8 14.2S3.5 10.2 3.5 7a4.5 4.5 0 1 1 9 0c0 3.2-4.5 7.2-4.5 7.2z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="8" cy="7" r="1.6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              添加地点
             </button>
 
             <span
               id="composer-location-name"
               class="location-chip"
-              data-glass
               hidden
             ></span>
 
@@ -356,12 +374,17 @@
 
         <button
           id="map-close"
-          class="map-close"
+          class="map-close glass"
           data-glass
+          data-pill
+          data-glass-source="map"
+          data-floor-min="0.55"
           type="button"
           aria-label="收起地图"
         >
-          ×
+          <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
         </button>
 
         <div class="notes-heading">
@@ -414,7 +437,7 @@
 
         <div
           id="notes-status"
-          class="status-card"
+          class="status-card glass"
           data-glass
           role="status"
           aria-live="polite"
@@ -454,11 +477,15 @@
 
       </div>
 
+      <footer class="colophon">
+        <p>背景 川瀬巴水《鳴沢の富士》《牛堀の夕》</p>
+      </footer>
+
     </main>
 
     <button
       id="map-toggle"
-      class="map-toggle"
+      class="map-toggle glass"
       data-glass
       type="button"
       aria-controls="map-panel"
@@ -476,7 +503,7 @@
 
     <template id="note-template">
 
-      <article class="note-card card" data-glass>
+      <article class="note-card card glass" data-glass>
 
         <div class="note-meta">
 
@@ -580,7 +607,7 @@
 
     <template id="comment-template">
 
-      <li class="comment-item" data-glass>
+      <li class="comment-item">
 
         <div class="comment-meta">
 
@@ -611,7 +638,7 @@
 
     <div
       id="toast"
-      class="toast"
+      class="toast glass"
       data-glass
       role="status"
       aria-live="polite"
@@ -626,7 +653,7 @@
     <template id="skeleton-template">
 
       <article
-        class="note-card card skeleton-card"
+        class="note-card card skeleton-card glass"
         data-glass
         aria-hidden="true"
       >
@@ -662,7 +689,7 @@
       hidden
     >
 
-      <div class="modal-panel" data-glass>
+      <div class="modal-panel glass" data-glass data-floor-max="0.22">
 
         <div class="modal-head">
 
@@ -676,7 +703,9 @@
             type="button"
             aria-label="关闭"
           >
-            ×
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
           </button>
 
         </div>
@@ -715,7 +744,11 @@
             class="text-button"
             type="button"
           >
-            📍 使用当前位置
+            <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
+              <circle cx="8" cy="8" r="2.1" fill="none" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8 1.6v2.1M8 12.3v2.1M1.6 8h2.1M12.3 8h2.1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            使用当前位置
           </button>
 
           <span class="location-hint">
@@ -791,23 +824,30 @@
       aria-hidden="true"
     >
 
-      <button
-        id="lightbox-close"
-        class="lightbox-close"
-        data-glass
-        data-glass-ink="light"
-        type="button"
-        aria-label="关闭图片"
-      >
-        ×
-      </button>
+      <div class="lightbox-frame">
+        <button
+          id="lightbox-close"
+          class="lightbox-close glass"
+          data-glass
+          data-pill
+          data-kind="dark"
+          data-kind-lock="dark"
+          data-glass-source="photo"
+          data-floor-min="0.84"
+          type="button"
+          aria-label="关闭图片"
+        >
+          <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </button>
 
-
-      <img
-        id="lightbox-image"
-        class="lightbox-image"
-        alt="大图预览"
-      />
+        <img
+          id="lightbox-image"
+          class="lightbox-image"
+          alt="大图预览"
+        />
+      </div>
 
     </div>
 
@@ -826,6 +866,8 @@
       type="module"
       src="./js/app.js"
     ></script>
+    </div>
+    </div>
 
   </body>
 </html>

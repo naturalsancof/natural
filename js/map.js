@@ -103,15 +103,19 @@ export function createMap(host, options = {}) {
   host.appendChild(svg);
 
   const popup = document.createElement('div');
-  popup.className = 'map-popup';
+  popup.className = 'map-popup glass';
   popup.dataset.glass = '';
+  popup.dataset.glassSource = 'map';
+  popup.dataset.floorMin = '0.55';
   popup.hidden = true;
   host.appendChild(popup);
 
   const resetButton = document.createElement('button');
   resetButton.type = 'button';
-  resetButton.className = 'map-reset';
+  resetButton.className = 'map-reset glass';
   resetButton.dataset.glass = '';
+  resetButton.dataset.glassSource = 'map';
+  resetButton.dataset.floorMin = '0.55';
   resetButton.textContent = '全览';
   resetButton.hidden = true;
   resetButton.addEventListener('click', event => {

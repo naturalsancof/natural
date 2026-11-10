@@ -16,7 +16,7 @@ import {
 import { validateImage, uploadImage, compressImage } from './storage.js';
 import { createMap, clusterNotes } from './map.js';
 import { openLocationPicker } from './location-picker.js';
-import { initLiquidGlass } from './liquid-glass.js';
+import { initGlass } from './glass.js';
 
 const PAGE_SIZE = 10;
 
@@ -33,6 +33,11 @@ function applyTheme(theme) {
   }
 
   themeToggle?.setAttribute('aria-pressed', String(theme === 'dark'));
+
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) {
+    themeMeta.setAttribute('content', theme === 'dark' ? '#3d5164' : '#d2c4a8');
+  }
 }
 
 if (themeToggle) {
@@ -51,10 +56,8 @@ if (themeToggle) {
   });
 }
 
-// Surface material only: attach glass, sample backgrounds, and restore the
-// per-theme tint. The helper observes the DOM so note/comment cards and map
-// popups created later opt in automatically.
-initLiquidGlass();
+// Glasswork: lens, adapt and refract on surfaces over the window, map or a photo.
+initGlass();
 
 const mapPanel = document.getElementById('map-panel');
 const mapToggle = document.getElementById('map-toggle');
@@ -87,6 +90,7 @@ const form = document.getElementById('note-form');
 const authorInput = document.getElementById('author');
 const contentInput = document.getElementById('content');
 const imageInput = document.getElementById('img-file');
+const fileName = document.getElementById('file-name');
 const previewWrap = document.getElementById('preview-wrap');
 const preview = document.getElementById('preview');
 const removeImageButton = document.getElementById('remove-image');
@@ -403,9 +407,16 @@ imageInput.addEventListener('change', () => {
 
   preview.src = URL.createObjectURL(file);
   previewWrap.hidden = false;
+  renderFileName(file);
   showFormMessage('');
 });
 
+
+function renderFileName(file) {
+  if (!fileName) return;
+  fileName.textContent = file ? file.name : '';
+  fileName.hidden = !file;
+}
 
 function clearImagePreview() {
   if (preview.src.startsWith('blob:')) {
@@ -414,6 +425,7 @@ function clearImagePreview() {
 
   preview.src = '';
   previewWrap.hidden = true;
+  renderFileName(null);
 }
 
 
@@ -455,7 +467,7 @@ function renderComposerLocation() {
   composerLocationButton.hidden = hasPoint;
   composerLocationClear.hidden = !hasPoint;
   composerLocationName.hidden = !hasPoint;
-  composerLocationName.textContent = hasPoint ? `📍 ${composerLocation.location}` : '';
+  composerLocationName.textContent = hasPoint ? composerLocation.location : '';
 }
 
 composerLocationButton.addEventListener('click', async () => {
@@ -1158,7 +1170,8 @@ function placeGap() {
 
   if (!gapElement) {
     gapElement = document.createElement('div');
-    gapElement.className = 'notes-gap';
+    gapElement.className = 'notes-gap glass';
+    gapElement.dataset.glass = '';
 
     const hint = document.createElement('p');
     hint.className = 'notes-gap-hint';
