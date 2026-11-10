@@ -12,6 +12,7 @@
  */
 
 @import url("./glass.css");
+@import url("../fonts/source-han-serif/source-han-serif.css");
 
 /* ---------- Tokens ---------- */
 
@@ -23,7 +24,7 @@
   --d-tint: #1e1e22;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-  --font-sans: "ChillDIN", "ChillDIN Gothic", "PingFang SC", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans CJK SC", "Noto Sans CJK JP", "Microsoft YaHei", "DengXian", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Source Han Serif SC", "Noto Serif CJK SC", "Source Han Serif", "Songti SC", "Noto Serif CJK JP", "Hiragino Mincho ProN", "Yu Mincho", "SimSun", "Apple SD Gothic Neo", "Malgun Gothic", serif;
 
   --text: #1c1916;
   --text-2: #3f3a34;
@@ -35,7 +36,7 @@
   --focus: #9a3412;
   --positive: #0f6b38;
   --negative: #7a1414;
-  --sky: #d5e1ea;
+  --sky: #d2c4a8;
 }
 
 [data-theme="dark"] {
@@ -49,31 +50,7 @@
   --focus: #e7a07a;
   --positive: #8fd4a8;
   --negative: #ffb4ae;
-  --sky: #10161e;
-}
-
-@font-face {
-  font-family: "ChillDIN";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("../fonts/chilldin/ChillDIN-Regular.woff") format("woff");
-}
-
-@font-face {
-  font-family: "ChillDIN";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("../fonts/chilldin/ChillDIN-Medium.woff") format("woff");
-}
-
-@font-face {
-  font-family: "ChillDIN Gothic";
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url("../fonts/chilldin/ChillDINGothic-Std.woff2") format("woff2");
+  --sky: #3d5164;
 }
 
 /* ---------- Base ---------- */
@@ -129,6 +106,7 @@ button {
   background: none;
   border: 0;
   padding: 0;
+  font-weight: 500;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -189,15 +167,23 @@ img {
 .refraction {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
   z-index: 0;
   pointer-events: none;
   user-select: none;
 }
 
+.refraction {
+  width: 100%;
+  height: 100%;
+}
+
 .wallpaper {
-  object-fit: cover;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  object-fit: contain;
   object-position: center center;
   transition: opacity 320ms var(--ease);
 }
@@ -322,6 +308,18 @@ img {
   font-size: 18px;
   line-height: 28px;
   font-weight: 400;
+}
+
+.colophon {
+  margin: 48px 0 0;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+}
+
+.colophon p {
+  margin: 0;
 }
 
 .admin-area {
@@ -791,7 +789,7 @@ textarea::placeholder {
 
 .file-button {
   margin: 0;
-  font-weight: 400;
+  font-weight: 500;
   cursor: pointer;
 }
 
@@ -1065,7 +1063,7 @@ textarea::placeholder {
 
 .map-pin-count {
   fill: #f7f4ee;
-  font-family: "ChillDIN", "ChillDIN Gothic", sans-serif;
+  font-family: "Source Han Serif SC", "Noto Serif CJK SC", serif;
   font-size: 6px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;

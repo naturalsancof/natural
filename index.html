@@ -7,7 +7,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#d5e1ea" />
+    <meta name="theme-color" content="#d2c4a8" />
 
     <title>Bon voyage · 旅行留言板</title>
 
@@ -30,7 +30,7 @@
       if (iOS || safari) document.documentElement.dataset.engine = 'webkit';
 
       var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', dark ? '#10161e' : '#d5e1ea');
+      if (meta) meta.setAttribute('content', dark ? '#3d5164' : '#d2c4a8');
     } catch (error) {
       /* 忽略：隐私模式下 localStorage 可能不可用 */
     }
@@ -40,8 +40,8 @@
 
   <body>
     <div class="stage" id="stage">
-    <img class="wallpaper wallpaper-light" src="./assets/wallpaper-light.svg" alt="" width="1600" height="1000">
-    <img class="wallpaper wallpaper-dark" src="./assets/wallpaper-dark.svg" alt="" width="1600" height="1000">
+    <img class="wallpaper wallpaper-light" src="./assets/wallpaper-light.jpg" alt="" width="3200" height="2114">
+    <img class="wallpaper wallpaper-dark" src="./assets/wallpaper-dark.jpg" alt="" width="2233" height="1256">
     <canvas id="glass-refraction" class="refraction" hidden></canvas>
     <div class="sheet">
 
@@ -476,6 +476,10 @@
       </section>
 
       </div>
+
+      <footer class="colophon">
+        <p>背景 川瀬巴水《鳴沢の富士》《牛堀の夕》</p>
+      </footer>
 
     </main>
 
