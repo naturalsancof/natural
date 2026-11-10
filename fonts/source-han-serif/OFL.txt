@@ -2,8 +2,9 @@ Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Sour
 Copyright 2017-2021 Google LLC, with Reserved Font Name 'Noto'.
 
 Noto Serif CJK and Source Han Serif (思源宋体) are the same typeface.
-The files in this directory are the Noto Serif SC Regular (400) and Medium (500)
-unicode-range slices, self-hosted for the web.
+The files in this directory are the Noto Serif SC Regular (400) slices.
+The medium/ directory holds the official Medium (500) slices. Both are
+self-hosted for the web.
 
 This Font Software is licensed under the SIL Open Font License,
 Version 1.1.
