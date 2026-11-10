@@ -163,8 +163,12 @@ img {
 }
 
 :focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 1px solid color-mix(in srgb, #c2410c 40%, #efe9df);
   outline-offset: 2px;
+}
+
+[data-theme="dark"] :focus-visible {
+  outline-color: color-mix(in srgb, #e7a07a 42%, transparent);
 }
 
 .icon {
@@ -727,7 +731,20 @@ textarea {
   color: var(--text);
   font-size: 16px;
   line-height: 1.5;
-  transition: border-color 160ms var(--ease), background-color 160ms var(--ease);
+  transition: border-color 160ms var(--ease), background-color 160ms var(--ease), box-shadow 160ms var(--ease);
+}
+
+input:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, #c2410c 28%, var(--hairline));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #c2410c 32%, #efe9df);
+}
+
+[data-theme="dark"] input:focus-visible,
+[data-theme="dark"] textarea:focus-visible {
+  border-color: color-mix(in srgb, #e7a07a 32%, var(--hairline));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #e7a07a 36%, transparent);
 }
 
 textarea {
@@ -745,23 +762,52 @@ textarea::placeholder {
   opacity: 1;
 }
 
-input[type="file"] {
-  display: block;
-  width: 100%;
-  color: var(--text-2);
-  font-size: 14px;
+.file-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-::file-selector-button,
-::-webkit-file-upload-button {
-  margin-right: 12px;
-  min-height: 36px;
-  padding: 0 12px;
-  border: 1px solid var(--hairline);
-  border-radius: 8px;
-  background: var(--raised);
-  color: var(--text);
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.file-input:focus,
+.file-input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.file-button {
+  margin: 0;
+  font-weight: 400;
   cursor: pointer;
+}
+
+.file-field:focus-within .file-button {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #c2410c 32%, #efe9df);
+}
+
+[data-theme="dark"] .file-field:focus-within .file-button {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #e7a07a 36%, transparent);
+}
+
+.file-name {
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 20px;
+  overflow-wrap: anywhere;
 }
 
 .field-hint {
@@ -866,13 +912,15 @@ input[type="file"] {
 }
 
 .location-button,
+.file-button,
 #location-locate {
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
-.location-button {
+.location-button,
+.file-button {
   min-height: 40px;
   padding: 0 12px;
   border: 1px solid var(--hairline);
@@ -883,7 +931,8 @@ input[type="file"] {
   transition: background-color 160ms var(--ease);
 }
 
-.location-button:hover {
+.location-button:hover,
+.file-button:hover {
   background: color-mix(in srgb, var(--raised) 82%, var(--text));
 }
 
@@ -1197,6 +1246,38 @@ input[type="file"] {
   max-height: min(720px, calc(100vh - 48px));
   padding: 20px;
   overflow: auto;
+  color: #1c1916;
+}
+
+[data-theme="dark"] .modal-panel {
+  color: #f4f1ea;
+}
+
+/* Solid ink at 500, so the clearer modal plate still clears 4.5:1. */
+.modal-panel.glass :is(
+  h2,
+  .location-hint,
+  .location-label,
+  .location-result span,
+  .location-result strong,
+  .text-button
+),
+[data-theme="dark"] .modal-panel.glass:not([data-kind="light"]) :is(
+  h2,
+  .location-hint,
+  .location-label,
+  .location-result span,
+  .location-result strong,
+  .text-button
+) {
+  color: inherit;
+  font-weight: 500;
+}
+
+.modal-panel .location-hint,
+.modal-panel .location-label {
+  font-size: 14px;
+  line-height: 20px;
 }
 
 .modal-head {

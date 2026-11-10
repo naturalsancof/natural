@@ -134,6 +134,8 @@ function decide(el) {
 
   const min = Number(el.dataset.floorMin);
   if (Number.isFinite(min)) floor = Math.max(floor, min);
+  const max = Number(el.dataset.floorMax);
+  if (Number.isFinite(max)) floor = Math.min(floor, max);
   floor = Math.min(0.9, floor);
 
   setVar(el, '--density', density);

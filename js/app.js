@@ -90,6 +90,7 @@ const form = document.getElementById('note-form');
 const authorInput = document.getElementById('author');
 const contentInput = document.getElementById('content');
 const imageInput = document.getElementById('img-file');
+const fileName = document.getElementById('file-name');
 const previewWrap = document.getElementById('preview-wrap');
 const preview = document.getElementById('preview');
 const removeImageButton = document.getElementById('remove-image');
@@ -406,9 +407,16 @@ imageInput.addEventListener('change', () => {
 
   preview.src = URL.createObjectURL(file);
   previewWrap.hidden = false;
+  renderFileName(file);
   showFormMessage('');
 });
 
+
+function renderFileName(file) {
+  if (!fileName) return;
+  fileName.textContent = file ? file.name : '';
+  fileName.hidden = !file;
+}
 
 function clearImagePreview() {
   if (preview.src.startsWith('blob:')) {
@@ -417,6 +425,7 @@ function clearImagePreview() {
 
   preview.src = '';
   previewWrap.hidden = true;
+  renderFileName(null);
 }
 
 

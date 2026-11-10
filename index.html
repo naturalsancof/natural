@@ -250,12 +250,24 @@
             照片（可选）
           </label>
 
-          <input
-            id="img-file"
-            name="image"
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
-          />
+          <div class="file-field">
+            <input
+              id="img-file"
+              class="file-input"
+              name="image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+            />
+            <label for="img-file" class="file-button">
+              <svg class="icon" viewBox="0 0 16 16" aria-hidden="true">
+                <rect x="2.25" y="3.25" width="11.5" height="9.5" rx="1.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="5.6" cy="6.3" r="0.9" fill="currentColor"/>
+                <path d="M2.8 10.6l2.6-2.2 2.1 1.7 1.7-1.3 3.1 2.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+              添加照片
+            </label>
+            <span id="file-name" class="file-name" hidden></span>
+          </div>
 
           <p class="field-hint">
             支持 JPEG、PNG、WebP、GIF，最大 10 MB。
@@ -673,7 +685,7 @@
       hidden
     >
 
-      <div class="modal-panel glass" data-glass data-floor-min="0.7">
+      <div class="modal-panel glass" data-glass data-floor-max="0.22">
 
         <div class="modal-head">
 
