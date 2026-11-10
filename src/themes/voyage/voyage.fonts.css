@@ -1,0 +1,6 @@
+/* Figtree is the Latin face named by the Neutral theme this one extends. */
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap');
+
+/* Source Han Serif SC (思源宋体), self-hosted. Regular is 400.
+   Medium covers 500–700 so buttons and emphasis stay Medium. */
+@import '../../../fonts/source-han-serif/source-han-serif.css';
