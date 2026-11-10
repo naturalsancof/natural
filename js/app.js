@@ -16,7 +16,7 @@ import {
 import { validateImage, uploadImage, compressImage } from './storage.js';
 import { createMap, clusterNotes } from './map.js';
 import { openLocationPicker } from './location-picker.js';
-import { initLiquidGlass } from './liquid-glass.js';
+import { initGlass } from './glass.js';
 
 const PAGE_SIZE = 10;
 
@@ -33,6 +33,11 @@ function applyTheme(theme) {
   }
 
   themeToggle?.setAttribute('aria-pressed', String(theme === 'dark'));
+
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeMeta) {
+    themeMeta.setAttribute('content', theme === 'dark' ? '#10161e' : '#d5e1ea');
+  }
 }
 
 if (themeToggle) {
@@ -51,10 +56,8 @@ if (themeToggle) {
   });
 }
 
-// Surface material only: attach glass, sample backgrounds, and restore the
-// per-theme tint. The helper observes the DOM so note/comment cards and map
-// popups created later opt in automatically.
-initLiquidGlass();
+// Glasswork: lens, adapt and refract on surfaces over the window, map or a photo.
+initGlass();
 
 const mapPanel = document.getElementById('map-panel');
 const mapToggle = document.getElementById('map-toggle');
@@ -455,7 +458,7 @@ function renderComposerLocation() {
   composerLocationButton.hidden = hasPoint;
   composerLocationClear.hidden = !hasPoint;
   composerLocationName.hidden = !hasPoint;
-  composerLocationName.textContent = hasPoint ? `📍 ${composerLocation.location}` : '';
+  composerLocationName.textContent = hasPoint ? composerLocation.location : '';
 }
 
 composerLocationButton.addEventListener('click', async () => {
@@ -1158,7 +1161,8 @@ function placeGap() {
 
   if (!gapElement) {
     gapElement = document.createElement('div');
-    gapElement.className = 'notes-gap';
+    gapElement.className = 'notes-gap glass';
+    gapElement.dataset.glass = '';
 
     const hint = document.createElement('p');
     hint.className = 'notes-gap-hint';
